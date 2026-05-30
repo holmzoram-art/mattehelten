@@ -109,7 +109,20 @@ function buildCharGrid(){
 }
 
 function saveCharacter(){
-  const name=document.getElementById('cs-name').value.trim()||CHARS[selectedChar].name;
+  const nameInput=document.getElementById('cs-name');
+  const name=nameInput.value.trim();
+  if(!name){
+    nameInput.style.borderColor='var(--red)';
+    nameInput.style.boxShadow='0 0 16px rgba(255,68,102,.5)';
+    nameInput.placeholder='⚠️ Du må skrive navnet ditt!';
+    nameInput.focus();
+    nameInput.addEventListener('input',()=>{
+      nameInput.style.borderColor='';
+      nameInput.style.boxShadow='';
+      nameInput.placeholder='Skriv navnet ditt...';
+    },{once:true});
+    return;
+  }
   const player={emoji:CHARS[selectedChar].emoji,name};
   localStorage.setItem('mh_player',JSON.stringify(player));
   applyPlayer(player);

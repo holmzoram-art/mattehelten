@@ -251,6 +251,45 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 .hud-badges-btn{font-size:1.1rem;cursor:pointer;transition:transform .15s;background:none;border:none;padding:0;line-height:1;}
 .hud-badges-btn:hover{transform:scale(1.2);}
 
+/* HERO CARD */
+.herocard-overlay{position:fixed;inset:0;z-index:750;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);padding:16px;}
+.herocard-overlay.show{display:flex;animation:fadeIn .25s ease;}
+.herocard{position:relative;width:300px;max-width:88vw;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,#1a1535 0%,#0d0b1e 60%,#1a1040 100%);border:2px solid var(--hc-border,var(--gold));box-shadow:0 0 60px var(--hc-glow,rgba(255,217,61,.35)),inset 0 0 80px rgba(255,255,255,.02);animation:cardIn .45s cubic-bezier(.34,1.56,.64,1);}
+@keyframes cardIn{from{transform:scale(.5) rotate(-12deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.herocard::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.04) 50%,transparent 65%);animation:hcShimmer 4s ease-in-out infinite;pointer-events:none;}
+@keyframes hcShimmer{0%,100%{transform:translateX(-120%)}50%{transform:translateX(220%)}}
+.hc-corner{position:absolute;width:18px;height:18px;border-style:solid;border-color:var(--hc-border,var(--gold));opacity:.55;}
+.hc-corner.tl{top:8px;left:8px;border-width:2px 0 0 2px;border-radius:4px 0 0 0;}
+.hc-corner.tr{top:8px;right:8px;border-width:2px 2px 0 0;border-radius:0 4px 0 0;}
+.hc-corner.bl{bottom:8px;left:8px;border-width:0 0 2px 2px;border-radius:0 0 0 4px;}
+.hc-corner.br{bottom:8px;right:8px;border-width:0 2px 2px 0;border-radius:0 0 4px 0;}
+.hc-close{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);border:none;color:rgba(255,255,255,.45);border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;z-index:2;}
+.hc-topbar{padding:8px 16px;display:flex;justify-content:space-between;align-items:center;font-family:'Fredoka One',cursive;font-size:.78rem;color:#fff;letter-spacing:.5px;}
+.hc-body{padding:16px 18px 14px;text-align:center;}
+.hc-char{font-size:5.5rem;display:block;margin-bottom:8px;filter:drop-shadow(0 0 36px var(--hc-glow,rgba(255,217,61,.7)));animation:hcFloat 3s ease-in-out infinite;}
+@keyframes hcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.hc-name{font-family:'Fredoka One',cursive;font-size:2rem;color:#fff;line-height:1.1;margin-bottom:6px;}
+.hc-rank-badge{display:inline-block;border-radius:99px;padding:5px 18px;font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--dark);margin-bottom:14px;box-shadow:0 0 20px var(--hc-glow,rgba(255,217,61,.5));}
+.hc-lvl-box{background:rgba(255,255,255,.06);border-radius:12px;padding:10px 14px;margin-bottom:12px;text-align:left;}
+.hc-lvl-row{display:flex;justify-content:space-between;font-family:'Fredoka One',cursive;font-size:.82rem;color:var(--gold);margin-bottom:5px;}
+.hc-xp-track{height:7px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;}
+.hc-xp-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));border-radius:99px;box-shadow:var(--glow-c);}
+.hc-worlds-lbl{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;}
+.hc-world-row{display:flex;gap:7px;justify-content:center;margin-bottom:14px;}
+.hc-wnode{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);position:relative;flex-direction:column;gap:1px;}
+.hc-wnode.done{background:rgba(255,217,61,.1);box-shadow:0 0 14px var(--hc-glow,rgba(255,217,61,.3));}
+.hc-wnode.locked{opacity:.28;filter:grayscale(1);}
+.hc-wstars{font-size:.42rem;line-height:1;letter-spacing:0;}
+.hc-stats-row{display:flex;gap:8px;margin-bottom:14px;}
+.hc-stat{flex:1;background:rgba(255,255,255,.06);border-radius:10px;padding:8px 4px;text-align:center;}
+.hc-stat-n{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--gold);}
+.hc-stat-l{font-size:.58rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.hc-share-btn{width:100%;padding:13px;font-family:'Fredoka One',cursive;font-size:1rem;background:linear-gradient(135deg,var(--gold),var(--orange));color:var(--dark);border:none;border-radius:var(--rs);cursor:pointer;box-shadow:var(--glow-gold);transition:transform .15s;}
+.hc-share-btn:hover{transform:scale(1.04);}
+.hc-footer{background:rgba(0,0,0,.35);padding:6px 16px;display:flex;justify-content:space-between;font-size:.6rem;color:rgba(255,255,255,.28);font-weight:700;letter-spacing:.5px;}
+.hud-card-btn{font-size:1rem;cursor:pointer;background:none;border:none;padding:0;line-height:1;transition:transform .15s;filter:drop-shadow(0 0 4px rgba(255,217,61,.4));}
+.hud-card-btn:hover{transform:scale(1.2) rotate(-5deg);}
+
 /* ACHIEVEMENT TOAST */
 .achieve-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--dark2);border:2px solid var(--gold);border-radius:var(--r);padding:12px 20px;display:flex;align-items:center;gap:12px;z-index:9998;box-shadow:var(--glow-gold);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:320px;width:90%;}
 .achieve-toast.show{transform:translateX(-50%) translateY(0);}
@@ -451,6 +490,34 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 <div class="stars" id="stars"></div>
 <div class="particles" id="particles"></div>
 
+<!-- HERO CARD -->
+<div class="herocard-overlay" id="herocard-overlay" onclick="if(event.target===this)closeHeroCard()">
+  <div class="herocard" id="herocard">
+    <div class="hc-corner tl"></div><div class="hc-corner tr"></div>
+    <div class="hc-corner bl"></div><div class="hc-corner br"></div>
+    <button class="hc-close" onclick="closeHeroCard()">✕</button>
+    <div class="hc-topbar" id="hc-topbar"><span>⚔️ MATTEHELTEN</span><span id="hc-id">ID #0001</span></div>
+    <div class="hc-body">
+      <span class="hc-char" id="hc-char">🧙</span>
+      <div class="hc-name" id="hc-name">Helten</div>
+      <div class="hc-rank-badge" id="hc-rank-badge">Lærling 🌱</div>
+      <div class="hc-lvl-box">
+        <div class="hc-lvl-row"><span id="hc-lvl-txt">Nivå 1</span><span id="hc-xp-txt">0 XP</span></div>
+        <div class="hc-xp-track"><div class="hc-xp-fill" id="hc-xp-fill" style="width:0%"></div></div>
+      </div>
+      <div class="hc-worlds-lbl">Verdener oppdaget</div>
+      <div class="hc-world-row" id="hc-world-row"></div>
+      <div class="hc-stats-row">
+        <div class="hc-stat"><div class="hc-stat-n" id="hc-badges">0</div><div class="hc-stat-l">Merker</div></div>
+        <div class="hc-stat"><div class="hc-stat-n" id="hc-coins-hc">0</div><div class="hc-stat-l">Mynter</div></div>
+        <div class="hc-stat"><div class="hc-stat-n" id="hc-worlds-done">0/5</div><div class="hc-stat-l">Verdener</div></div>
+      </div>
+      <button class="hc-share-btn" id="hc-share-btn" onclick="shareHeroCard()">📸 Vis frem på skolen!</button>
+    </div>
+    <div class="hc-footer"><span>Kongeriket Talland 🏰</span><span id="hc-date"></span></div>
+  </div>
+</div>
+
 <!-- STORY INTRO -->
 <div class="story-overlay" id="story-overlay">
   <button class="story-skip" onclick="skipStory()">Hopp over</button>
@@ -537,6 +604,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
     <div class="hud-streak">🔥<span id="hud-streak">0</span></div>
     <div class="hud-coins">🪙<span id="hud-coins">0</span></div>
     <button class="hud-badges-btn" onclick="openBadges()" title="Merker">🏆</button>
+    <button class="hud-card-btn" onclick="openHeroCard()" title="Heltekort">🃏</button>
   </div>
   <div class="main-flex">
     <div class="game-col">

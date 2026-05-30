@@ -694,6 +694,63 @@ function unlockAchievement(id){
   sidekickReact('celebrate');
 }
 
+function openHeroCard(){
+  const p=getPlayer();
+  const level=curLvl();
+  const rank=getRank(level);
+  const emoji=getCharEmoji(getCharIdx(),level);
+  const card=document.getElementById('herocard');
+  // Rank-based colors
+  card.style.setProperty('--hc-border',rank.color);
+  card.style.setProperty('--hc-glow',rank.color+'55');
+  document.getElementById('hc-topbar').style.background=`linear-gradient(90deg,${rank.color},${rank.color}66)`;
+  document.getElementById('hc-char').textContent=emoji;
+  document.getElementById('hc-name').textContent=p.name;
+  document.getElementById('hc-rank-badge').textContent=rank.name;
+  document.getElementById('hc-rank-badge').style.background=`linear-gradient(135deg,${rank.color},${rank.color}aa)`;
+  document.getElementById('hc-rank-badge').style.color=rank.lvl>=8?'#fff':'var(--dark)';
+  document.getElementById('hc-lvl-txt').textContent=`Nivå ${level}`;
+  const xpPct=Math.round(xpInLvl()/lvlFor(level)*100);
+  document.getElementById('hc-xp-txt').textContent=`${xpInLvl()} / ${lvlFor(level)} XP`;
+  document.getElementById('hc-xp-fill').style.width=xpPct+'%';
+  document.getElementById('hc-coins-hc').textContent=prog.coins;
+  document.getElementById('hc-badges').textContent=BADGES.filter(b=>unlockedAchievements[b.id]).length;
+  document.getElementById('hc-date').textContent=new Date().toLocaleDateString('no-NO');
+  // Unique player ID from name
+  const uid='#'+String(p.name.split('').reduce((a,c)=>a+c.charCodeAt(0),1337)%9000+1000);
+  document.getElementById('hc-id').textContent='ID '+uid;
+  // World nodes
+  const wr=document.getElementById('hc-world-row');
+  wr.innerHTML='';
+  let worldsDone=0;
+  WORLDS.forEach((w,i)=>{
+    const unlocked=isWorldUnlocked(i);
+    const stars=getWorldStars(w.grades);
+    const allStar=stars==='⭐⭐⭐';
+    if(unlocked)worldsDone++;
+    const d=document.createElement('div');
+    d.className='hc-wnode'+(unlocked?' done':'  locked');
+    if(unlocked){d.style.borderColor=w.color;d.style.boxShadow=`0 0 12px ${w.glow}`;}
+    d.innerHTML=`${w.icon}<div class="hc-wstars">${unlocked?stars:'🔒'}</div>`;
+    wr.appendChild(d);
+  });
+  document.getElementById('hc-worlds-done').textContent=`${worldsDone}/5`;
+  document.getElementById('hc-share-btn').textContent='📸 Vis frem på skolen!';
+  document.getElementById('herocard-overlay').classList.add('show');
+  launch(25,['#ffd93d','#a855f7','#06d6ff']);
+}
+
+function closeHeroCard(){
+  document.getElementById('herocard-overlay').classList.remove('show');
+}
+
+function shareHeroCard(){
+  const btn=document.getElementById('hc-share-btn');
+  btn.textContent='📱 Ta skjermbilde nå!';
+  launch(80,['#ffd93d','#ff6b35','#00ff88','#a855f7']);
+  setTimeout(()=>{btn.textContent='📸 Vis frem på skolen!';},2500);
+}
+
 function openBadges(){
   const grid=document.getElementById('badge-grid');
   const unlocked=BADGES.filter(b=>unlockedAchievements[b.id]).length;

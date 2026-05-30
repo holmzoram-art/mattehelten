@@ -86,7 +86,7 @@ window.addEventListener('resize',resizeCanvas);
 setTimeout(()=>resizeCanvas(),200);
 
 // ============================================================
-// CHARACTERS
+// CHARACTERS + EVOLUTION
 // ============================================================
 const CHARS=[
   {emoji:'🧙',name:'Trollmannen'},{emoji:'🦸',name:'Superhelten'},
@@ -95,6 +95,103 @@ const CHARS=[
   {emoji:'🐉',name:'Dragen'},{emoji:'⚡',name:'Lynet'},
   {emoji:'🦄',name:'Enhørningen'},{emoji:'🚀',name:'Raketten'},
 ];
+
+// 5 evolusjonsstadier per karakter (nivå 1→3→5→8→12)
+const EVOLUTIONS = [
+  ['🧙','🧙‍♂️','🔮','🌟','🌌'],   // Trollmannen
+  ['🦸','🦸‍♂️','💪','⚡','🏆'],   // Superhelten
+  ['🥷','🗡️','⚔️','🌑','💀'],    // Ninjaen
+  ['🧚','🧚‍♀️','🦋','🌈','✨'],   // Alven
+  ['🤖','⚙️','🔧','💎','🛸'],    // Roboten
+  ['🦊','🐺','🦁','🔱','🐉'],    // Reven
+  ['🐉','🔥','💥','🌋','🌠'],    // Dragen
+  ['⚡','🌩️','🌪️','💫','☄️'],   // Lynet
+  ['🦄','🌈','✨','🌟','💎'],    // Enhørningen
+  ['🚀','🛸','🌙','⭐','🌌'],    // Raketten
+];
+
+const RANKS = [
+  {name:'Lærling 🌱', lvl:1,  color:'#8878cc', desc:'Du har akkurat begynt eventyret ditt!'},
+  {name:'Kriger ⚔️',  lvl:3,  color:'#06d6ff', desc:'Du har vist styrke i kampen mot tallene!'},
+  {name:'Mester 🔥',  lvl:5,  color:'#ff6b35', desc:'Tallene frykter deg nå!'},
+  {name:'Legende ⭐', lvl:8,  color:'#ffd93d', desc:'Du er blant de beste matteheltenene!'},
+  {name:'Mattegud 🌌',lvl:12, color:'#a855f7', desc:'Du har nådd toppen av matteunivers!'},
+];
+
+function getEvoTier(level) {
+  if(level >= 12) return 4;
+  if(level >= 8)  return 3;
+  if(level >= 5)  return 2;
+  if(level >= 3)  return 1;
+  return 0;
+}
+
+function getRank(level) {
+  let rank = RANKS[0];
+  RANKS.forEach(r => { if(level >= r.lvl) rank = r; });
+  return rank;
+}
+
+function getCharEmoji(charIdx, level) {
+  const tier = getEvoTier(level);
+  return EVOLUTIONS[charIdx]?.[tier] || CHARS[charIdx].emoji;
+}
+
+function getCharIdx() {
+  return parseInt(localStorage.getItem('mh_char_idx') || '0');
+}
+
+let pendingEvolution = null;
+
+function checkEvolution(oldLevel, newLevel) {
+  const oldTier = getEvoTier(oldLevel);
+  const newTier = getEvoTier(newLevel);
+  if(newTier > oldTier) {
+    const charIdx = getCharIdx();
+    pendingEvolution = {
+      oldEmoji: EVOLUTIONS[charIdx][oldTier],
+      newEmoji: EVOLUTIONS[charIdx][newTier],
+      rank: getRank(newLevel),
+    };
+  }
+}
+
+function showEvolution() {
+  if(!pendingEvolution) return;
+  const {oldEmoji, newEmoji, rank} = pendingEvolution;
+  document.getElementById('evo-old').textContent = oldEmoji;
+  document.getElementById('evo-new').textContent = newEmoji;
+  document.getElementById('evo-rank-badge').textContent = rank.name;
+  document.getElementById('evo-rank-badge').style.background = `linear-gradient(135deg,${rank.color},${rank.color}99)`;
+  document.getElementById('evo-desc').textContent = rank.desc;
+  // reset animation
+  const en = document.getElementById('evo-new');
+  en.style.animation = 'none'; void en.offsetWidth; en.style.animation = '';
+  document.getElementById('evo-overlay').classList.add('show');
+  launch(120, ['#ffd93d','#a855f7','#06d6ff','#ff6b35','#00ff88']);
+  sndLvl();
+  pendingEvolution = null;
+}
+
+function closeEvolution() {
+  document.getElementById('evo-overlay').classList.remove('show');
+  updatePlayerEmoji();
+}
+
+function updatePlayerEmoji() {
+  const charIdx = getCharIdx();
+  const level = curLvl();
+  const emoji = getCharEmoji(charIdx, level);
+  const rank = getRank(level);
+  // Update everywhere
+  document.getElementById('hud-char').textContent = emoji;
+  document.getElementById('player-avatar').textContent = emoji;
+  const p = getPlayer();
+  p.emoji = emoji;
+  // HUD level label with rank badge
+  document.getElementById('hud-lvl').innerHTML =
+    `⭐ Nivå ${level} · <span id="hud-name">${p.name}</span> <span class="rank-badge" style="background:${rank.color}22;color:${rank.color};border:1px solid ${rank.color}44">${rank.name}</span>`;
+}
 let selectedChar=0;
 
 function buildCharGrid(){
@@ -125,7 +222,9 @@ function saveCharacter(){
   }
   const player={emoji:CHARS[selectedChar].emoji,name};
   localStorage.setItem('mh_player',JSON.stringify(player));
+  localStorage.setItem('mh_char_idx', String(selectedChar));
   applyPlayer(player);
+  updatePlayerEmoji();
   showScreen('grades');
 }
 
@@ -575,7 +674,8 @@ function submitAnswer(){
     const xpG=10+(S.combo>=3?8:0)+(S.combo>=5?5:0);
     const oldL=curLvl();
     prog.xp+=xpG;prog.coins+=1;saveProg();renderHUD();
-    if(curLvl()>oldL){sndLvl();launch(100);unlockAchievement('lvlup');}
+    if(curLvl()>oldL){checkEvolution(oldL,curLvl());sndLvl();launch(100);unlockAchievement('lvlup');if(pendingEvolution)showEvolution();}
+    updatePlayerEmoji();
     if(prog.coins>=100)unlockAchievement('coins100');
     if(S.streak===1&&!unlockedAchievements.first_correct)unlockAchievement('first_correct');
     if(S.streak===5)unlockAchievement('streak5');
@@ -884,6 +984,7 @@ buildWorldList();
 const savedPlayer=localStorage.getItem('mh_player');
 if(savedPlayer){
   applyPlayer(JSON.parse(savedPlayer));
+  updatePlayerEmoji();
   showScreen('grades');
 }
 renderHUD();

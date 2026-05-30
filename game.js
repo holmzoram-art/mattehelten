@@ -565,12 +565,12 @@ function setSpeech(txt,show=true){
 // ============================================================
 // GAME STATE
 // ============================================================
-let S={grade:null,topicId:null,topic:null,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100};
+let S={grade:null,topicId:null,topic:null,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false};
 const TQ=10;
 
 function startGame(g,topicId){
   const gd=CUR[g],topic=gd.topics.find(t=>t.id===topicId);
-  S={grade:g,topicId,topic,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100};
+  S={grade:g,topicId,topic,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false};
   const p=getPlayer();
   document.getElementById('player-avatar').textContent=p.emoji;
   document.getElementById('player-name').textContent=p.name;
@@ -658,6 +658,12 @@ function submitAnswer(){
     document.getElementById('enemy-avatar').classList.add('hit');
     setTimeout(()=>document.getElementById('enemy-avatar').classList.remove('hit'),500);
     launch(S.combo>=3?80:40);
+    if(S.enemyHp<=0){
+      S.enemyDefeated=true;
+      document.getElementById('enemy-avatar').textContent='💀';
+      setSpeech('K.O.! Du knuste monsteret! 💥');
+      launch(150,['#ffd93d','#ff6b35','#00ff88','#06d6ff']);
+    }
     // Combo flash
     if(S.combo>=3){
       sndCombo();
@@ -696,11 +702,11 @@ function submitAnswer(){
   document.getElementById('numpad').style.display='none';
   updateBattleProg();
   const nb=document.getElementById('next-btn');
-  nb.textContent=S.idx>=TQ?'Se resultat 🏁':'Neste →';
+  nb.textContent=(S.idx>=TQ||S.enemyDefeated)?'Se resultat 🏁':'Neste →';
   nb.style.display='block';
 }
 
-function handleNext(){if(S.idx>=TQ)showChest();else loadQuestion();}
+function handleNext(){if(S.idx>=TQ||S.enemyDefeated)showChest();else loadQuestion();}
 
 // ============================================================
 // CHEST + RESULTS

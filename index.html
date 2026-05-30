@@ -155,6 +155,102 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 @keyframes nextPop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
 .next-btn:hover{transform:translateY(-2px);}
 
+/* STORY INTRO */
+.story-overlay{position:fixed;inset:0;z-index:800;background:#050310;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;}
+.story-overlay.hidden{display:none;}
+.story-panel{display:none;flex-direction:column;align-items:center;gap:16px;animation:storyIn .6s ease;}
+.story-panel.active{display:flex;}
+@keyframes storyIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.story-villain{font-size:6rem;filter:drop-shadow(0 0 40px rgba(255,68,102,.8));animation:villainFloat 3s ease-in-out infinite;}
+@keyframes villainFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-14px) rotate(5deg)}}
+.story-big{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--white);line-height:1.2;max-width:360px;}
+.story-big .red{color:var(--red);text-shadow:0 0 20px rgba(255,68,102,.7);}
+.story-big .gold{color:var(--gold);}
+.story-sub{font-size:.95rem;color:rgba(255,255,255,.65);font-weight:700;max-width:320px;line-height:1.6;}
+.story-hero{font-size:4rem;animation:heroPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes heroPop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.story-btn{padding:14px 40px;font-family:'Fredoka One',cursive;font-size:1.1rem;background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;border:none;border-radius:var(--rs);cursor:pointer;box-shadow:var(--glow-p);margin-top:8px;}
+.story-btn:hover{transform:scale(1.05);}
+.story-skip{position:absolute;top:16px;right:16px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:4px 14px;font-size:.75rem;font-weight:800;color:rgba(255,255,255,.4);cursor:pointer;}
+.story-skip:hover{color:rgba(255,255,255,.7);}
+.story-dots{display:flex;gap:8px;margin-top:8px;}
+.story-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);}
+.story-dot.active{background:var(--cyan);}
+
+/* ADVENTURE MAP */
+.adv-map-wrap{position:relative;width:100%;height:520px;border-radius:var(--r);overflow:hidden;border:1px solid rgba(255,255,255,.08);}
+.adv-map-bg{position:absolute;inset:0;background:linear-gradient(to top,#0f2b0f 0%,#1a4a1a 18%,#2d6b2d 32%,#5a6a3a 44%,#4a4060 58%,#1a1040 72%,#0d0b1e 85%,#050310 100%);}
+.adv-map-deco{position:absolute;inset:0;pointer-events:none;}
+.adv-map-svg{position:absolute;inset:0;width:100%;height:100%;}
+.map-node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:transform .2s;}
+.map-node:hover:not(.locked){transform:translate(-50%,-50%) scale(1.12);}
+.map-node.locked{opacity:.45;cursor:not-allowed;filter:grayscale(.7);}
+.map-node-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;border:3px solid rgba(255,255,255,.2);box-shadow:0 4px 20px rgba(0,0,0,.5);position:relative;background:rgba(0,0,0,.4);}
+.map-node:not(.locked) .map-node-icon{border-color:var(--nc,var(--purple));box-shadow:0 4px 24px var(--ng,rgba(124,58,237,.5));animation:nodeGlow 2.5s ease-in-out infinite;}
+@keyframes nodeGlow{0%,100%{box-shadow:0 4px 24px var(--ng,rgba(124,58,237,.5))}50%{box-shadow:0 4px 36px var(--ng,rgba(124,58,237,.8)),0 0 60px var(--ng,rgba(124,58,237,.3))}}
+.map-node-lock{position:absolute;bottom:-4px;right:-4px;font-size:.9rem;background:rgba(0,0,0,.8);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.map-node-name{font-family:'Fredoka One',cursive;font-size:.72rem;color:var(--white);text-shadow:0 2px 6px rgba(0,0,0,.9);text-align:center;max-width:80px;line-height:1.2;}
+.map-node-stars{font-size:.65rem;letter-spacing:1px;}
+.map-you{position:absolute;font-size:1.4rem;transform:translate(-50%,-200%);animation:youBounce 1s ease-in-out infinite;pointer-events:none;filter:drop-shadow(0 0 8px var(--gold));}
+@keyframes youBounce{0%,100%{transform:translate(-50%,-200%)}50%{transform:translate(-50%,-220%)}}
+
+/* WORLD STORY POPUP */
+.world-popup{position:fixed;inset:0;z-index:400;display:none;align-items:flex-end;justify-content:center;padding:20px;background:rgba(0,0,0,.7);}
+.world-popup.show{display:flex;animation:fadeIn .3s ease;}
+.world-popup-card{background:var(--dark2);border:1px solid rgba(255,255,255,.12);border-radius:var(--r);padding:22px;width:100%;max-width:460px;text-align:center;}
+.wp-icon{font-size:3.5rem;margin-bottom:8px;filter:drop-shadow(0 0 16px var(--wpc,var(--purple)));}
+.wp-name{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--white);margin-bottom:6px;}
+.wp-story{font-size:.88rem;color:rgba(255,255,255,.7);font-weight:700;line-height:1.6;margin-bottom:16px;}
+.wp-btns{display:flex;gap:10px;}
+.wp-cancel{flex:0 0 auto;padding:11px 16px;font-size:.88rem;font-weight:800;background:rgba(255,255,255,.07);color:var(--white);border:1px solid rgba(255,255,255,.12);border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;}
+.wp-go{flex:1;padding:12px;font-family:'Fredoka One',cursive;font-size:1rem;background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;border:none;border-radius:var(--rs);cursor:pointer;box-shadow:var(--glow-p);}
+
+/* SIDEKICK */
+.hud-sidekick{font-size:1.5rem;position:relative;cursor:pointer;transition:transform .15s;filter:drop-shadow(0 0 6px rgba(255,217,61,.4));}
+.hud-sidekick:hover{transform:scale(1.2);}
+.hud-sidekick.react-happy{animation:skHappy .5s ease forwards;}
+.hud-sidekick.react-sad{animation:skSad .5s ease forwards;}
+.hud-sidekick.react-combo{animation:skCombo .6s ease forwards;}
+.hud-sidekick.react-scared{animation:skScared .8s ease infinite;}
+.hud-sidekick.react-celebrate{animation:skCelebrate .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes skHappy{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.5) rotate(15deg)}60%{transform:scale(.9)}100%{transform:scale(1) rotate(0)}}
+@keyframes skSad{0%{transform:scale(1)}25%{transform:rotate(-15deg) scale(.85)}75%{transform:rotate(10deg) scale(.9)}100%{transform:scale(1) rotate(0)}}
+@keyframes skCombo{0%{transform:scale(1)}20%{transform:scale(1.8) rotate(-10deg)}50%{transform:scale(1.4) rotate(15deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes skScared{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(.85) rotate(-8deg)}75%{transform:scale(.85) rotate(8deg)}}
+@keyframes skCelebrate{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.5) rotate(20deg)}100%{transform:scale(1) rotate(0)}}
+.sidekick-pick{margin-bottom:16px;}
+.sidekick-pick-lbl{font-size:.8rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.sidekick-grid{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.sk-card{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:10px 14px;text-align:center;cursor:pointer;transition:all .15s;min-width:70px;}
+.sk-card:hover{border-color:var(--gold);background:rgba(255,217,61,.1);}
+.sk-card.selected{border-color:var(--gold);background:rgba(255,217,61,.15);box-shadow:0 0 16px rgba(255,217,61,.3);}
+.sk-emoji{font-size:1.8rem;display:block;margin-bottom:3px;}
+.sk-name{font-size:.68rem;font-weight:800;color:var(--muted);}
+.sk-card.selected .sk-name{color:var(--gold);}
+
+/* BADGE COLLECTION */
+.badge-overlay{position:fixed;inset:0;z-index:700;display:none;flex-direction:column;background:var(--dark);overflow-y:auto;}
+.badge-overlay.show{display:flex;}
+.badge-hdr{background:var(--dark2);border-bottom:1px solid rgba(255,255,255,.08);padding:16px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:1;}
+.badge-back{background:rgba(255,255,255,.08);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--white);}
+.badge-hdr-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--white);}
+.badge-hdr-count{font-size:.8rem;color:var(--muted);font-weight:700;margin-left:auto;}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px;}
+@media(min-width:500px){.badge-grid{grid-template-columns:repeat(4,1fr);}}
+.badge-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:14px 10px;text-align:center;transition:all .2s;}
+.badge-card.unlocked{border-color:var(--gold);background:rgba(255,217,61,.08);box-shadow:0 0 20px rgba(255,217,61,.15);}
+.badge-card.secret:not(.unlocked){opacity:.4;filter:grayscale(1);}
+.badge-icon{font-size:2.2rem;display:block;margin-bottom:6px;}
+.badge-card:not(.unlocked) .badge-icon{filter:grayscale(1);opacity:.5;}
+.badge-name{font-family:'Fredoka One',cursive;font-size:.78rem;color:var(--white);margin-bottom:2px;}
+.badge-desc{font-size:.65rem;color:var(--muted);font-weight:600;line-height:1.3;}
+.badge-card.unlocked .badge-name{color:var(--gold);}
+.badge-new{display:inline-block;background:var(--red);color:#fff;border-radius:99px;padding:1px 7px;font-size:.6rem;font-weight:800;margin-top:3px;}
+
+/* HUD badge button */
+.hud-badges-btn{font-size:1.1rem;cursor:pointer;transition:transform .15s;background:none;border:none;padding:0;line-height:1;}
+.hud-badges-btn:hover{transform:scale(1.2);}
+
 /* ACHIEVEMENT TOAST */
 .achieve-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--dark2);border:2px solid var(--gold);border-radius:var(--r);padding:12px 20px;display:flex;align-items:center;gap:12px;z-index:9998;box-shadow:var(--glow-gold);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:320px;width:90%;}
 .achieve-toast.show{transform:translateX(-50%) translateY(0);}
@@ -354,6 +450,56 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 <body>
 <div class="stars" id="stars"></div>
 <div class="particles" id="particles"></div>
+
+<!-- STORY INTRO -->
+<div class="story-overlay" id="story-overlay">
+  <button class="story-skip" onclick="skipStory()">Hopp over</button>
+  <div class="story-panel active" id="story-p0">
+    <div style="font-size:3rem">🏰✨🌿</div>
+    <div class="story-big">I kongeriket <span class="gold">Talland</span> lever alle i harmoni med tallene...</div>
+    <div class="story-sub">Matematikk er magi. Alle kan plusse, gange og dele — og verden er vakker.</div>
+    <div class="story-dots"><div class="story-dot active"></div><div class="story-dot"></div><div class="story-dot"></div></div>
+    <button class="story-btn" onclick="storyNext()">Neste →</button>
+  </div>
+  <div class="story-panel" id="story-p1">
+    <div class="story-villain">👹</div>
+    <div class="story-big">Men så kom det mørke monsteret... <span class="red">NULLIUS!</span></div>
+    <div class="story-sub">Det stjal all matematikk fra kongeriket. Tallene ble kaotiske. Ingen kan lenger plusse, gange eller dele!</div>
+    <div class="story-dots"><div class="story-dot"></div><div class="story-dot active"></div><div class="story-dot"></div></div>
+    <button class="story-btn" onclick="storyNext()">Neste →</button>
+  </div>
+  <div class="story-panel" id="story-p2">
+    <div class="story-hero">⚔️</div>
+    <div class="story-big">Bare <span class="gold">én helt</span> kan redde kongeriket!</div>
+    <div class="story-sub">Reis gjennom 5 verdener, beseir Nullius' monstre, og bring matematikken tilbake til Talland!</div>
+    <div class="story-dots"><div class="story-dot"></div><div class="story-dot"></div><div class="story-dot active"></div></div>
+    <button class="story-btn" onclick="skipStory()">🚀 Jeg er klar!</button>
+  </div>
+</div>
+
+<!-- BADGE OVERLAY -->
+<div class="badge-overlay" id="badge-overlay">
+  <div class="badge-hdr">
+    <button class="badge-back" onclick="closeBadges()">←</button>
+    <div class="badge-hdr-title">🏆 Merkesamling</div>
+    <div class="badge-hdr-count" id="badge-count">0 / 0</div>
+  </div>
+  <div class="badge-grid" id="badge-grid"></div>
+</div>
+
+<!-- WORLD STORY POPUP -->
+<div class="world-popup" id="world-popup">
+  <div class="world-popup-card">
+    <div class="wp-icon" id="wp-icon">🌿</div>
+    <div class="wp-name" id="wp-name">Tallenes Dal</div>
+    <div class="wp-story" id="wp-story"></div>
+    <div class="wp-btns">
+      <button class="wp-cancel" onclick="closeWorldPopup()">← Tilbake</button>
+      <button class="wp-go" id="wp-go">⚔️ Gå til kamp!</button>
+    </div>
+  </div>
+</div>
+
 <div class="achieve-toast" id="achieve-toast">
   <div class="at-icon" id="at-icon">🏆</div>
   <div><div class="at-title" id="at-title">Achievement!</div><div class="at-sub" id="at-sub">Godt jobbet!</div></div>
@@ -383,12 +529,14 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
   <div class="hdr"><div class="hdr-title">⚔️ Mattehelten</div><div class="hdr-sub">Bli en legendarisk mattehelt!</div></div>
   <div class="hud" id="hud">
     <div class="hud-char" id="hud-char">🦸</div>
+    <div class="hud-sidekick" id="hud-sidekick" title="Din sidekick!" onclick="void 0">🐱</div>
     <div class="hud-xp">
       <div class="hud-lvl" id="hud-lvl">⭐ Nivå 1 · <span id="hud-name">Helt</span></div>
       <div class="hud-bar"><div class="hud-fill" id="hud-fill" style="width:0%"></div></div>
     </div>
     <div class="hud-streak">🔥<span id="hud-streak">0</span></div>
     <div class="hud-coins">🪙<span id="hud-coins">0</span></div>
+    <button class="hud-badges-btn" onclick="openBadges()" title="Merker">🏆</button>
   </div>
   <div class="main-flex">
     <div class="game-col">
@@ -397,6 +545,10 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
         <div class="cs-title">Velg din helt! ⚔️</div>
         <div class="cs-sub">Din karakter følger deg gjennom alle matteoppgavene</div>
         <div class="char-grid" id="char-grid"></div>
+        <div class="sidekick-pick">
+          <div class="sidekick-pick-lbl">Velg din sidekick 🐾</div>
+          <div class="sidekick-grid" id="sidekick-grid"></div>
+        </div>
         <div class="cs-name-wrap">
           <div class="cs-name-lbl">Hva heter helten din?</div>
           <input type="text" id="cs-name" class="cs-name-input" placeholder="Skriv navnet ditt..." maxlength="20"/>
@@ -405,8 +557,14 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
       </div>
 
       <div id="screen-grades" class="screen">
-        <div class="wm-title">🗺️ Velg verden</div>
-        <div class="world-list" id="world-list"></div>
+        <div class="wm-title">🗺️ Eventyrkart</div>
+        <div class="adv-map-wrap" id="adv-map-wrap">
+          <div class="adv-map-bg"></div>
+          <div class="adv-map-deco" id="adv-map-deco"></div>
+          <svg class="adv-map-svg" id="adv-map-svg" viewBox="0 0 600 520" preserveAspectRatio="xMidYMid meet"></svg>
+          <div id="adv-map-nodes"></div>
+          <div class="map-you" id="map-you">👇</div>
+        </div>
       </div>
 
       <div id="screen-topics" class="screen">

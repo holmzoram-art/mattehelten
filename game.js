@@ -86,6 +86,92 @@ window.addEventListener('resize',resizeCanvas);
 setTimeout(()=>resizeCanvas(),200);
 
 // ============================================================
+// STORY
+// ============================================================
+let storyPanel=0;
+function storyNext(){
+  storyPanel++;
+  document.querySelectorAll('.story-panel').forEach((p,i)=>p.classList.toggle('active',i===storyPanel));
+}
+function skipStory(){
+  document.getElementById('story-overlay').classList.add('hidden');
+  localStorage.setItem('mh_story_seen','1');
+}
+
+// ============================================================
+// SIDEKICKS
+// ============================================================
+const SIDEKICKS=[
+  {emoji:'🐱',name:'Kattungen'},
+  {emoji:'🐶',name:'Valpen'},
+  {emoji:'🐸',name:'Frosken'},
+  {emoji:'🦉',name:'Uglen'},
+  {emoji:'🐲',name:'Drage-babyen'},
+  {emoji:'🐹',name:'Hamsteret'},
+];
+let selectedSidekick=0;
+
+function buildSidekickGrid(){
+  const g=document.getElementById('sidekick-grid');
+  SIDEKICKS.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='sk-card'+(i===0?' selected':'');
+    d.innerHTML=`<span class="sk-emoji">${s.emoji}</span><div class="sk-name">${s.name}</div>`;
+    d.onclick=()=>{selectedSidekick=i;document.querySelectorAll('.sk-card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');};
+    g.appendChild(d);
+  });
+}
+
+function getSidekickEmoji(){
+  const idx=parseInt(localStorage.getItem('mh_sidekick')||'0');
+  return SIDEKICKS[idx]?.emoji||'🐱';
+}
+
+function sidekickReact(type){
+  const el=document.getElementById('hud-sidekick');
+  if(!el)return;
+  el.className='hud-sidekick';
+  void el.offsetWidth;
+  el.className=`hud-sidekick react-${type}`;
+  setTimeout(()=>{el.className='hud-sidekick';},800);
+}
+
+function updateSidekick(){
+  const el=document.getElementById('hud-sidekick');
+  if(el)el.textContent=getSidekickEmoji();
+}
+
+// ============================================================
+// WORLD STORIES
+// ============================================================
+const WORLD_STORIES=[
+  {color:'#43e97b',glow:'rgba(67,233,123,.6)',
+   story:'Nullius\' minste håndlanger — Pluss-trollet — gjemmer seg i den grønne dalen. Det har blandet sammen alle tall under 100! Beseir det ved å mestre addisjon og subtraksjon!'},
+  {color:'#4facfe',glow:'rgba(79,172,254,.6)',
+   story:'Dypt inne i Gangeskogen lurer Gange-demonen. Den har lært alle trærne å snakke i gåter. Ingen tør å gå inn... ingen unntatt deg. Mester gangetabellen og frigjør skogen!'},
+  {color:'#f7971e',glow:'rgba(247,151,30,.6)',
+   story:'Høyt oppe i fjellene bor Komma-heksen. Hun har gjort alle tall uleselige ved å flytte kommaene! Beseir henne med desimaltall og prosent.'},
+  {color:'#a855f7',glow:'rgba(168,85,247,.6)',
+   story:'I den mørke Algebraborgen sitter Likning-trollet og holder kongerikets hemmelige formler fanget bak jernporter. Knekk algebraen og åpne portene!'},
+  {color:'#06d6ff',glow:'rgba(6,214,255,.6)',
+   story:'Her oppe i Kosmos-riket venter selve NULLIUS — den store skurken! Det er det endelige oppgjøret. Bruk all din kunnskap og redd kongeriket Talland for alltid!'},
+];
+
+let pendingWorldSelect=null;
+function openWorldPopup(world,worldIdx){
+  if(!isWorldUnlocked(worldIdx))return;
+  pendingWorldSelect=world;
+  const ws=WORLD_STORIES[worldIdx]||{};
+  document.getElementById('wp-icon').textContent=world.icon;
+  document.getElementById('wp-icon').style.setProperty('--wpc',ws.color||'var(--purple)');
+  document.getElementById('wp-name').textContent=world.name;
+  document.getElementById('wp-story').textContent=ws.story||'';
+  document.getElementById('wp-go').onclick=()=>{closeWorldPopup();selectWorld(world);};
+  document.getElementById('world-popup').classList.add('show');
+}
+function closeWorldPopup(){document.getElementById('world-popup').classList.remove('show');}
+
+// ============================================================
 // CHARACTERS + EVOLUTION
 // ============================================================
 const CHARS=[
@@ -223,8 +309,12 @@ function saveCharacter(){
   const player={emoji:CHARS[selectedChar].emoji,name};
   localStorage.setItem('mh_player',JSON.stringify(player));
   localStorage.setItem('mh_char_idx', String(selectedChar));
+  localStorage.setItem('mh_sidekick', String(selectedSidekick));
   applyPlayer(player);
   updatePlayerEmoji();
+  updateSidekick();
+  unlockAchievement('sidekick');
+  buildAdventureMap();
   showScreen('grades');
 }
 
@@ -255,26 +345,86 @@ const ENEMIES={
   1:'🐛',2:'🐞',3:'🦎',4:'🐊',5:'🦕',6:'🐉',7:'👹',8:'🧟',9:'👾',10:'🛸'
 };
 
-function buildWorldList(){
-  const list=document.getElementById('world-list');
-  list.innerHTML='';
-  WORLDS.forEach(w=>{
+// World node positions on the 600x520 viewBox [x%, y%]
+const MAP_POS=[
+  [16,82],[36,62],[53,40],[70,55],[82,20]
+];
+
+function isWorldUnlocked(idx){
+  if(idx===0)return true;
+  const prev=WORLDS[idx-1];
+  return prev.grades.some(g=>(CUR[g]?.topics||[]).some(t=>getBest(g,t.id)!==null));
+}
+
+function getYouPos(){
+  // Find the last unlocked world index
+  let last=0;
+  WORLDS.forEach((_,i)=>{if(isWorldUnlocked(i))last=i;});
+  return MAP_POS[last];
+}
+
+function buildAdventureMap(){
+  const svg=document.getElementById('adv-map-svg');
+  const nodes=document.getElementById('adv-map-nodes');
+  const wrap=document.getElementById('adv-map-wrap');
+  if(!svg||!nodes)return;
+  svg.innerHTML='';nodes.innerHTML='';
+
+  // Draw path segments between nodes
+  for(let i=0;i<MAP_POS.length-1;i++){
+    const [x1,y1]=MAP_POS[i],[x2,y2]=MAP_POS[i+1];
+    const unlocked=isWorldUnlocked(i)&&isWorldUnlocked(i+1);
+    const cx=(x1+x2)/2,cy=(y1+y2)/2-8;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M ${x1*6} ${y1*5.2} Q ${cx*6} ${cy*5.2} ${x2*6} ${y2*5.2}`);
+    path.setAttribute('stroke',unlocked?'rgba(255,217,61,.6)':'rgba(255,255,255,.15)');
+    path.setAttribute('stroke-width','4');
+    path.setAttribute('stroke-dasharray',unlocked?'none':'10 6');
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke-linecap','round');
+    svg.appendChild(path);
+  }
+
+  // Add terrain decoration dots
+  const deco=document.getElementById('adv-map-deco');
+  if(deco){
+    const decos=[
+      {top:'78%',left:'5%',t:'🌿'},{top:'70%',left:'25%',t:'🌳'},{top:'85%',left:'30%',t:'🌲'},
+      {top:'55%',left:'10%',t:'🌲'},{top:'48%',left:'62%',t:'⛰️'},{top:'60%',left:'78%',t:'🏔️'},
+      {top:'30%',left:'40%',t:'☁️'},{top:'15%',left:'60%',t:'✨'},{top:'10%',left:'90%',t:'⭐'},
+      {top:'5%',left:'50%',t:'🌌'},{top:'92%',left:'50%',t:'🌿'},
+    ];
+    deco.innerHTML=decos.map(d=>`<div style="position:absolute;top:${d.top};left:${d.left};font-size:1.2rem;opacity:.45;pointer-events:none;user-select:none">${d.t}</div>`).join('');
+  }
+
+  // Draw world nodes
+  WORLDS.forEach((w,i)=>{
+    const [lx,ly]=MAP_POS[i];
+    const unlocked=isWorldUnlocked(i);
     const stars=getWorldStars(w.grades);
-    const div=document.createElement('div');
-    div.className='world-card';
-    div.style.cssText=`--wcolor:${w.color};--wglow:${w.glow};--wbg:${w.bg};--wbg2:${w.bg2}`;
-    div.innerHTML=`
-      <div class="world-icon">${w.icon}</div>
-      <div class="world-info">
-        <div class="world-name">${w.name}</div>
-        <div class="world-grades">${w.grades.map(g=>g+'. klasse').join(' & ')}</div>
-        <div class="world-topics">${w.desc}</div>
+    const node=document.createElement('div');
+    node.className='map-node'+(unlocked?'':' locked');
+    node.style.cssText=`left:${lx}%;top:${ly}%;--nc:${w.color};--ng:${w.glow}`;
+    node.innerHTML=`
+      <div class="map-node-icon">
+        ${w.icon}
+        ${!unlocked?'<div class="map-node-lock">🔒</div>':''}
       </div>
-      <div class="world-stars">${stars}</div>
+      <div class="map-node-name">${w.name}</div>
+      <div class="map-node-stars">${stars}</div>
     `;
-    div.onclick=()=>selectWorld(w);
-    list.appendChild(div);
+    if(unlocked)node.onclick=()=>openWorldPopup(w,i);
+    nodes.appendChild(node);
   });
+
+  // "You are here" marker
+  const you=document.getElementById('map-you');
+  if(you){
+    const [yx,yy]=getYouPos();
+    you.style.left=yx+'%';
+    you.style.top=yy+'%';
+    you.textContent=getCharEmoji(getCharIdx(),curLvl());
+  }
 }
 
 function getWorldStars(grades){
@@ -503,17 +653,33 @@ function renderHUD(){
 function getPlayer(){return JSON.parse(localStorage.getItem('mh_player')||'{"emoji":"🦸","name":"Helt"}');}
 
 // ============================================================
-// ACHIEVEMENTS
+// BADGES / ACHIEVEMENTS
 // ============================================================
-const ACHIEVEMENTS={
-  first_correct:{icon:'⚡',title:'Forste treff!',sub:'Du fikk ditt forste riktige svar'},
-  streak5:{icon:'🔥',title:'Pa strak arm!',sub:'5 riktige pa rad'},
-  streak10:{icon:'🌋',title:'USTOPPELIG!',sub:'10 riktige pa rad'},
-  perfect:{icon:'💎',title:'Perfekt runde!',sub:'10 av 10 riktige'},
-  lvlup:{icon:'⭐',title:'NIVA OPP!',sub:'Du er blitt sterkere!'},
-  coins100:{icon:'🪙',title:'Pengesekken!',sub:'100 mynter samlet'},
-};
+const BADGES=[
+  {id:'first_correct', icon:'⚡', name:'Første treff!',   desc:'Svar riktig for første gang', secret:false},
+  {id:'streak5',       icon:'🔥', name:'På strak arm!',   desc:'5 riktige på rad',            secret:false},
+  {id:'streak10',      icon:'🌋', name:'Ustoppelig!',     desc:'10 riktige på rad',           secret:true},
+  {id:'perfect',       icon:'💎', name:'Perfekt runde!',  desc:'10 av 10 riktige',            secret:false},
+  {id:'ko',            icon:'💀', name:'K.O. Mester!',    desc:'Beseir fienden med combo',    secret:false},
+  {id:'lvlup',         icon:'⭐', name:'Nivå opp!',       desc:'Nå et nytt nivå',             secret:false},
+  {id:'lvl5',          icon:'🔥', name:'Mester!',         desc:'Nå nivå 5',                   secret:false},
+  {id:'lvl8',          icon:'🌟', name:'Legende!',        desc:'Nå nivå 8',                   secret:true},
+  {id:'lvl12',         icon:'🌌', name:'Mattegud!',       desc:'Det høyeste nivå — du klarte det!', secret:true},
+  {id:'coins100',      icon:'🪙', name:'Pengesekken!',    desc:'Samle 100 mynter',            secret:false},
+  {id:'coins50',       icon:'💰', name:'Rik helt!',       desc:'Samle 50 mynter',             secret:false},
+  {id:'world1',        icon:'🌿', name:'Dalens hersker',  desc:'Fullfør Tallenes Dal',        secret:false},
+  {id:'world2',        icon:'🌲', name:'Skogens mester',  desc:'Fullfør Gangeskogen',         secret:false},
+  {id:'world3',        icon:'🏔️', name:'Fjellkongen',    desc:'Fullfør Desimalfjellene',     secret:false},
+  {id:'world4',        icon:'🏰', name:'Borgherren',      desc:'Fullfør Algebraborgen',       secret:false},
+  {id:'world5',        icon:'🌌', name:'Kosmoshersker',   desc:'Fullfør Kosmos-riket',        secret:true},
+  {id:'combo5',        icon:'💫', name:'Combo x5!',       desc:'5 combo i én kamp',           secret:false},
+  {id:'sidekick',      icon:'🐾', name:'Bestevenn!',      desc:'Velg din sidekick',           secret:false},
+];
+const ACHIEVEMENTS=Object.fromEntries(BADGES.map(b=>
+  [b.id,{icon:b.icon,title:b.name,sub:b.desc}]
+));
 let unlockedAchievements=JSON.parse(localStorage.getItem('mh_ach')||'{}');
+
 function unlockAchievement(id){
   if(unlockedAchievements[id])return;
   unlockedAchievements[id]=Date.now();
@@ -525,7 +691,24 @@ function unlockAchievement(id){
   document.getElementById('at-sub').textContent=a.sub;
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3500);
+  sidekickReact('celebrate');
 }
+
+function openBadges(){
+  const grid=document.getElementById('badge-grid');
+  const unlocked=BADGES.filter(b=>unlockedAchievements[b.id]).length;
+  document.getElementById('badge-count').textContent=`${unlocked} / ${BADGES.length}`;
+  grid.innerHTML='';
+  BADGES.forEach(b=>{
+    const got=!!unlockedAchievements[b.id];
+    const div=document.createElement('div');
+    div.className='badge-card'+(got?' unlocked':'')+(b.secret&&!got?' secret':'');
+    div.innerHTML=`<span class="badge-icon">${b.secret&&!got?'❓':b.icon}</span><div class="badge-name">${b.secret&&!got?'???':b.name}</div><div class="badge-desc">${b.secret&&!got?'Hemmelig merke':b.desc}</div>`;
+    grid.appendChild(div);
+  });
+  document.getElementById('badge-overlay').classList.add('show');
+}
+function closeBadges(){document.getElementById('badge-overlay').classList.remove('show');}
 
 // ============================================================
 // PARTICLES
@@ -663,6 +846,8 @@ function submitAnswer(){
       document.getElementById('enemy-avatar').textContent='💀';
       setSpeech('K.O.! Du knuste monsteret! 💥');
       launch(150,['#ffd93d','#ff6b35','#00ff88','#06d6ff']);
+      sidekickReact('celebrate');
+      unlockAchievement('ko');
     }
     // Combo flash
     if(S.combo>=3){
@@ -680,12 +865,16 @@ function submitAnswer(){
     const xpG=10+(S.combo>=3?8:0)+(S.combo>=5?5:0);
     const oldL=curLvl();
     prog.xp+=xpG;prog.coins+=1;saveProg();renderHUD();
-    if(curLvl()>oldL){checkEvolution(oldL,curLvl());sndLvl();launch(100);unlockAchievement('lvlup');if(pendingEvolution)showEvolution();}
+    const newL=curLvl();
+    if(newL>oldL){checkEvolution(oldL,newL);sndLvl();launch(100);unlockAchievement('lvlup');if(newL>=5)unlockAchievement('lvl5');if(newL>=8)unlockAchievement('lvl8');if(newL>=12)unlockAchievement('lvl12');if(pendingEvolution)showEvolution();}
     updatePlayerEmoji();
+    if(prog.coins>=50)unlockAchievement('coins50');
     if(prog.coins>=100)unlockAchievement('coins100');
     if(S.streak===1&&!unlockedAchievements.first_correct)unlockAchievement('first_correct');
     if(S.streak===5)unlockAchievement('streak5');
-    if(S.combo===10)unlockAchievement('streak10');
+    if(S.combo>=5)unlockAchievement('combo5');
+    if(S.combo>=10)unlockAchievement('streak10');
+    sidekickReact(S.combo>=5?'combo':'happy');
   }else{
     S.streak=0;S.combo=0;
     inp.className='ans-input wrong';
@@ -698,6 +887,7 @@ function submitAnswer(){
     document.getElementById('player-avatar').classList.add('sad');
     setTimeout(()=>document.getElementById('player-avatar').classList.remove('sad'),500);
     setSpeech(pick(['Ikke gi opp! 💪','Prøv igjen! 🛡️','Du klarer det!']));
+    sidekickReact(S.playerHp<=30?'scared':'sad');
   }
   document.getElementById('numpad').style.display='none';
   updateBattleProg();
@@ -733,6 +923,14 @@ function showChest(){
   document.getElementById('chest-overlay').classList.add('show');
   launch(pct>=.8?120:60);
   if(pct===1)unlockAchievement('perfect');
+  sidekickReact(pct>=.8?'celebrate':'happy');
+  // World completion badges
+  const wi=WORLDS.findIndex(w=>w.grades.includes(S.grade));
+  if(wi>=0&&pct>=.5){
+    const allDone=WORLDS[wi].grades.every(g=>(CUR[g]?.topics||[]).every(t=>getBest(g,t.id)!==null));
+    if(allDone)unlockAchievement('world'+(wi+1));
+  }
+  buildAdventureMap();
 }
 
 function closeChest(){
@@ -986,11 +1184,16 @@ function learnPrev(){if(learnState.idx>0){learnState.idx--;renderLearnStep();}}
 // INIT
 // ============================================================
 buildCharGrid();
-buildWorldList();
+buildSidekickGrid();
 const savedPlayer=localStorage.getItem('mh_player');
 if(savedPlayer){
   applyPlayer(JSON.parse(savedPlayer));
   updatePlayerEmoji();
+  updateSidekick();
+  buildAdventureMap();
   showScreen('grades');
+} else if(!localStorage.getItem('mh_story_seen')){
+  // Show story intro for new players
+  document.getElementById('story-overlay').classList.remove('hidden');
 }
 renderHUD();

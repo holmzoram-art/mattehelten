@@ -981,13 +981,6 @@ function showChest(){
   launch(pct>=.8?120:60);
   if(pct===1)unlockAchievement('perfect');
   sidekickReact(pct>=.8?'celebrate':'happy');
-  // World completion badges
-  const wi=WORLDS.findIndex(w=>w.grades.includes(S.grade));
-  if(wi>=0&&pct>=.5){
-    const allDone=WORLDS[wi].grades.every(g=>(CUR[g]?.topics||[]).every(t=>getBest(g,t.id)!==null));
-    if(allDone)unlockAchievement('world'+(wi+1));
-  }
-  buildAdventureMap();
 }
 
 function closeChest(){
@@ -1021,6 +1014,13 @@ function buildResults(){
   const rows=document.getElementById('res-rows');rows.innerHTML='';
   S.questions.forEach(q=>{const d=document.createElement('div');d.className='rb-row '+(q.ok?'ok':'bad');d.innerHTML=`<span class="rb-q">${q.q.replace(' = ?','').replace(' x = ?','')}</span><span class="rb-a ${q.ok?'ok':'bad'}">${q.ok?`= ${q.correct} ✓`:`${q.given} ✗ (${q.correct})`}</span>`;rows.appendChild(d);});
   saveHS();renderHS();
+  // World completion badges + rebuild map now that hs is saved
+  const wi=WORLDS.findIndex(w=>w.grades.includes(S.grade));
+  if(wi>=0){
+    const allDone=WORLDS[wi].grades.every(g=>(CUR[g]?.topics||[]).every(t=>getBest(g,t.id)!==null));
+    if(allDone)unlockAchievement('world'+(wi+1));
+  }
+  buildAdventureMap();
 }
 
 function fmtSub(s){if(s.startsWith('x'))return`${s.slice(1)}-gangen`;if(s.startsWith('d'))return`Del med ${s.slice(1)}`;if(s==='1/2'||s==='1/4'||s==='1/3')return`Brok ${s}`;if(s==='alg+')return'Algebra +';if(s==='alg-')return'Algebra -';if(s.startsWith('pct'))return`Prosent ${s.slice(3)}%`;if(s==='eq1')return'Likning ax=b';if(s==='sq')return'Kvadrat n^2';if(s.startsWith('geo'))return'Geometri';if(s==='median')return'Median';if(s==='avg')return'Gjennomsnitt';if(s.startsWith('trig'))return`Trig ${s.split('_')[1]}`;if(s.startsWith('func'))return'Funksjon';if(s.startsWith('prob'))return'Sannsynlighet';return s;}

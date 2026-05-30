@@ -640,7 +640,12 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
           <button class="back-btn" onclick="showScreen('grades')">←</button>
           <div class="topic-screen-title" id="topic-screen-title">Velg tema</div>
         </div>
-        <div class="topic-list" id="topic-list"></div>
+        <div class="adv-map-wrap" id="topic-map-wrap" style="height:260px">
+          <div class="adv-map-bg" id="topic-map-bg"></div>
+          <svg class="adv-map-svg" id="topic-map-svg" viewBox="0 0 600 260" preserveAspectRatio="xMidYMid meet"></svg>
+          <div id="topic-map-nodes"></div>
+        </div>
+        <div class="topic-list" id="topic-list" style="margin-top:10px"></div>
       </div>
 
       <div id="screen-game" class="screen">

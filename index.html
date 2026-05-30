@@ -1,376 +1,377 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Mattehelten 🦸</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--bg1:#667eea;--bg2:#764ba2;--yellow:#ffd93d;--orange:#ff6b35;--green:#06d6a0;--red:#ef476f;--white:#fff;--card:rgba(255,255,255,.97);--text:#2d1b69;--muted:#7c6f9f;--r:20px;--rs:14px;}
-    html,body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));min-height:100vh;color:var(--text);overflow-x:hidden;}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mattehelten ⚔️</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --dark:#0d0b1e;--dark2:#1a1535;--dark3:#252047;
+  --purple:#7c3aed;--purple2:#a855f7;--cyan:#06d6ff;--gold:#ffd93d;
+  --green:#00ff88;--red:#ff4466;--orange:#ff6b35;
+  --white:#fff;--muted:#8878cc;
+  --r:18px;--rs:12px;
+  --glow-p:0 0 20px rgba(124,58,237,.6);
+  --glow-c:0 0 20px rgba(6,214,255,.5);
+  --glow-g:0 0 20px rgba(0,255,136,.5);
+  --glow-gold:0 0 20px rgba(255,217,61,.6);
+}
+html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--white);min-height:100vh;overflow-x:hidden;}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.9;transform:scale(1.4)}}
+.app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px 12px 40px;}
+.hdr{text-align:center;margin-bottom:14px;}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:2.4rem;background:linear-gradient(135deg,var(--cyan),var(--purple2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 20px rgba(168,85,247,.5));}
+.hdr-sub{color:var(--muted);font-size:.85rem;font-weight:700;margin-top:2px;}
+.main-flex{display:flex;gap:14px;width:100%;max-width:1000px;align-items:flex-start;}
+.game-col{flex:1;min-width:0;max-width:620px;}
+.scratch-col{width:290px;flex-shrink:0;}
+@media(max-width:920px){.main-flex{flex-direction:column;align-items:center;}.scratch-col{width:100%;max-width:620px;}}
+.hud{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:8px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;width:100%;max-width:1000px;}
+.hud-char{font-size:1.6rem;filter:drop-shadow(0 0 8px var(--purple2));}
+.hud-xp{flex:1;}
+.hud-lvl{font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--gold);margin-bottom:2px;}
+.hud-bar{height:7px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;}
+.hud-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));border-radius:99px;transition:width .5s ease;box-shadow:var(--glow-c);}
+.hud-coins{font-size:.85rem;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:4px;}
+.hud-streak{font-size:.85rem;font-weight:800;color:var(--orange);display:flex;align-items:center;gap:3px;}
+.screen{display:none;width:100%;}
+.screen.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
-    /* BG */
-    .bg-shapes{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-    .shape{position:absolute;border-radius:50%;opacity:.07;animation:float 8s ease-in-out infinite;}
-    .shape:nth-child(1){width:280px;height:280px;background:#fff;top:-70px;left:-70px;}
-    .shape:nth-child(2){width:180px;height:180px;background:#ffd93d;bottom:8%;right:-50px;animation-delay:2s;}
-    .shape:nth-child(3){width:130px;height:130px;background:#06d6a0;top:38%;left:-35px;animation-delay:4s;}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+/* CHARACTER SELECT */
+.cs-title{font-family:'Fredoka One',cursive;font-size:1.8rem;text-align:center;color:var(--white);margin-bottom:6px;}
+.cs-sub{text-align:center;color:var(--muted);font-weight:700;font-size:.88rem;margin-bottom:20px;}
+.char-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;}
+@media(max-width:500px){.char-grid{grid-template-columns:repeat(3,1fr);}}
+.char-card{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.08);border-radius:var(--r);padding:16px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.char-card:hover{border-color:var(--purple2);background:rgba(124,58,237,.2);transform:translateY(-4px);}
+.char-card.selected{border-color:var(--cyan);background:rgba(6,214,255,.12);box-shadow:var(--glow-c);}
+.char-emoji{font-size:2.8rem;display:block;margin-bottom:6px;}
+.char-name{font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--muted);}
+.char-card.selected .char-name{color:var(--cyan);}
+.cs-name-wrap{margin-bottom:16px;}
+.cs-name-lbl{font-size:.8rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.cs-name-input{width:100%;padding:12px 16px;font-size:1.1rem;font-family:'Fredoka One',cursive;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.12);border-radius:var(--rs);color:var(--white);outline:none;text-align:center;}
+.cs-name-input:focus{border-color:var(--purple2);}
+.cs-name-input::placeholder{color:var(--muted);}
+.start-btn{width:100%;padding:16px;font-family:'Fredoka One',cursive;font-size:1.3rem;background:linear-gradient(135deg,var(--purple),var(--cyan));border:none;border-radius:var(--rs);color:#fff;cursor:pointer;box-shadow:var(--glow-p);transition:all .2s;}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 0 32px rgba(124,58,237,.8);}
 
-    /* LAYOUT */
-    .app{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:10px 12px 28px;min-height:100vh;}
-    .app-header{text-align:center;margin-bottom:12px;}
-    .app-title{font-family:'Fredoka One',cursive;font-size:2.2rem;color:#fff;text-shadow:0 4px 12px rgba(0,0,0,.25);}
-    .app-sub{color:rgba(255,255,255,.8);font-weight:600;font-size:.88rem;}
+/* WORLD MAP */
+.wm-title{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--white);text-align:center;margin-bottom:16px;}
+.world-list{display:flex;flex-direction:column;gap:10px;}
+.world-card{border-radius:var(--r);padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;border:2px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);transition:all .2s;position:relative;overflow:hidden;}
+.world-card::before{content:'';position:absolute;inset:0;background:var(--wbg,rgba(124,58,237,.12));z-index:0;transition:all .2s;}
+.world-card:hover{border-color:var(--wcolor,var(--purple));transform:translateX(5px);box-shadow:0 0 28px var(--wglow,rgba(124,58,237,.25));}
+.world-card:hover::before{background:var(--wbg2,rgba(124,58,237,.22));}
+.world-icon{font-size:2.4rem;position:relative;z-index:1;filter:drop-shadow(0 0 10px var(--wcolor,var(--purple)));}
+.world-info{flex:1;position:relative;z-index:1;}
+.world-name{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--white);}
+.world-grades{font-size:.75rem;font-weight:800;color:var(--muted);margin-top:1px;}
+.world-topics{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:3px;}
+.world-stars{position:relative;z-index:1;font-size:1rem;letter-spacing:2px;}
 
-    /* MAIN FLEX (game + scratch) */
-    .main-flex{display:flex;gap:14px;width:100%;max-width:980px;align-items:flex-start;}
-    .game-col{flex:1;min-width:0;max-width:600px;}
-    .scratch-col{width:300px;flex-shrink:0;}
-    @media(max-width:900px){.main-flex{flex-direction:column;align-items:center;}.scratch-col{width:100%;max-width:600px;}}
+/* TOPIC LIST */
+.topic-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.back-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--white);transition:all .15s;flex-shrink:0;}
+.back-btn:hover{background:rgba(255,255,255,.15);}
+.topic-screen-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--white);}
+.topic-list{display:flex;flex-direction:column;gap:9px;}
+.topic-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--rs);padding:14px 16px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .15s;position:relative;}
+.topic-btn:hover{background:rgba(124,58,237,.2);border-color:var(--purple2);transform:translateX(3px);}
+.tb-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.tb-name{font-family:'Fredoka One',cursive;font-size:.97rem;color:var(--white);}
+.tb-desc{font-size:.74rem;color:var(--muted);margin-top:1px;font-weight:600;}
+.topic-best{position:absolute;top:8px;right:38px;font-size:.7rem;font-weight:800;color:var(--gold);}
+.adapt-tag{font-size:.62rem;font-weight:800;background:rgba(255,217,61,.15);color:var(--gold);border-radius:99px;padding:1px 7px;margin-left:5px;vertical-align:middle;}
+.topic-learn-btn{position:absolute;bottom:9px;right:38px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:99px;padding:3px 10px;font-size:.68rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:var(--glow-p);}
+.topic-learn-btn:hover{transform:scale(1.08);}
 
-    /* XP */
-    .xp-bar{background:rgba(255,255,255,.15);border-radius:var(--r);padding:7px 13px;margin-bottom:12px;display:flex;align-items:center;gap:9px;width:100%;max-width:980px;}
-    .xp-lvl{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--yellow);text-shadow:0 2px 6px rgba(0,0,0,.2);}
-    .xp-tw{flex:1;}
-    .xp-lbl{font-size:.62rem;font-weight:800;color:rgba(255,255,255,.7);margin-bottom:2px;}
-    .xp-track{height:7px;background:rgba(255,255,255,.18);border-radius:99px;overflow:hidden;}
-    .xp-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));border-radius:99px;transition:width .5s;}
-    .xp-coins{font-size:.8rem;font-weight:800;color:var(--yellow);display:flex;align-items:center;gap:3px;}
+/* BATTLE */
+.battle-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.battle-back{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--white);flex-shrink:0;}
+.battle-back:hover{background:rgba(255,255,255,.15);}
+.battle-prog-wrap{flex:1;}
+.battle-prog-lbl{display:flex;justify-content:space-between;font-size:.68rem;font-weight:800;color:var(--muted);margin-bottom:3px;}
+.battle-prog-track{height:8px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;}
+.battle-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--cyan));transition:width .4s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--glow-c);}
+.combo-badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:5px 10px;font-weight:800;font-size:.8rem;color:var(--white);flex-shrink:0;display:flex;align-items:center;gap:3px;min-width:60px;justify-content:center;transition:all .2s;}
+.combo-badge.hot{background:linear-gradient(135deg,var(--orange),var(--gold));color:var(--dark);box-shadow:var(--glow-gold);animation:comboPulse .4s ease;}
+@keyframes comboPulse{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+.fighters{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;}
+.fighter{text-align:center;flex:1;}
+.fighter-avatar{font-size:3rem;display:block;filter:drop-shadow(0 0 14px var(--purple2));animation:fIdle 3s ease-in-out infinite;}
+@keyframes fIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.fighter-avatar.happy{animation:fHappy .5s ease forwards;}
+@keyframes fHappy{0%{transform:scale(1)}30%{transform:scale(1.4) rotate(10deg)}60%{transform:scale(.9)}100%{transform:scale(1)}}
+.fighter-avatar.sad{animation:fSad .4s ease forwards;}
+@keyframes fSad{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}100%{transform:rotate(0)}}
+.fighter-name{font-family:'Fredoka One',cursive;font-size:.78rem;color:var(--muted);margin-top:3px;}
+.fighter-hp{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-top:5px;}
+.fighter-hp-fill{height:100%;background:linear-gradient(90deg,var(--green),#00cc66);border-radius:99px;transition:width .5s ease;box-shadow:var(--glow-g);}
+.vs-badge{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--muted);flex-shrink:0;}
+.enemy-avatar{font-size:3rem;display:block;filter:drop-shadow(0 0 14px var(--red));animation:eIdle 2.5s ease-in-out infinite;}
+@keyframes eIdle{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-5px) rotate(3deg)}}
+.enemy-avatar.hit{animation:eHit .4s ease forwards;}
+@keyframes eHit{0%{transform:scale(1)}20%{transform:scale(1.2) rotate(15deg)}60%{transform:scale(.8)}100%{transform:scale(1)}}
+.speech-wrap{text-align:center;min-height:30px;margin-bottom:8px;}
+.speech{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:5px 14px;font-size:.78rem;font-weight:800;color:var(--white);opacity:0;transition:opacity .3s;}
+.speech.show{opacity:1;}
+.q-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:20px 18px 16px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden;}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--qc1,#7c3aed),var(--qc2,#06d6ff));}
+.q-cat{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);color:var(--muted);border-radius:99px;padding:3px 12px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.q-txt{font-family:'Fredoka One',cursive;font-size:2.8rem;color:var(--white);line-height:1.1;margin-bottom:5px;animation:qPop .28s cubic-bezier(.34,1.56,.64,1);}
+@keyframes qPop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.q-hint{font-size:.8rem;color:var(--muted);font-weight:700;min-height:16px;}
+.combo-flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:10;}
+.combo-txt{font-family:'Fredoka One',cursive;font-size:3rem;color:var(--gold);text-shadow:var(--glow-gold);opacity:0;animation:comboFlash .8s ease forwards;}
+@keyframes comboFlash{0%{opacity:0;transform:scale(.5)}30%{opacity:1;transform:scale(1.3)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.8)}}
+.ans-row{display:flex;gap:8px;margin-bottom:10px;}
+.ans-input{flex:1;padding:12px;font-size:1.8rem;font-weight:900;font-family:'Fredoka One',cursive;border:2px solid rgba(255,255,255,.12);border-radius:var(--rs);outline:none;text-align:center;background:rgba(255,255,255,.07);color:var(--white);transition:all .2s;}
+.ans-input:focus{border-color:var(--purple2);box-shadow:var(--glow-p);}
+.ans-input.correct{border-color:var(--green);background:rgba(0,255,136,.1);box-shadow:var(--glow-g);}
+.ans-input.wrong{border-color:var(--red);background:rgba(255,68,102,.1);box-shadow:0 0 20px rgba(255,68,102,.4);}
+.sub-btn{padding:12px 18px;font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:var(--rs);cursor:pointer;box-shadow:var(--glow-p);font-family:'Nunito',sans-serif;transition:all .15s;}
+.sub-btn:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(124,58,237,.7);}
+.sub-btn:active{transform:scale(.95);}
+.sub-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.numpad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+.numpad button{padding:11px 5px;font-size:1.15rem;font-weight:800;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:11px;cursor:pointer;transition:all .1s;font-family:'Fredoka One',cursive;color:var(--white);}
+.numpad button:hover{background:rgba(124,58,237,.3);border-color:var(--purple2);}
+.numpad button:active{transform:scale(.9);}
+.n-del{background:rgba(255,68,102,.15)!important;border-color:rgba(255,68,102,.3)!important;color:var(--red)!important;font-size:.88rem!important;}
+.n-neg{background:rgba(255,217,61,.1)!important;border-color:rgba(255,217,61,.3)!important;color:var(--gold)!important;font-size:.82rem!important;}
+.n-dot{background:rgba(6,214,255,.1)!important;border-color:rgba(6,214,255,.3)!important;color:var(--cyan)!important;}
+.fb-box{border-radius:var(--rs);padding:12px 14px;font-size:.88rem;line-height:1.5;font-weight:700;margin-bottom:10px;display:none;animation:fbIn .28s cubic-bezier(.34,1.56,.64,1);}
+@keyframes fbIn{from{opacity:0;transform:scale(.91)}to{opacity:1;transform:scale(1)}}
+.fb-box.correct{background:rgba(0,255,136,.1);border:2px solid rgba(0,255,136,.4);color:var(--green);display:block;}
+.fb-box.wrong{background:rgba(255,68,102,.1);border:2px solid rgba(255,68,102,.4);color:#ff8899;display:block;}
+.fb-title{font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:2px;}
+.next-btn{width:100%;padding:14px;font-size:1rem;font-weight:900;background:linear-gradient(135deg,#00cc66,var(--green));color:var(--dark);border:none;border-radius:var(--rs);cursor:pointer;display:none;font-family:'Nunito',sans-serif;transition:all .15s;animation:nextPop .32s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--glow-g);}
+@keyframes nextPop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+.next-btn:hover{transform:translateY(-2px);}
 
-    /* SCREENS */
-    .screen{display:none;width:100%;}
-    .screen.active{display:block;animation:fadeUp .28s ease;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+/* ACHIEVEMENT TOAST */
+.achieve-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--dark2);border:2px solid var(--gold);border-radius:var(--r);padding:12px 20px;display:flex;align-items:center;gap:12px;z-index:9998;box-shadow:var(--glow-gold);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:320px;width:90%;}
+.achieve-toast.show{transform:translateX(-50%) translateY(0);}
+.at-icon{font-size:2rem;}
+.at-title{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--gold);}
+.at-sub{font-size:.75rem;color:var(--muted);font-weight:700;}
 
-    /* GRADE PICKER */
-    .grade-section-label{font-family:'Fredoka One',cursive;font-size:1rem;color:rgba(255,255,255,.75);margin:12px 0 6px;text-transform:uppercase;letter-spacing:1px;}
-    .grade-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:6px;}
-    @media(max-width:540px){.grade-grid{grid-template-columns:repeat(2,1fr);}}
-    .grade-card{background:var(--card);border-radius:var(--r);padding:14px 10px;cursor:pointer;text-align:center;box-shadow:0 6px 22px rgba(0,0,0,.13);border:3px solid transparent;transition:transform .18s,box-shadow .18s,border-color .18s;position:relative;overflow:hidden;}
-    .grade-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c1,#667eea),var(--c2,#764ba2));opacity:.07;transition:opacity .2s;}
-    .grade-card:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 32px rgba(0,0,0,.18);border-color:var(--c1,#667eea);}
-    .grade-card:hover::before{opacity:.14;}
-    .grade-card:active{transform:scale(.97);}
-    .gc-icon{font-size:1.9rem;margin-bottom:3px;}
-    .gc-num{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--text);line-height:1;}
-    .gc-lbl{font-size:.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
-    .gc-topics{font-size:.7rem;color:var(--muted);line-height:1.45;}
-    .grade-card.locked{opacity:.42;cursor:not-allowed;}
-    .grade-card.locked:hover{transform:none;box-shadow:0 6px 22px rgba(0,0,0,.13);border-color:transparent;}
-    .locked-badge{position:absolute;top:6px;right:6px;background:#e2e8f0;border-radius:99px;font-size:.58rem;font-weight:800;padding:2px 6px;color:var(--muted);}
+/* CHEST OVERLAY */
+.chest-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:20px;}
+.chest-overlay.show{display:flex;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.chest-emoji{font-size:6rem;animation:chestBounce .6s cubic-bezier(.34,1.56,.64,1);}
+@keyframes chestBounce{from{transform:scale(0)}to{transform:scale(1)}}
+.chest-title{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--gold);text-shadow:var(--glow-gold);}
+.chest-sub{font-size:.9rem;color:var(--muted);font-weight:700;}
+.chest-rewards{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.chest-reward{background:rgba(255,255,255,.08);border:2px solid rgba(255,217,61,.3);border-radius:12px;padding:10px 16px;text-align:center;min-width:80px;}
+.chest-reward-icon{font-size:1.5rem;display:block;}
+.chest-reward-val{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--gold);}
+.chest-btn{padding:14px 32px;font-family:'Fredoka One',cursive;font-size:1.1rem;background:linear-gradient(135deg,var(--gold),var(--orange));color:var(--dark);border:none;border-radius:var(--rs);cursor:pointer;box-shadow:var(--glow-gold);}
+.chest-btn:hover{transform:scale(1.05);}
 
-    /* TOPIC */
-    .topic-hdr{display:flex;align-items:center;gap:9px;margin-bottom:14px;}
-    .back-btn{background:rgba(255,255,255,.2);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;transition:background .15s;flex-shrink:0;}
-    .back-btn:hover{background:rgba(255,255,255,.35);}
-    .topic-screen-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;}
-    .topic-list{display:flex;flex-direction:column;gap:9px;}
-    .topic-btn{background:var(--card);border:none;border-radius:var(--rs);padding:14px 16px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:12px;box-shadow:0 3px 12px rgba(0,0,0,.09);transition:transform .14s,box-shadow .14s;position:relative;}
-    .topic-btn::after{content:'→';position:absolute;right:16px;font-size:1rem;color:var(--muted);transition:transform .14s;}
-    .topic-btn:hover{transform:translateX(3px);box-shadow:0 7px 20px rgba(0,0,0,.13);}
-    .topic-btn:hover::after{transform:translateX(4px);}
-    .tb-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
-    .tb-name{font-family:'Fredoka One',cursive;font-size:.97rem;color:var(--text);}
-    .tb-desc{font-size:.75rem;color:var(--muted);margin-top:1px;font-weight:600;}
-    .topic-best{position:absolute;top:7px;right:36px;font-size:.7rem;font-weight:800;color:#f59e0b;}
-    .adapt-tag{font-size:.62rem;font-weight:800;background:#fef3c7;color:#92400e;border-radius:99px;padding:1px 7px;margin-left:5px;vertical-align:middle;}
+/* VICTORY */
+.victory-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:26px 22px;text-align:center;}
+.victory-emoji{font-size:4.5rem;display:block;margin-bottom:8px;animation:vPop .6s cubic-bezier(.34,1.56,.64,1);}
+@keyframes vPop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.victory-title{font-family:'Fredoka One',cursive;font-size:2rem;background:linear-gradient(135deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:3px;}
+.victory-sub{font-size:.88rem;color:var(--muted);font-weight:700;margin-bottom:14px;}
+.victory-stars{font-size:2.4rem;margin-bottom:12px;letter-spacing:4px;}
+.score-ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;position:relative;}
+.score-ring::before{content:'';position:absolute;inset:9px;background:var(--dark);border-radius:50%;}
+.score-inner{position:relative;z-index:1;text-align:center;}
+.score-num{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--white);line-height:1;}
+.score-den{font-size:.68rem;font-weight:800;color:var(--muted);}
+.adapt-sec{background:rgba(255,217,61,.06);border:1px solid rgba(255,217,61,.2);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;text-align:left;}
+.adapt-title{font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--gold);margin-bottom:7px;}
+.adapt-row{display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:700;color:var(--white);margin-bottom:4px;}
+.adapt-bar-wrap{flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;}
+.adapt-bar{height:100%;border-radius:99px;}
+.res-breakdown{text-align:left;margin-bottom:14px;max-height:190px;overflow-y:auto;}
+.rb-hdr{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:7px;}
+.rb-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:8px;margin-bottom:3px;font-size:.82rem;}
+.rb-row.ok{background:rgba(0,255,136,.07);}
+.rb-row.bad{background:rgba(255,68,102,.07);}
+.rb-q{font-weight:700;color:var(--white);}
+.rb-a{font-family:'Fredoka One',cursive;font-size:.86rem;}
+.rb-a.ok{color:var(--green);}
+.rb-a.bad{color:var(--red);}
+.res-actions{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;}
+.res-actions button{flex:1;min-width:70px;padding:11px;font-size:.88rem;font-weight:800;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;}
+.btn-retry{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;box-shadow:var(--glow-p);}
+.btn-retry:hover{transform:translateY(-2px);}
+.btn-parent{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;}
+.btn-parent:hover{transform:translateY(-2px);}
+.btn-menu{background:rgba(255,255,255,.08);color:var(--white);border:1px solid rgba(255,255,255,.12);}
+.hs-sec{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:13px;}
+.hs-title{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:7px;}
+.hs-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.8rem;color:var(--white);}
+.hs-row:last-child{border:none;}
+.hs-score{font-family:'Fredoka One',cursive;color:var(--gold);}
 
-    /* GAME */
-    .game-top{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-    .game-back{background:rgba(255,255,255,.18);border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff;flex-shrink:0;transition:background .14s;}
-    .game-back:hover{background:rgba(255,255,255,.33);}
-    .prog-wrap{flex:1;}
-    .prog-lbl{display:flex;justify-content:space-between;font-size:.68rem;font-weight:800;color:rgba(255,255,255,.8);margin-bottom:3px;}
-    .prog-track{height:9px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden;}
-    .prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--yellow),var(--orange));transition:width .4s cubic-bezier(.34,1.56,.64,1);}
-    .streak-badge{background:rgba(255,255,255,.18);border-radius:9px;padding:4px 9px;display:flex;align-items:center;gap:3px;font-weight:800;font-size:.78rem;color:#fff;flex-shrink:0;}
+/* PARENT REPORT */
+.pr-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);overflow:hidden;}
+.pr-hdr{background:linear-gradient(135deg,var(--purple),var(--dark3));padding:20px;color:#fff;text-align:center;border-bottom:1px solid rgba(255,255,255,.1);}
+.pr-logo{font-size:2rem;margin-bottom:3px;}
+.pr-htitle{font-family:'Fredoka One',cursive;font-size:1.5rem;}
+.pr-date{font-size:.75rem;opacity:.7;margin-top:2px;}
+.pr-body{padding:18px 20px;}
+.pr-score-row{display:flex;gap:10px;margin-bottom:16px;}
+.pr-stat{flex:1;background:rgba(255,255,255,.06);border-radius:var(--rs);padding:12px;text-align:center;border:1px solid rgba(255,255,255,.08);}
+.pr-stat-num{font-family:'Fredoka One',cursive;font-size:1.9rem;color:var(--cyan);}
+.pr-stat-lbl{font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;}
+.pr-stars-big{font-size:2rem;text-align:center;margin-bottom:16px;letter-spacing:5px;}
+.pr-sec-title{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:12px 0 8px;}
+.pr-strength{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.3);border-radius:11px;padding:9px 13px;margin-bottom:7px;font-size:.82rem;font-weight:700;color:var(--green);}
+.pr-weakness{background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:11px;padding:9px 13px;margin-bottom:7px;font-size:.82rem;font-weight:700;color:#ff8899;}
+.pr-qrow{display:flex;justify-content:space-between;font-size:.79rem;font-weight:700;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06);color:var(--white);}
+.pr-qrow:last-child{border:none;}
+.pr-rec{background:rgba(255,255,255,.05);border-radius:11px;padding:11px 13px;font-size:.82rem;font-weight:700;color:rgba(255,255,255,.8);line-height:1.55;border:1px solid rgba(255,255,255,.08);}
+.pr-actions{display:flex;gap:9px;padding:0 20px 18px;}
+.pr-actions button{flex:1;padding:11px;font-size:.88rem;font-weight:800;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;}
+.btn-print{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;}
+.btn-back-res{background:rgba(255,255,255,.08);color:var(--white);}
+.pr-footer{padding:12px 20px;text-align:center;font-size:.72rem;color:var(--muted);font-weight:600;border-top:1px solid rgba(255,255,255,.06);}
 
-    /* MASCOT */
-    .mascot-wrap{text-align:center;margin-bottom:5px;position:relative;height:65px;}
-    .mascot{font-size:2.7rem;display:inline-block;animation:mIdle 3s ease-in-out infinite;}
-    @keyframes mIdle{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
-    .mascot.happy{animation:mHappy .5s ease forwards;}
-    @keyframes mHappy{0%{transform:scale(1)}30%{transform:scale(1.35) rotate(10deg)}60%{transform:scale(.92) rotate(-5deg)}100%{transform:scale(1) rotate(0)}}
-    .mascot.sad{animation:mSad .4s ease forwards;}
-    @keyframes mSad{0%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}100%{transform:rotate(0)}}
-    .speech{position:absolute;top:2px;left:50%;transform:translateX(-50%);background:#fff;border-radius:12px;padding:4px 12px;font-size:.73rem;font-weight:800;color:var(--text);white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.13);opacity:0;transition:opacity .28s;pointer-events:none;}
-    .speech.show{opacity:1;}
-    .speech::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#fff;border-bottom:none;}
+/* LEARN */
+.learn-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);overflow:hidden;}
+.learn-top-bar{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);}
+.learn-back{background:rgba(255,255,255,.08);border:none;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff;flex-shrink:0;}
+.learn-back:hover{background:rgba(255,255,255,.15);}
+.learn-topic-name{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--white);}
+.learn-step-lbl{font-size:.7rem;color:var(--muted);font-weight:700;margin-top:1px;}
+.learn-dots{display:flex;gap:6px;justify-content:center;padding:12px 0 0;}
+.learn-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s;}
+.learn-dot.done{background:var(--green);box-shadow:var(--glow-g);}
+.learn-dot.active{background:var(--cyan);transform:scale(1.3);box-shadow:var(--glow-c);}
+.learn-body{padding:18px 18px 14px;min-height:300px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.learn-step-icon{font-size:2.8rem;margin-bottom:8px;animation:lIcon .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes lIcon{from{transform:scale(0)}to{transform:scale(1)}}
+.learn-step-title{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--white);margin-bottom:8px;}
+.learn-step-text{font-size:.9rem;color:rgba(255,255,255,.7);font-weight:700;line-height:1.6;margin-bottom:14px;max-width:420px;}
+.learn-visual{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:14px;margin-bottom:12px;width:100%;max-width:480px;}
+.dot-groups{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;}
+.dot-group{display:flex;flex-wrap:wrap;gap:4px;max-width:120px;justify-content:center;}
+.dot{width:20px;height:20px;border-radius:50%;display:inline-block;animation:dotPop .3s ease backwards;}
+@keyframes dotPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.dot-op{font-size:1.5rem;font-weight:900;color:var(--white);align-self:center;}
+.dot-eq{font-size:1.3rem;font-weight:900;color:var(--muted);align-self:center;}
+.nline-wrap{overflow-x:auto;padding:8px 4px;}
+.nline{position:relative;height:56px;min-width:260px;}
+.nline-track{position:absolute;top:28px;left:10px;right:10px;height:2px;background:rgba(255,255,255,.2);border-radius:99px;}
+.nline-tick{position:absolute;top:20px;width:1px;height:16px;background:rgba(255,255,255,.25);transform:translateX(-50%);}
+.nline-num{position:absolute;top:40px;font-size:.68rem;font-weight:800;color:var(--muted);transform:translateX(-50%);}
+.nline-dot{position:absolute;top:22px;width:12px;height:12px;border-radius:50%;background:var(--cyan);transform:translateX(-50%);box-shadow:var(--glow-c);}
+.nline-arrow{position:absolute;top:8px;height:10px;border-top:2px dashed var(--orange);animation:arrowIn .5s ease forwards;}
+@keyframes arrowIn{from{width:0}to{width:var(--w)}}
+.frac-bar{display:flex;height:36px;border-radius:8px;overflow:hidden;gap:2px;margin:0 auto;max-width:280px;}
+.frac-seg{flex:1;border-radius:4px;transition:opacity .3s;}
+.frac-seg.filled{opacity:1;}
+.frac-seg.empty{opacity:.12;}
+.mul-grid{display:inline-grid;gap:4px;margin:0 auto;}
+.mul-cell{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#fff;animation:dotPop .2s ease backwards;}
+.worked{text-align:left;font-family:'Fredoka One',cursive;font-size:1rem;line-height:1.9;width:100%;}
+.worked .step{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:8px;margin-bottom:2px;opacity:0;animation:stepIn .4s ease forwards;color:var(--white);}
+@keyframes stepIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+.worked .step.hl{background:rgba(124,58,237,.25);}
+.worked .step .ann{font-size:.68rem;font-family:'Nunito',sans-serif;font-weight:800;color:var(--muted);margin-left:auto;}
+.eq-box{background:rgba(255,255,255,.07);border:2px solid var(--purple2);border-radius:8px;padding:6px 16px;font-family:'Fredoka One',cursive;font-size:1.3rem;text-align:center;margin:6px auto;color:var(--white);}
+.learn-nav{padding:10px 14px 14px;display:flex;gap:10px;}
+.learn-prev{flex:0 0 auto;padding:10px 14px;font-size:.88rem;font-weight:800;background:rgba(255,255,255,.07);color:var(--white);border:1px solid rgba(255,255,255,.12);border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;}
+.learn-next{flex:1;padding:11px;font-size:.95rem;font-weight:900;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:var(--glow-p);}
+.learn-next.finish{background:linear-gradient(135deg,#00cc66,var(--green));color:var(--dark);box-shadow:var(--glow-g);}
 
-    /* Q CARD */
-    .q-card{background:var(--card);border-radius:var(--r);padding:18px 18px 14px;box-shadow:0 9px 30px rgba(0,0,0,.12);text-align:center;margin-bottom:10px;position:relative;overflow:hidden;}
-    .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--qc1,#667eea),var(--qc2,#764ba2));}
-    .q-cat{display:inline-flex;align-items:center;gap:4px;background:var(--qbg,#ede9fe);color:var(--qtxt,#6d28d9);border-radius:99px;padding:3px 11px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
-    .q-txt{font-family:'Fredoka One',cursive;font-size:2.5rem;color:var(--text);line-height:1.1;margin-bottom:5px;animation:qPop .28s cubic-bezier(.34,1.56,.64,1);}
-    @keyframes qPop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
-    .q-hint{font-size:.81rem;color:var(--muted);font-weight:700;min-height:16px;}
+/* SCRATCH PAD */
+.scratch-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);overflow:hidden;position:sticky;top:10px;}
+.scratch-hdr{background:rgba(124,58,237,.3);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);}
+.scratch-hdr-title{font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;}
+.scratch-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.08);}
+.scratch-tab{flex:1;padding:7px;font-size:.78rem;font-weight:800;font-family:'Nunito',sans-serif;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;}
+.scratch-tab.active{color:var(--cyan);border-bottom:2px solid var(--cyan);}
+.scratch-tab:hover:not(.active){color:var(--white);}
+.scratch-toolbar{display:flex;align-items:center;gap:5px;padding:7px 9px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;}
+.tool-btn{border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:3px 8px;font-size:.73rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:transparent;color:var(--muted);}
+.tool-btn:hover{background:rgba(255,255,255,.08);color:var(--white);}
+.tool-btn.active{background:rgba(124,58,237,.4);border-color:var(--purple2);color:var(--white);}
+.tool-sep{width:1px;height:18px;background:rgba(255,255,255,.1);margin:0 2px;}
+.size-btn{width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.size-btn.active{border-color:var(--cyan);}
+.size-dot{border-radius:50%;background:rgba(255,255,255,.7);}
+.color-btn{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .12s;}
+.color-btn:hover{transform:scale(1.15);}
+.color-btn.active{border-color:var(--white);box-shadow:0 0 8px rgba(255,255,255,.4);}
+.scratch-canvas{display:block;width:100%;background:#06040f;cursor:crosshair;touch-action:none;}
+.scratch-canvas.erase{cursor:cell;}
+.scratch-write{display:none;}
+.scratch-write.active{display:block;}
+.scratch-write textarea{width:100%;min-height:320px;padding:12px 14px;font-size:1.05rem;font-family:'Fredoka One',cursive;background:transparent;border:none;outline:none;resize:none;color:var(--white);background:repeating-linear-gradient(transparent,transparent 27px,rgba(255,255,255,.05) 28px);line-height:28px;}
+.scratch-write textarea::placeholder{color:rgba(255,255,255,.18);font-family:'Nunito',sans-serif;font-size:.82rem;}
+.scratch-footer{padding:6px 10px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.06);}
+.scratch-hint{font-size:.65rem;color:var(--muted);font-weight:600;}
+.clear-btn{background:rgba(255,68,102,.15);border:1px solid rgba(255,68,102,.3);border-radius:7px;padding:3px 9px;font-size:.72rem;font-weight:800;color:var(--red);cursor:pointer;font-family:'Nunito',sans-serif;}
+.clear-btn:hover{background:rgba(255,68,102,.25);}
 
-    /* ANSWER */
-    .ans-row{display:flex;gap:7px;margin-bottom:9px;}
-    .ans-input{flex:1;padding:11px;font-size:1.7rem;font-weight:900;font-family:'Fredoka One',cursive;border:3px solid rgba(103,126,234,.22);border-radius:var(--rs);outline:none;text-align:center;background:var(--card);color:var(--text);transition:all .18s;box-shadow:0 3px 9px rgba(0,0,0,.06);}
-    .ans-input:focus{border-color:var(--bg1);box-shadow:0 0 0 3px rgba(102,126,234,.13);}
-    .ans-input.correct{border-color:var(--green);background:#f0fdf9;box-shadow:0 0 0 3px rgba(6,214,160,.12);}
-    .ans-input.wrong{border-color:var(--red);background:#fff1f4;box-shadow:0 0 0 3px rgba(239,71,111,.12);}
-    .sub-btn{padding:11px 16px;font-size:1.2rem;font-weight:900;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;border:none;border-radius:var(--rs);cursor:pointer;box-shadow:0 5px 14px rgba(102,126,234,.36);font-family:'Nunito',sans-serif;transition:all .14s;}
-    .sub-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(102,126,234,.44);}
-    .sub-btn:active{transform:scale(.95);}
-    .sub-btn:disabled{opacity:.44;cursor:not-allowed;transform:none;}
-
-    /* NUMPAD */
-    .numpad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px;}
-    .numpad button{padding:11px 5px;font-size:1.15rem;font-weight:800;background:var(--card);border:2px solid rgba(103,126,234,.12);border-radius:11px;cursor:pointer;transition:all .1s;font-family:'Fredoka One',cursive;color:var(--text);box-shadow:0 2px 6px rgba(0,0,0,.07);}
-    .numpad button:hover{background:#ede9fe;border-color:var(--bg1);transform:translateY(-2px);}
-    .numpad button:active{transform:scale(.92);}
-    .n-del{background:#fee2e2!important;border-color:#fca5a5!important;color:var(--red)!important;font-size:.88rem!important;}
-    .n-neg{background:#fef9c3!important;border-color:#fde047!important;color:#92400e!important;font-size:.82rem!important;}
-    .n-dot{background:#e0f2fe!important;border-color:#7dd3fc!important;color:#075985!important;}
-
-    /* FEEDBACK */
-    .fb-box{border-radius:var(--rs);padding:12px 14px;font-size:.88rem;line-height:1.5;font-weight:700;margin-bottom:9px;display:none;animation:fbIn .28s cubic-bezier(.34,1.56,.64,1);}
-    @keyframes fbIn{from{opacity:0;transform:scale(.91)}to{opacity:1;transform:scale(1)}}
-    .fb-box.correct{background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:2px solid #34d399;color:#065f46;display:block;}
-    .fb-box.wrong{background:linear-gradient(135deg,#fee2e2,#fecaca);border:2px solid #f87171;color:#991b1b;display:block;}
-    .fb-title{font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:2px;}
-
-    /* NEXT */
-    .next-btn{width:100%;padding:13px;font-size:1rem;font-weight:900;background:linear-gradient(135deg,var(--green),#059669);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;display:none;box-shadow:0 5px 16px rgba(6,214,160,.36);font-family:'Nunito',sans-serif;transition:all .14s;animation:nextPop .32s cubic-bezier(.34,1.56,.64,1);}
-    @keyframes nextPop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
-    .next-btn:hover{transform:translateY(-2px);}
-    .next-btn:active{transform:scale(.96);}
-
-    /* RESULTS */
-    .res-card{background:var(--card);border-radius:var(--r);padding:24px 20px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.17);}
-    .res-mascot{font-size:4rem;display:block;margin-bottom:5px;animation:rPop .55s cubic-bezier(.34,1.56,.64,1);}
-    @keyframes rPop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
-    .res-title{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--text);margin-bottom:2px;}
-    .res-sub{font-size:.88rem;color:var(--muted);font-weight:700;margin-bottom:12px;}
-    .res-stars{font-size:2.3rem;margin-bottom:9px;letter-spacing:3px;}
-    .res-ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 5px 18px rgba(6,214,160,.26);position:relative;}
-    .res-ring::before{content:'';position:absolute;inset:9px;background:#fff;border-radius:50%;}
-    .res-inner{position:relative;z-index:1;}
-    .res-num{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--text);line-height:1;}
-    .res-den{font-size:.68rem;font-weight:800;color:var(--muted);}
-    .adapt-sec{background:#fff8e1;border:2px solid #fde68a;border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;text-align:left;}
-    .adapt-title{font-family:'Fredoka One',cursive;font-size:.92rem;color:#92400e;margin-bottom:7px;}
-    .adapt-row{display:flex;align-items:center;gap:7px;font-size:.79rem;font-weight:700;color:var(--text);margin-bottom:4px;}
-    .adapt-bar-wrap{flex:1;height:6px;background:#fde68a;border-radius:99px;overflow:hidden;}
-    .adapt-bar{height:100%;border-radius:99px;}
-    .res-breakdown{text-align:left;margin-bottom:14px;max-height:190px;overflow-y:auto;}
-    .rb-hdr{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:7px;}
-    .rb-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:8px;margin-bottom:3px;font-size:.82rem;}
-    .rb-row.ok{background:#f0fdf9;} .rb-row.bad{background:#fff1f4;}
-    .rb-q{font-weight:700;} .rb-a{font-family:'Fredoka One',cursive;font-size:.86rem;}
-    .rb-a.ok{color:var(--green);} .rb-a.bad{color:var(--red);}
-    .res-actions{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;}
-    .res-actions button{flex:1;min-width:80px;padding:11px;font-size:.88rem;font-weight:800;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .14s;}
-    .btn-retry{background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 4px 13px rgba(102,126,234,.36);}
-    .btn-retry:hover{transform:translateY(-2px);}
-    .btn-parent{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 4px 13px rgba(245,158,11,.36);}
-    .btn-parent:hover{transform:translateY(-2px);}
-    .btn-menu{background:#f1f5f9;color:var(--text);}
-    .btn-menu:hover{background:#e2e8f0;}
-    .hs-sec{background:#f8f7ff;border-radius:var(--rs);padding:13px;}
-    .hs-title{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:7px;}
-    .hs-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #ede9fe;font-size:.8rem;}
-    .hs-row:last-child{border:none;}
-    .hs-score{font-family:'Fredoka One',cursive;color:var(--text);}
-
-    /* PARENT REPORT */
-    .pr-card{background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.17);}
-    .pr-hdr{background:linear-gradient(135deg,var(--bg1),var(--bg2));padding:20px;color:#fff;text-align:center;}
-    .pr-logo{font-size:2rem;margin-bottom:3px;}
-    .pr-htitle{font-family:'Fredoka One',cursive;font-size:1.5rem;}
-    .pr-date{font-size:.75rem;opacity:.8;margin-top:2px;}
-    .pr-body{padding:18px 20px;}
-    .pr-score-row{display:flex;gap:10px;margin-bottom:16px;}
-    .pr-stat{flex:1;background:#f8f7ff;border-radius:var(--rs);padding:12px;text-align:center;}
-    .pr-stat-num{font-family:'Fredoka One',cursive;font-size:1.9rem;color:var(--bg1);}
-    .pr-stat-lbl{font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
-    .pr-stars-big{font-size:2rem;text-align:center;margin-bottom:16px;letter-spacing:5px;}
-    .pr-sec-title{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:12px 0 8px;}
-    .pr-strength{background:#f0fdf9;border:2px solid #a7f3d0;border-radius:11px;padding:9px 13px;margin-bottom:7px;font-size:.82rem;font-weight:700;}
-    .pr-weakness{background:#fff1f4;border:2px solid #fca5a5;border-radius:11px;padding:9px 13px;margin-bottom:7px;font-size:.82rem;font-weight:700;}
-    .pr-qrow{display:flex;justify-content:space-between;font-size:.79rem;font-weight:700;padding:4px 0;border-bottom:1px solid #f1f5f9;}
-    .pr-qrow:last-child{border:none;}
-    .pr-rec{background:#f8f7ff;border-radius:11px;padding:11px 13px;font-size:.82rem;font-weight:700;color:var(--text);line-height:1.55;}
-    .pr-actions{display:flex;gap:9px;padding:0 20px 18px;}
-    .pr-actions button{flex:1;padding:11px;font-size:.88rem;font-weight:800;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .14s;}
-    .btn-print{background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 4px 13px rgba(102,126,234,.35);}
-    .btn-print:hover{transform:translateY(-2px);}
-    .btn-back-res{background:#f1f5f9;color:var(--text);}
-    .btn-back-res:hover{background:#e2e8f0;}
-    .pr-footer{background:#f8f7ff;padding:12px 20px;text-align:center;font-size:.72rem;color:var(--muted);font-weight:600;}
-    @media print{.bg-shapes,.particles,.app-header,.xp-bar,.scratch-col,.pr-actions{display:none!important;}body{background:#fff!important;}.pr-card{box-shadow:none!important;}}
-
-    /* = KLADDEBOK = */
-    .scratch-card{background:var(--card);border-radius:var(--r);box-shadow:0 8px 28px rgba(0,0,0,.13);overflow:hidden;position:sticky;top:10px;}
-    .scratch-hdr{background:linear-gradient(135deg,#f093fb,#f5576c);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;}
-    .scratch-hdr-title{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#fff;display:flex;align-items:center;gap:6px;}
-    .scratch-toolbar{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#f8f7ff;border-bottom:1px solid #ede9fe;flex-wrap:wrap;}
-    .tool-btn{border:2px solid transparent;border-radius:8px;padding:4px 9px;font-size:.75rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .13s;background:#fff;color:var(--text);}
-    .tool-btn:hover{background:#ede9fe;border-color:var(--bg1);}
-    .tool-btn.active{background:var(--bg1);color:#fff;border-color:var(--bg1);}
-    .tool-sep{width:1px;height:20px;background:#e2e8f0;margin:0 2px;}
-    .size-btn{width:26px;height:26px;border-radius:50%;border:2px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;}
-    .size-btn:hover{border-color:var(--bg1);}
-    .size-btn.active{border-color:var(--bg1);background:#ede9fe;}
-    .size-dot{border-radius:50%;background:var(--text);pointer-events:none;}
-    .color-btn{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .12s;}
-    .color-btn:hover{transform:scale(1.15);}
-    .color-btn.active{border-color:#fff;box-shadow:0 0 0 2px var(--text);}
-    .scratch-canvas{display:block;width:100%;background:#fffef7;cursor:crosshair;touch-action:none;}
-    .scratch-canvas.erase{cursor:cell;}
-    .scratch-footer{padding:7px 10px;background:#f8f7ff;display:flex;justify-content:space-between;align-items:center;}
-    .scratch-hint{font-size:.68rem;color:var(--muted);font-weight:600;}
-    .clear-btn{background:#fee2e2;border:none;border-radius:7px;padding:4px 10px;font-size:.75rem;font-weight:800;color:var(--red);cursor:pointer;font-family:'Nunito',sans-serif;transition:background .13s;}
-    .clear-btn:hover{background:#fecaca;}
-
-    /* SCRATCH TABS */
-    .scratch-tabs{display:flex;border-bottom:2px solid #ede9fe;}
-    .scratch-tab{flex:1;padding:8px;font-size:.8rem;font-weight:800;font-family:'Nunito',sans-serif;border:none;background:#f8f7ff;color:var(--muted);cursor:pointer;transition:all .15s;}
-    .scratch-tab:first-child{border-radius:0;}
-    .scratch-tab.active{background:#fff;color:var(--bg1);border-bottom:3px solid var(--bg1);margin-bottom:-2px;}
-    .scratch-tab:hover:not(.active){background:#ede9fe;}
-
-    /* SCRATCH WRITE panel */
-    .scratch-write{display:none;position:relative;}
-    .scratch-write.active{display:block;}
-    .scratch-write textarea{
-      width:100%;min-height:340px;
-      padding:12px 14px;
-      font-size:1.1rem;font-family:'Fredoka One',cursive;
-      color:var(--text);
-      border:none;outline:none;resize:none;
-      background:repeating-linear-gradient(
-        transparent, transparent 27px,
-        #d4d0e8 28px
-      );
-      background-color:#fffef7;
-      line-height:28px;
-      padding-top:8px;
-    }
-    .scratch-write textarea::placeholder{color:#c4b8d8;font-family:'Nunito',sans-serif;font-size:.85rem;}
-
-    /* hide draw toolbar when in write mode */
-    .scratch-draw{}
-
-    /* ═══ LEARN SCREEN ═══ */
-    .learn-card{background:var(--card);border-radius:var(--r);box-shadow:0 10px 36px rgba(0,0,0,.14);overflow:hidden;}
-    .learn-top-bar{background:linear-gradient(135deg,var(--lc1,#667eea),var(--lc2,#764ba2));padding:16px 18px;color:#fff;display:flex;align-items:center;gap:10px;}
-    .learn-back{background:rgba(255,255,255,.2);border:none;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#fff;flex-shrink:0;transition:background .14s;}
-    .learn-back:hover{background:rgba(255,255,255,.35);}
-    .learn-top-info{flex:1;}
-    .learn-topic-name{font-family:'Fredoka One',cursive;font-size:1.1rem;line-height:1.1;}
-    .learn-step-lbl{font-size:.72rem;opacity:.82;font-weight:700;margin-top:1px;}
-    /* progress dots */
-    .learn-dots{display:flex;gap:6px;justify-content:center;padding:14px 0 0;}
-    .learn-dot{width:10px;height:10px;border-radius:50%;background:#e2e8f0;transition:all .3s;}
-    .learn-dot.done{background:var(--green);}
-    .learn-dot.active{background:var(--bg1);transform:scale(1.3);}
-    /* step content */
-    .learn-body{padding:20px 20px 16px;min-height:320px;display:flex;flex-direction:column;align-items:center;text-align:center;}
-    .learn-step-icon{font-size:3rem;margin-bottom:10px;animation:lIcon .4s cubic-bezier(.34,1.56,.64,1);}
-    @keyframes lIcon{from{transform:scale(0)}to{transform:scale(1)}}
-    .learn-step-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--text);margin-bottom:10px;}
-    .learn-step-text{font-size:.92rem;color:var(--muted);font-weight:700;line-height:1.6;margin-bottom:16px;max-width:420px;}
-    /* visual area */
-    .learn-visual{background:#f8f7ff;border-radius:var(--rs);padding:16px;margin-bottom:14px;width:100%;max-width:480px;}
-    /* dot groups */
-    .dot-groups{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;}
-    .dot-group{display:flex;flex-wrap:wrap;gap:4px;max-width:120px;justify-content:center;}
-    .dot{width:22px;height:22px;border-radius:50%;display:inline-block;animation:dotPop .3s ease backwards;}
-    @keyframes dotPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-    .dot-op{font-size:1.6rem;font-weight:900;color:var(--text);align-self:center;}
-    .dot-eq{font-size:1.4rem;font-weight:900;color:var(--muted);align-self:center;}
-    /* number line */
-    .nline-wrap{overflow-x:auto;padding:8px 4px;}
-    .nline{position:relative;height:56px;min-width:260px;}
-    .nline-track{position:absolute;top:28px;left:10px;right:10px;height:3px;background:#d4d0e8;border-radius:99px;}
-    .nline-tick{position:absolute;top:20px;width:2px;height:18px;background:#a09cc0;border-radius:1px;transform:translateX(-50%);}
-    .nline-num{position:absolute;top:42px;font-size:.7rem;font-weight:800;color:var(--muted);transform:translateX(-50%);}
-    .nline-dot{position:absolute;top:22px;width:12px;height:12px;border-radius:50%;background:var(--bg1);transform:translateX(-50%);transition:left .5s cubic-bezier(.34,1.56,.64,1);}
-    .nline-arrow{position:absolute;top:8px;height:12px;border-top:3px dashed var(--orange);animation:arrowIn .5s ease forwards;transform-origin:left;}
-    @keyframes arrowIn{from{width:0}to{width:var(--w)}}
-    /* fraction visual */
-    .frac-bar{display:flex;height:40px;border-radius:8px;overflow:hidden;gap:2px;margin:0 auto;max-width:280px;}
-    .frac-seg{flex:1;border-radius:4px;transition:opacity .3s;}
-    .frac-seg.filled{opacity:1;}
-    .frac-seg.empty{opacity:.25;}
-    /* multiplication grid */
-    .mul-grid{display:inline-grid;gap:4px;margin:0 auto;}
-    .mul-cell{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;animation:dotPop .2s ease backwards;}
-    /* worked example */
-    .worked{text-align:left;font-family:'Fredoka One',cursive;font-size:1.1rem;line-height:1.9;width:100%;}
-    .worked .step{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:8px;margin-bottom:2px;opacity:0;animation:stepIn .4s ease forwards;}
-    @keyframes stepIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
-    .worked .step.hl{background:#ede9fe;}
-    .worked .step .ann{font-size:.7rem;font-family:'Nunito',sans-serif;font-weight:800;color:var(--muted);margin-left:auto;}
-    /* equation highlight */
-    .eq-hl{background:var(--yellow);border-radius:4px;padding:0 4px;}
-    .eq-box{background:#fff;border:2px solid var(--bg1);border-radius:8px;padding:6px 16px;font-family:'Fredoka One',cursive;font-size:1.4rem;text-align:center;margin:6px auto;}
-    /* navigation */
-    .learn-nav{padding:12px 16px 16px;display:flex;gap:10px;}
-    .learn-prev{flex:0 0 auto;padding:11px 16px;font-size:.9rem;font-weight:800;background:#f1f5f9;color:var(--text);border:none;border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .14s;}
-    .learn-prev:hover{background:#e2e8f0;}
-    .learn-next{flex:1;padding:12px;font-size:1rem;font-weight:900;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .14s;box-shadow:0 4px 14px rgba(102,126,234,.35);}
-    .learn-next:hover{transform:translateY(-2px);}
-    .learn-next.finish{background:linear-gradient(135deg,var(--green),#059669);box-shadow:0 4px 14px rgba(6,214,160,.35);}
-    /* topic btn learn button */
-    .topic-learn-btn{position:absolute;bottom:10px;right:38px;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;border:none;border-radius:99px;padding:3px 10px;font-size:.7rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .13s;box-shadow:0 2px 8px rgba(102,126,234,.3);}
-    .topic-learn-btn:hover{transform:scale(1.08);}
-
-    /* Mobile scratch toggle */
-    .scratch-toggle-btn{display:none;position:fixed;bottom:16px;right:16px;z-index:100;background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:1.4rem;cursor:pointer;box-shadow:0 4px 18px rgba(240,147,251,.5);transition:all .15s;}
-    .scratch-toggle-btn:hover{transform:scale(1.1);}
-    /* Desktop: alltid synlig */
-    @media(min-width:901px){
-      .scratch-col { display:block !important; }
-      .scratch-toggle-btn { display:none !important; }
-    }
-    /* Mobil: skjult som standard, toggle-knapp vises */
-    @media(max-width:900px){
-      .scratch-col.mobile-hidden { display:none; }
-      .scratch-toggle-btn { display:flex; align-items:center; justify-content:center; }
-    }
-
-    /* PARTICLES */
-    .particles{position:fixed;inset:0;pointer-events:none;z-index:9999;}
-    .particle{position:absolute;border-radius:50%;opacity:0;animation:pFall 2s ease-in forwards;}
-    @keyframes pFall{0%{transform:translateY(-20px) rotate(0) scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(100vh) rotate(540deg) scale(.3);opacity:0}}
-  </style>
+@media(min-width:921px){.scratch-col{display:block!important;}.scratch-toggle-btn{display:none!important;}}
+@media(max-width:920px){.scratch-col.mobile-hidden{display:none;}.scratch-toggle-btn{display:flex;align-items:center;justify-content:center;}}
+.scratch-toggle-btn{display:none;position:fixed;bottom:16px;right:16px;z-index:100;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:1.3rem;cursor:pointer;box-shadow:var(--glow-p);}
+.particles{position:fixed;inset:0;pointer-events:none;z-index:9999;}
+.particle{position:absolute;border-radius:50%;opacity:0;animation:pFall 2s ease-in forwards;}
+@keyframes pFall{0%{transform:translateY(-20px) rotate(0) scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(100vh) rotate(540deg) scale(.3);opacity:0}}
+@media print{.stars,.particles,.hud,.scratch-col,.pr-actions,.achieve-toast,.chest-overlay{display:none!important;}body{background:#fff!important;color:#000!important;}}
+@media(max-width:400px){.q-txt{font-size:2.2rem;}}
+</style>
 </head>
 <body>
-<div class="bg-shapes"><div class="shape"></div><div class="shape"></div><div class="shape"></div></div>
+<div class="stars" id="stars"></div>
 <div class="particles" id="particles"></div>
-
+<div class="achieve-toast" id="achieve-toast">
+  <div class="at-icon" id="at-icon">🏆</div>
+  <div><div class="at-title" id="at-title">Achievement!</div><div class="at-sub" id="at-sub">Godt jobbet!</div></div>
+</div>
+<div class="chest-overlay" id="chest-overlay">
+  <div class="chest-emoji" id="chest-emoji">🎁</div>
+  <div class="chest-title" id="chest-title">Skatt funnet!</div>
+  <div class="chest-sub" id="chest-sub">Du fullførte en runde!</div>
+  <div class="chest-rewards" id="chest-rewards"></div>
+  <button class="chest-btn" onclick="closeChest()">Se resultater →</button>
+</div>
 <div class="app">
-  <div class="app-header">
-    <div class="app-title">🦸 Mattehelten</div>
-    <div class="app-sub">Bli en mattehelt — ett regnestykke om gangen!</div>
+  <div class="hdr"><div class="hdr-title">⚔️ Mattehelten</div><div class="hdr-sub">Bli en legendarisk mattehelt!</div></div>
+  <div class="hud" id="hud">
+    <div class="hud-char" id="hud-char">🦸</div>
+    <div class="hud-xp">
+      <div class="hud-lvl" id="hud-lvl">⭐ Nivå 1 · <span id="hud-name">Helt</span></div>
+      <div class="hud-bar"><div class="hud-fill" id="hud-fill" style="width:0%"></div></div>
+    </div>
+    <div class="hud-streak">🔥<span id="hud-streak">0</span></div>
+    <div class="hud-coins">🪙<span id="hud-coins">0</span></div>
   </div>
-
-  <!-- XP BAR -->
-  <div class="xp-bar">
-    <div class="xp-lvl" id="xp-lvl">⭐1</div>
-    <div class="xp-tw"><div class="xp-lbl">ERFARING</div><div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div></div>
-    <div class="xp-coins">🪙<span id="coin-count">0</span></div>
-  </div>
-
-  <div class="main-flex" id="main-flex">
-    <!-- GAME COLUMN -->
+  <div class="main-flex">
     <div class="game-col">
 
-      <!-- GRADE PICKER -->
-      <div id="screen-grades" class="screen active">
-        <div class="grade-section-label">🏫 Barneskole (1.–7. klasse)</div>
-        <div class="grade-grid" id="grid-barnesk"></div>
-        <div class="grade-section-label" style="margin-top:14px">🎓 Ungdomsskole (8.–10. klasse)</div>
-        <div class="grade-grid" id="grid-ungdomsk" style="grid-template-columns:repeat(3,1fr)"></div>
+      <div id="screen-chars" class="screen active">
+        <div class="cs-title">Velg din helt! ⚔️</div>
+        <div class="cs-sub">Din karakter følger deg gjennom alle matteoppgavene</div>
+        <div class="char-grid" id="char-grid"></div>
+        <div class="cs-name-wrap">
+          <div class="cs-name-lbl">Hva heter helten din?</div>
+          <input type="text" id="cs-name" class="cs-name-input" placeholder="Skriv navnet ditt..." maxlength="20"/>
+        </div>
+        <button class="start-btn" onclick="saveCharacter()">🚀 Start eventyret!</button>
       </div>
 
-      <!-- TOPIC PICKER -->
+      <div id="screen-grades" class="screen">
+        <div class="wm-title">🗺️ Velg verden</div>
+        <div class="world-list" id="world-list"></div>
+      </div>
+
       <div id="screen-topics" class="screen">
         <div class="topic-hdr">
           <button class="back-btn" onclick="showScreen('grades')">←</button>
@@ -379,92 +380,96 @@
         <div class="topic-list" id="topic-list"></div>
       </div>
 
-      <!-- GAME -->
       <div id="screen-game" class="screen">
-        <div class="game-top">
-          <button class="game-back" onclick="showScreen('grades')">←</button>
-          <div class="prog-wrap">
-            <div class="prog-lbl"><span id="prog-label">Spørsmål 1 av 10</span><span id="score-label">0 riktige</span></div>
-            <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="battle-top">
+          <button class="battle-back" onclick="showScreen('grades')">←</button>
+          <div class="battle-prog-wrap">
+            <div class="battle-prog-lbl"><span id="prog-label">Spørsmål 1 av 10</span><span id="score-label" style="color:var(--green)">0 riktige</span></div>
+            <div class="battle-prog-track"><div class="battle-prog-fill" id="prog-fill" style="width:0%"></div></div>
           </div>
-          <div class="streak-badge">🔥<span id="streak-num">0</span></div>
+          <div class="combo-badge" id="combo-badge">⚡<span id="combo-num">0</span></div>
         </div>
-        <div class="mascot-wrap">
-          <div class="speech" id="speech">Hei! Klar for matte? 😄</div>
-          <div class="mascot" id="mascot">🦸</div>
+        <div class="fighters">
+          <div class="fighter">
+            <span class="fighter-avatar" id="player-avatar">🦸</span>
+            <div class="fighter-name" id="player-name">Helten</div>
+            <div class="fighter-hp"><div class="fighter-hp-fill" id="player-hp" style="width:100%"></div></div>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="fighter" style="text-align:center">
+            <span class="enemy-avatar" id="enemy-avatar">👾</span>
+            <div class="fighter-name" id="enemy-name">Tallmonsteret</div>
+            <div class="fighter-hp"><div class="fighter-hp-fill" id="enemy-hp" style="width:100%;background:linear-gradient(90deg,var(--red),#ff0044);box-shadow:0 0 12px rgba(255,68,102,.5)"></div></div>
+          </div>
         </div>
+        <div class="speech-wrap"><span class="speech" id="speech">Klar til kamp? ⚔️</span></div>
         <div class="q-card" id="q-card">
           <div class="q-cat" id="q-cat">Addisjon</div>
           <div class="q-txt" id="q-txt">3 + 2 = ?</div>
           <div class="q-hint" id="q-hint"></div>
+          <div class="combo-flash" id="combo-flash"></div>
         </div>
         <div class="ans-row">
           <input type="number" id="ans-input" class="ans-input" placeholder="?" autocomplete="off" inputmode="decimal"/>
-          <button class="sub-btn" id="sub-btn" onclick="submitAnswer()">✓</button>
+          <button class="sub-btn" id="sub-btn" onclick="submitAnswer()">⚔️</button>
         </div>
         <div class="numpad" id="numpad"></div>
         <div class="fb-box" id="fb-box"></div>
         <button class="next-btn" id="next-btn" onclick="handleNext()">Neste →</button>
       </div>
 
-      <!-- RESULTS -->
       <div id="screen-results" class="screen">
-        <div class="res-card">
-          <span class="res-mascot" id="res-mascot">🏆</span>
-          <div class="res-title" id="res-title">Kjempebra!</div>
-          <div class="res-sub" id="res-sub"></div>
-          <div class="res-stars" id="res-stars">⭐⭐⭐</div>
-          <div class="res-ring" id="res-ring"><div class="res-inner"><div class="res-num" id="res-num">0</div><div class="res-den">av 10</div></div></div>
+        <div class="victory-card">
+          <span class="victory-emoji" id="res-mascot">🏆</span>
+          <div class="victory-title" id="res-title">Kjempebra!</div>
+          <div class="victory-sub" id="res-sub"></div>
+          <div class="victory-stars" id="res-stars">⭐⭐⭐</div>
+          <div class="score-ring" id="res-ring"><div class="score-inner"><div class="score-num" id="res-num">0</div><div class="score-den">av 10</div></div></div>
           <div class="adapt-sec" id="adapt-sec"></div>
-          <div class="res-breakdown"><div class="rb-hdr">Gjennomgang av alle oppgavene</div><div id="res-rows"></div></div>
+          <div class="res-breakdown"><div class="rb-hdr">Gjennomgang</div><div id="res-rows"></div></div>
           <div class="res-actions">
             <button class="btn-retry" onclick="retrySession()">🔁 Prøv igjen</button>
-            <button class="btn-parent" onclick="showParentReport()">📋 Foreldres rapport</button>
-            <button class="btn-menu" onclick="showScreen('grades')">🏠</button>
+            <button class="btn-parent" onclick="showParentReport()">📋 Rapport</button>
+            <button class="btn-menu" onclick="showScreen('grades')">🗺️ Kart</button>
           </div>
           <div class="hs-sec"><div class="hs-title">🏅 Rekorder</div><div id="hs-rows"></div></div>
         </div>
       </div>
 
-      <!-- PARENT REPORT -->
       <div id="screen-parent" class="screen">
         <div class="pr-card">
-          <div class="pr-hdr"><div class="pr-logo">🦸📋</div><div class="pr-htitle">Matterapport</div><div class="pr-date" id="pr-date"></div></div>
+          <div class="pr-hdr"><div class="pr-logo">⚔️📋</div><div class="pr-htitle">Matterapport</div><div class="pr-date" id="pr-date"></div></div>
           <div class="pr-body">
-            <div style="text-align:center;margin-bottom:14px"><h2 style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--text)" id="pr-topic-name"></h2><p style="font-size:.82rem;color:var(--muted);font-weight:600" id="pr-grade-name"></p></div>
+            <div style="text-align:center;margin-bottom:14px"><h2 style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--white)" id="pr-topic-name"></h2><p style="font-size:.82rem;color:var(--muted);font-weight:600" id="pr-grade-name"></p></div>
             <div class="pr-score-row">
               <div class="pr-stat"><div class="pr-stat-num" id="pr-correct"></div><div class="pr-stat-lbl">Riktige</div></div>
               <div class="pr-stat"><div class="pr-stat-num" id="pr-wrong"></div><div class="pr-stat-lbl">Feil</div></div>
               <div class="pr-stat"><div class="pr-stat-num" id="pr-pct"></div><div class="pr-stat-lbl">Prosent</div></div>
             </div>
             <div class="pr-stars-big" id="pr-stars"></div>
-            <div class="pr-sec-title">✅ Hva gikk bra</div><div id="pr-strengths"></div>
-            <div class="pr-sec-title">🔧 Kan øves mer</div><div id="pr-weaknesses"></div>
-            <div class="pr-sec-title">📝 Alle oppgavene</div><div id="pr-breakdown" style="margin-bottom:14px"></div>
-            <div class="pr-sec-title">💡 Anbefaling til foreldre</div><div class="pr-rec" id="pr-rec"></div>
+            <div class="pr-sec-title">Hva gikk bra</div><div id="pr-strengths"></div>
+            <div class="pr-sec-title">Kan øves mer</div><div id="pr-weaknesses"></div>
+            <div class="pr-sec-title">Alle oppgavene</div><div id="pr-breakdown" style="margin-bottom:14px"></div>
+            <div class="pr-sec-title">Anbefaling</div><div class="pr-rec" id="pr-rec"></div>
           </div>
           <div class="pr-actions">
             <button class="btn-print" onclick="window.print()">🖨️ Skriv ut</button>
             <button class="btn-back-res" onclick="showScreen('results')">← Tilbake</button>
           </div>
-          <div class="pr-footer">Mattehelten — mattespill for norske barn 🇳🇴</div>
+          <div class="pr-footer">Mattehelten — norsk mattespill 🇳🇴</div>
         </div>
       </div>
 
-      <!-- LEARN SCREEN -->
       <div id="screen-learn" class="screen">
-        <div class="learn-card" id="learn-card">
-          <div class="learn-top-bar" id="learn-top-bar">
+        <div class="learn-card">
+          <div class="learn-top-bar">
             <button class="learn-back" onclick="showScreen('topics')">←</button>
-            <div class="learn-top-info">
-              <div class="learn-topic-name" id="learn-topic-name">Addisjon</div>
-              <div class="learn-step-lbl" id="learn-step-lbl">Steg 1 av 4</div>
-            </div>
+            <div><div class="learn-topic-name" id="learn-topic-name">Addisjon</div><div class="learn-step-lbl" id="learn-step-lbl">Steg 1 av 4</div></div>
           </div>
           <div class="learn-dots" id="learn-dots"></div>
           <div class="learn-body" id="learn-body">
             <div class="learn-step-icon" id="learn-icon">➕</div>
-            <div class="learn-step-title" id="learn-title">Hva er addisjon?</div>
+            <div class="learn-step-title" id="learn-title"></div>
             <div class="learn-step-text" id="learn-text"></div>
             <div class="learn-visual" id="learn-visual"></div>
           </div>
@@ -477,855 +482,44 @@
 
     </div><!-- .game-col -->
 
-    <!-- SCRATCH PAD -->
     <div class="scratch-col mobile-hidden" id="scratch-col">
       <div class="scratch-card">
         <div class="scratch-hdr">
           <div class="scratch-hdr-title">✏️ Kladdebok</div>
-          <button class="clear-btn" id="clear-btn" onclick="clearScratch()" style="background:rgba(255,255,255,.25);color:#fff;border-color:rgba(255,255,255,.4)">Tøm</button>
+          <button class="clear-btn" onclick="clearScratch()">Tøm</button>
         </div>
-
-        <!-- TABS -->
         <div class="scratch-tabs">
           <button class="scratch-tab active" id="tab-draw" onclick="switchTab('draw')">✏️ Tegn</button>
           <button class="scratch-tab" id="tab-write" onclick="switchTab('write')">⌨️ Skriv</button>
         </div>
-
-        <!-- DRAW MODE -->
-        <div class="scratch-draw" id="scratch-draw">
+        <div id="scratch-draw">
           <div class="scratch-toolbar">
-            <button class="tool-btn active" id="tool-pen" onclick="setTool('pen')">✏️ Penn</button>
-            <button class="tool-btn" id="tool-erase" onclick="setTool('erase')">🧹 Viskelær</button>
+            <button class="tool-btn active" id="tool-pen" onclick="setTool('pen')">Penn</button>
+            <button class="tool-btn" id="tool-erase" onclick="setTool('erase')">Viskelær</button>
             <div class="tool-sep"></div>
-            <button class="size-btn active" id="sz-s" onclick="setSize(2,'sz-s')" title="Tynn"><div class="size-dot" style="width:4px;height:4px"></div></button>
-            <button class="size-btn" id="sz-m" onclick="setSize(5,'sz-m')" title="Medium"><div class="size-dot" style="width:8px;height:8px"></div></button>
-            <button class="size-btn" id="sz-l" onclick="setSize(10,'sz-l')" title="Tykk"><div class="size-dot" style="width:13px;height:13px"></div></button>
+            <button class="size-btn active" id="sz-s" onclick="setSize(2,'sz-s')"><div class="size-dot" style="width:4px;height:4px"></div></button>
+            <button class="size-btn" id="sz-m" onclick="setSize(5,'sz-m')"><div class="size-dot" style="width:8px;height:8px"></div></button>
+            <button class="size-btn" id="sz-l" onclick="setSize(10,'sz-l')"><div class="size-dot" style="width:13px;height:13px"></div></button>
             <div class="tool-sep"></div>
-            <div class="color-btn active" id="col-black" style="background:#2d1b69" onclick="setColor('#2d1b69','col-black')"></div>
-            <div class="color-btn" id="col-red" style="background:#ef476f" onclick="setColor('#ef476f','col-red')"></div>
-            <div class="color-btn" id="col-blue" style="background:#118ab2" onclick="setColor('#118ab2','col-blue')"></div>
-            <div class="color-btn" id="col-green" style="background:#06d6a0" onclick="setColor('#06d6a0','col-green')"></div>
-            <div class="color-btn" id="col-orange" style="background:#ff6b35" onclick="setColor('#ff6b35','col-orange')"></div>
+            <div class="color-btn active" id="col-w" style="background:#fff" onclick="setColor('#fff','col-w')"></div>
+            <div class="color-btn" id="col-c" style="background:#06d6ff" onclick="setColor('#06d6ff','col-c')"></div>
+            <div class="color-btn" id="col-g" style="background:#00ff88" onclick="setColor('#00ff88','col-g')"></div>
+            <div class="color-btn" id="col-r" style="background:#ff4466" onclick="setColor('#ff4466','col-r')"></div>
+            <div class="color-btn" id="col-gold" style="background:#ffd93d" onclick="setColor('#ffd93d','col-gold')"></div>
           </div>
-          <canvas id="scratch-canvas" class="scratch-canvas" width="300" height="380"></canvas>
+          <canvas id="scratch-canvas" class="scratch-canvas" width="290" height="370"></canvas>
         </div>
-
-        <!-- WRITE MODE -->
         <div class="scratch-write" id="scratch-write">
-          <textarea id="scratch-text" placeholder="Skriv utregningene dine her...&#10;Eks:  27 + 38&#10;      = 20+30 + 7+8&#10;      = 50 + 15&#10;      = 65"></textarea>
+          <textarea id="scratch-text" placeholder="Skriv utregningene dine her...&#10;Eks:  27 + 38&#10;      = 65"></textarea>
         </div>
-
         <div class="scratch-footer">
-          <span class="scratch-hint" id="scratch-hint">Tegn eller skriv utregningene dine 📐</span>
+          <span class="scratch-hint">Tegn eller skriv utregningene dine</span>
         </div>
       </div>
     </div>
-
-  </div><!-- .main-flex -->
-</div><!-- .app -->
-
-<!-- Mobile scratch toggle button -->
-<button class="scratch-toggle-btn" id="scratch-toggle" onclick="toggleScratch()" title="Åpne kladdebok">✏️</button>
-
-<script>
-// =
-// SCRATCH PAD
-// =
-let scratchTool='pen', scratchSize=2, scratchColor='#2d1b69';
-let drawing=false, lastX=0, lastY=0;
-const cvs=document.getElementById('scratch-canvas');
-const ctx2=cvs.getContext('2d');
-
-function resizeCanvas(){
-  const w=cvs.parentElement.clientWidth||300;
-  const img=ctx2.getImageData(0,0,cvs.width,cvs.height);
-  cvs.width=w; cvs.height=Math.max(380,window.innerHeight*0.55);
-  ctx2.putImageData(img,0,0);
-  drawLines();
-}
-function drawLines(){
-  ctx2.strokeStyle='#f0e6d3'; ctx2.lineWidth=1;
-  for(let y=28;y<cvs.height;y+=28){
-    ctx2.beginPath(); ctx2.moveTo(0,y); ctx2.lineTo(cvs.width,y); ctx2.stroke();
-  }
-}
-
-function getPos(e){
-  const r=cvs.getBoundingClientRect();
-  const src=e.touches?e.touches[0]:e;
-  return {x:(src.clientX-r.left)*(cvs.width/r.width), y:(src.clientY-r.top)*(cvs.height/r.height)};
-}
-function startDraw(e){
-  e.preventDefault(); drawing=true;
-  const p=getPos(e); lastX=p.x; lastY=p.y;
-}
-function doDraw(e){
-  if(!drawing) return; e.preventDefault();
-  const p=getPos(e);
-  ctx2.beginPath();
-  ctx2.lineCap='round'; ctx2.lineJoin='round';
-  if(scratchTool==='erase'){ctx2.globalCompositeOperation='destination-out'; ctx2.lineWidth=scratchSize*4;}
-  else{ctx2.globalCompositeOperation='source-over'; ctx2.strokeStyle=scratchColor; ctx2.lineWidth=scratchSize;}
-  ctx2.moveTo(lastX,lastY); ctx2.lineTo(p.x,p.y); ctx2.stroke();
-  lastX=p.x; lastY=p.y;
-}
-function endDraw(e){ drawing=false; if(scratchTool==='erase') ctx2.globalCompositeOperation='source-over'; }
-
-cvs.addEventListener('mousedown',startDraw); cvs.addEventListener('mousemove',doDraw);
-cvs.addEventListener('mouseup',endDraw); cvs.addEventListener('mouseleave',endDraw);
-cvs.addEventListener('touchstart',startDraw,{passive:false}); cvs.addEventListener('touchmove',doDraw,{passive:false});
-cvs.addEventListener('touchend',endDraw);
-
-function setTool(t){
-  scratchTool=t;
-  document.getElementById('tool-pen').classList.toggle('active',t==='pen');
-  document.getElementById('tool-erase').classList.toggle('active',t==='erase');
-  cvs.className='scratch-canvas'+(t==='erase'?' erase':'');
-}
-function setSize(s,id){
-  scratchSize=s;
-  ['sz-s','sz-m','sz-l'].forEach(i=>document.getElementById(i).classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function setColor(c,id){
-  scratchColor=c; scratchTool='pen'; setTool('pen');
-  ['col-black','col-red','col-blue','col-green','col-orange'].forEach(i=>document.getElementById(i).classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function clearCanvas(){
-  ctx2.clearRect(0,0,cvs.width,cvs.height); drawLines();
-}
-
-let scratchMode='draw';
-function switchTab(mode){
-  scratchMode=mode;
-  document.getElementById('tab-draw').classList.toggle('active',mode==='draw');
-  document.getElementById('tab-write').classList.toggle('active',mode==='write');
-  document.getElementById('scratch-draw').style.display=mode==='draw'?'block':'none';
-  document.getElementById('scratch-write').classList.toggle('active',mode==='write');
-  if(mode==='draw') resizeCanvas();
-  else setTimeout(()=>document.getElementById('scratch-text').focus(),50);
-}
-function clearScratch(){
-  if(scratchMode==='draw'){ clearCanvas(); }
-  else { document.getElementById('scratch-text').value=''; }
-}
-
-let scratchVisible=false;
-function toggleScratch(){
-  const col=document.getElementById('scratch-col');
-  scratchVisible=!scratchVisible;
-  col.classList.toggle('mobile-hidden',!scratchVisible);
-  document.getElementById('scratch-toggle').textContent=scratchVisible?'✖️':'✏️';
-  if(scratchVisible) setTimeout(()=>{resizeCanvas();},50);
-}
-
-window.addEventListener('resize',()=>{ resizeCanvas(); });
-// Init canvas on load — on desktop scratch pad is always visible
-setTimeout(()=>{ resizeCanvas(); drawLines(); },200);
-
-// =
-// ADAPTIVE
-// =
-function adaptKey(g,tid,sub){return `adapt_${g}_${tid}_${sub}`;}
-function recordAttempt(g,tid,sub,ok){
-  const k=adaptKey(g,tid,sub),d=JSON.parse(localStorage.getItem(k)||'{"a":0,"e":0}');
-  d.a++;if(!ok)d.e++;localStorage.setItem(k,JSON.stringify(d));
-}
-function errRate(g,tid,sub){
-  const d=JSON.parse(localStorage.getItem(adaptKey(g,tid,sub))||'{"a":0,"e":0}');
-  return d.a<3?0:d.e/d.a;
-}
-function weightedPick(items,wFn){
-  const pool=[];
-  items.forEach(it=>{const w=Math.max(1,Math.round(1+wFn(it)*5));for(let i=0;i<w;i++)pool.push(it);});
-  return pool[Math.floor(Math.random()*pool.length)];
-}
-
-// =
-// CURRICULUM — alle 10 trinn
-// =
-function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
-function r2(n){return Math.round(n*100)/100;}
-
-const CUR={
-  1:{c1:'#f093fb',c2:'#f5576c',badge:'#fce7f3',tc:'#9d174d',icon:'🔢',label:'Tall 1–20, + og −',
-    topics:[
-      {id:'add10',icon:'➕',bg:'#fce7f3',name:'Addisjon til 10',desc:'Legg sammen tall opp til 10',
-        gen(g,id){const pairs=[];for(let a=0;a<=9;a++)for(let b=0;b<=10-a;b++){const s=`${a}+${b}`,w=1+Math.round(errRate(g,id,s)*5);for(let i=0;i<w;i++)pairs.push({a,b,s});}const t=pick(pairs);return{q:`${t.a} + ${t.b} = ?`,ans:t.a+t.b,type:'Addisjon',sub:t.s};},fb:fbAdd},
-      {id:'sub10',icon:'➖',bg:'#fee2e2',name:'Subtraksjon til 10',desc:'Trekk fra tall opp til 10',
-        gen(g,id){const pairs=[];for(let a=0;a<=10;a++)for(let b=0;b<=a;b++){const s=`${a}-${b}`,w=1+Math.round(errRate(g,id,s)*5);for(let i=0;i<w;i++)pairs.push({a,b,s});}const t=pick(pairs);return{q:`${t.a} − ${t.b} = ?`,ans:t.a-t.b,type:'Subtraksjon',sub:t.s};},fb:fbSub},
-      {id:'add20',icon:'🔢',bg:'#ede9fe',name:'Addisjon til 20',desc:'Legg sammen tall opp til 20',
-        gen(g,id){const a=rand(1,15),b=rand(1,20-a),s=`g${Math.floor(a/5)}`;return{q:`${a} + ${b} = ?`,ans:a+b,type:'Addisjon',sub:s};},fb:fbAdd},
-    ]},
-  2:{c1:'#4facfe',c2:'#00f2fe',badge:'#dbeafe',tc:'#1e40af',icon:'🧮',label:'Tall 1–100, + − ×',
-    topics:[
-      {id:'add100',icon:'➕',bg:'#dbeafe',name:'Addisjon til 100',desc:'Legg sammen tall opp til 100',
-        gen(g,id){const a=rand(1,90),b=rand(1,100-a),s=`t${Math.floor(a/20)}`;return{q:`${a} + ${b} = ?`,ans:a+b,type:'Addisjon',sub:s};},fb:fbAdd},
-      {id:'sub100',icon:'➖',bg:'#fee2e2',name:'Subtraksjon til 100',desc:'Trekk fra tall opp til 100',
-        gen(g,id){const a=rand(10,100),b=rand(1,a),s=`t${Math.floor(a/20)}`;return{q:`${a} − ${b} = ?`,ans:a-b,type:'Subtraksjon',sub:s};},fb:fbSub},
-      {id:'mul25',icon:'✖️',bg:'#fef9c3',name:'Ganging med 2, 5 og 10',desc:'Enkel multiplikasjon',
-        gen(g,id){const b=weightedPick([2,5,10],t=>errRate(g,id,`x${t}`)),a=rand(1,10);return{q:`${a} × ${b} = ?`,ans:a*b,type:'Ganging',hint:`${b}-gangen`,sub:`x${b}`};},fb:fbMul},
-    ]},
-  3:{c1:'#43e97b',c2:'#38f9d7',badge:'#dcfce7',tc:'#166534',icon:'✖️',label:'Gangetabell 1–5, deling',
-    topics:[
-      {id:'mul15',icon:'✖️',bg:'#dcfce7',name:'Gangetabellen 1–5',desc:'1-, 2-, 3-, 4- og 5-gangen',
-        gen(g,id){const b=weightedPick([1,2,3,4,5],t=>errRate(g,id,`x${t}`)),a=rand(1,10);return{q:`${a} × ${b} = ?`,ans:a*b,type:'Ganging',hint:`${b}-gangen`,sub:`x${b}`};},fb:fbMul},
-      {id:'div25',icon:'➗',bg:'#fef9c3',name:'Deling med 2, 5, 10',desc:'Enkel divisjon',
-        gen(g,id){const b=weightedPick([2,5,10],t=>errRate(g,id,`d${t}`)),a=b*rand(1,10);return{q:`${a} ÷ ${b} = ?`,ans:a/b,type:'Divisjon',hint:`Del med ${b}`,sub:`d${b}`};},fb:fbDiv},
-      {id:'add100r',icon:'🔟',bg:'#ede9fe',name:'Runde tall til 1000',desc:'Legg sammen tiere og hundrere',
-        gen(g,id){const t=pick([10,20,50,100]);const a=t*rand(1,9),b=t*rand(1,9);return{q:`${a} + ${b} = ?`,ans:a+b,type:'Addisjon',hint:'Runde tall',sub:`r${t}`};},fb:fbAdd},
-    ]},
-  4:{c1:'#fa709a',c2:'#fee140',badge:'#fef3c7',tc:'#92400e',icon:'🍕',label:'Gangetabell 1–10, brøker',
-    topics:[
-      {id:'mul110',icon:'✖️',bg:'#fce7f3',name:'Gangetabellen 1–10',desc:'Hele gangetabellen',
-        gen(g,id){const b=weightedPick([1,2,3,4,5,6,7,8,9,10],t=>errRate(g,id,`x${t}`)),a=rand(1,10);return{q:`${a} × ${b} = ?`,ans:a*b,type:'Ganging',hint:`${b}-gangen`,sub:`x${b}`};},fb:fbMul},
-      {id:'div110',icon:'➗',bg:'#fef9c3',name:'Divisjon 1–10',desc:'Del med alle tall fra 1–10',
-        gen(g,id){const b=weightedPick([2,3,4,5,6,7,8,9,10],t=>errRate(g,id,`d${t}`)),a=b*rand(1,10);return{q:`${a} ÷ ${b} = ?`,ans:a/b,type:'Divisjon',sub:`d${b}`};},fb:fbDiv},
-      {id:'frac4',icon:'½',bg:'#ede9fe',name:'Enkle brøker',desc:'½, ⅓ og ¼ av et tall',
-        gen(g,id){const fs=[{s:'½',d:2},{s:'¼',d:4},{s:'⅓',d:3}];const f=weightedPick(fs,t=>errRate(g,id,t.s)),whole=f.d*rand(1,8);return{q:`${f.s} av ${whole} = ?`,ans:whole/f.d,type:'Brøk',hint:'Del på nevneren',sub:f.s};},fb:fbFrac},
-    ]},
-  5:{c1:'#f7971e',c2:'#ffd200',badge:'#fff3cd',tc:'#92400e',icon:'📊',label:'Desimaltall, prosent',
-    topics:[
-      {id:'dec5',icon:'🔢',bg:'#fff3cd',name:'Desimaltall',desc:'Addisjon og subtraksjon med desimaler',
-        gen(g,id){const op=pick(['+','-']);const a=r2(rand(10,99)/10),b=r2(rand(1,Math.floor(a*10)-1)/10);const ans=op==='+'?r2(a+b):r2(a-b);return{q:`${a} ${op==='+'?'+':'−'} ${b} = ?`,ans,type:'Desimaltall',hint:'Sett komma rett under komma',sub:op==='+'?'dec+':'dec-'};},fb:fbDec},
-      {id:'pct5',icon:'%',bg:'#fce7f3',name:'Enkel prosent',desc:'10%, 25%, 50% av et tall',
-        gen(g,id){const pcts=[10,20,25,50];const p=weightedPick(pcts,t=>errRate(g,id,`p${t}`));const base=rand(1,20)*10;return{q:`${p}% av ${base} = ?`,ans:r2(base*p/100),type:'Prosent',hint:`Del på ${100/p}`,sub:`p${p}`};},fb:fbPct},
-      {id:'round5',icon:'〰️',bg:'#ede9fe',name:'Avrunding',desc:'Rund av til nærmeste tier eller heltall',
-        gen(g,id){const t=pick(['heltall','tier']);if(t==='heltall'){const a=r2(rand(10,99)/10);const ans=Math.round(a);return{q:`Rund av ${a} til nærmeste heltall`,ans,type:'Avrunding',hint:'.5 og over rundes opp',sub:'rnd1'};}else{const a=rand(11,99);const ans=Math.round(a/10)*10;return{q:`Rund av ${a} til nærmeste tier`,ans,type:'Avrunding',hint:'Se på enerne',sub:'rnd10'};}},fb:fbRound},
-    ]},
-  6:{c1:'#4776e6',c2:'#8e54e9',badge:'#ede9fe',tc:'#4c1d95',icon:'📐',label:'Brøkregning, geometri, negative tall',
-    topics:[
-      {id:'frac6',icon:'½',bg:'#ede9fe',name:'Brøkregning',desc:'Legg til og trekk fra brøker',
-        gen(g,id){const ops=[{a:[1,2],b:[1,2]},{a:[1,3],b:[1,3]},{a:[1,4],b:[1,4]},{a:[1,2],b:[1,4]},{a:[2,3],b:[1,3]},{a:[3,4],b:[1,4]}];const o=pick(ops);const op=pick(['+','-']);let num,den;if(o.a[1]===o.b[1]){den=o.a[1];num=op==='+'?o.a[0]+o.b[0]:o.a[0]-o.b[0];}else{den=o.a[1]*o.b[1];const na=o.a[0]*o.b[1],nb=o.b[0]*o.a[1];num=op==='+'?na+nb:na-nb;}const g2=gcd(Math.abs(num),den);const ans=r2(num/den);return{q:`${o.a[0]}/${o.a[1]} ${op==='+'?'+':'−'} ${o.b[0]}/${o.b[1]} = ?`,ans,type:'Brøk',hint:'Finn fellesnevner',sub:`fr${op}`};},fb:fbFrOp},
-      {id:'geo6',icon:'📐',bg:'#dcfce7',name:'Areal og omkrets',desc:'Rektangler og kvadrater',
-        gen(g,id){const shape=pick(['rekt','kvadrat']);const t=pick(['areal','omkrets']);if(shape==='kvadrat'){const s=rand(2,12);const ans=t==='areal'?s*s:4*s;return{q:t==='areal'?`Areal av kvadrat med side ${s}`:`Omkrets av kvadrat med side ${s}`,ans,type:'Geometri',hint:t==='areal'?'side × side':'4 × side',sub:`geo_${t}`};}else{const w=rand(2,12),h=rand(2,12);const ans=t==='areal'?w*h:2*(w+h);return{q:t==='areal'?`Areal av rektangel ${w}×${h}`:`Omkrets av rektangel ${w}×${h}`,ans,type:'Geometri',hint:t==='areal'?'lengde × bredde':'2 × (l + b)',sub:`geo_${t}`};}},fb:fbGeo},
-      {id:'neg6',icon:'−',bg:'#fee2e2',name:'Negative tall',desc:'Regn med negative tall',
-        gen(g,id){const t=pick(['add','sub']);const a=rand(-9,9),b=rand(1,9);if(t==='add'){const ans=a+b;return{q:`${a} + ${b} = ?`,ans,type:'Negative tall',hint:'Flytt ${b} steg til høyre på tallinja',sub:'neg+'};}else{const ans=a-b;return{q:`${a} − ${b} = ?`,ans,type:'Negative tall',hint:'Flytt ${b} steg til venstre',sub:'neg-'};}},fb:fbNeg},
-    ]},
-  7:{c1:'#11998e',c2:'#38ef7d',badge:'#d1fae5',tc:'#065f46',icon:'🔣',label:'Algebra, forholdstall, statistikk',
-    topics:[
-      {id:'alg7',icon:'🔣',bg:'#d1fae5',name:'Enkel algebra',desc:'Finn den ukjente (x)',
-        gen(g,id){const t=pick(['xa','xb','xc']);if(t==='xa'){const x=rand(1,15),b=rand(1,10);return{q:`x + ${b} = ${x+b} → x = ?`,ans:x,type:'Algebra',hint:`Trekk ${b} fra begge sider`,sub:'alg+'};}else if(t==='xb'){const x=rand(2,15),b=rand(1,x-1);return{q:`x − ${b} = ${x-b} → x = ?`,ans:x,type:'Algebra',hint:`Legg til ${b} på begge sider`,sub:'alg-'};}else{const b=pick([2,3,4,5]),x=rand(1,12);return{q:`${b} × x = ${b*x} → x = ?`,ans:x,type:'Algebra',hint:`Del begge sider med ${b}`,sub:'algx'};}},fb:fbAlg},
-      {id:'ratio7',icon:'⚖️',bg:'#fef9c3',name:'Forholdstall',desc:'Finn den manglende verdien',
-        gen(g,id){const a=rand(1,6),b=rand(1,6),k=rand(2,5);const t=pick(['c','d']);if(t==='c'){return{q:`${a} : ${b} = ${a*k} : ?`,ans:b*k,type:'Forholdstall',hint:`Gang ${b} med samme tall som ${a}`,sub:'rat1'};}else{return{q:`${a} : ${b} = ? : ${b*k}`,ans:a*k,type:'Forholdstall',hint:`Gang ${a} med samme tall som ${b}`,sub:'rat2'};}},fb:fbRatio},
-      {id:'stat7',icon:'📊',bg:'#dbeafe',name:'Gjennomsnitt',desc:'Finn gjennomsnittet av en tallrekke',
-        gen(g,id){const n=rand(3,5);const vals=Array.from({length:n},()=>rand(1,20));const sum=vals.reduce((a,b)=>a+b,0);const ans=r2(sum/n);return{q:`Gjennomsnitt av: ${vals.join(', ')} = ?`,ans,type:'Statistikk',hint:`Summer alle og del på ${n}`,sub:'avg'};},fb:fbStat},
-    ]},
-  8:{c1:'#eb3349',c2:'#f45c43',badge:'#fee2e2',tc:'#991b1b',icon:'📈',label:'Likninger, potenser, prosent',
-    topics:[
-      {id:'eq8',icon:'=',bg:'#fee2e2',name:'Lineære likninger',desc:'Løs likninger med én ukjent',
-        gen(g,id){const t=pick(['ax','axb','axbc']);if(t==='ax'){const a=rand(2,9),x=rand(1,12);return{q:`${a}x = ${a*x} → x = ?`,ans:x,type:'Likning',hint:`Del begge sider med ${a}`,sub:'eq1'};}else if(t==='axb'){const a=rand(2,6),x=rand(1,10),b=rand(1,15);return{q:`${a}x + ${b} = ${a*x+b} → x = ?`,ans:x,type:'Likning',hint:`Trekk fra ${b}, del på ${a}`,sub:'eq2'};}else{const a=rand(2,5),x=rand(1,8),b=rand(1,10),c=rand(1,10);return{q:`${a}x + ${b} = ${c} + ${a*x+b-c}+${c} → x = ?`,ans:x,type:'Likning',hint:'Flytt tall til høyre, x til venstre',sub:'eq3'};}},fb:fbEq},
-      {id:'pow8',icon:'²',bg:'#fef9c3',name:'Potenser',desc:'Kvadrater, kuber og potenser',
-        gen(g,id){const t=pick(['sq','cub','pot']);if(t==='sq'){const b=rand(2,12);return{q:`${b}² = ?`,ans:b*b,type:'Potens',hint:`${b} × ${b}`,sub:'sq'};}else if(t==='cub'){const b=rand(2,6);return{q:`${b}³ = ?`,ans:b*b*b,type:'Potens',hint:`${b} × ${b} × ${b}`,sub:'cub'};}else{const b=rand(2,5),e=rand(2,4);return{q:`${b}^${e} = ?`,ans:Math.pow(b,e),type:'Potens',hint:`Gang ${b} med seg selv ${e} ganger`,sub:'pot'};}},fb:fbPow},
-      {id:'pct8',icon:'%',bg:'#ede9fe',name:'Prosentregning',desc:'Prosentvis endring og beregning',
-        gen(g,id){const t=pick(['of','inc','dec']);if(t==='of'){const p=pick([5,10,15,20,25,30,40,50,75]),base=rand(1,20)*20;return{q:`${p}% av ${base} = ?`,ans:r2(base*p/100),type:'Prosent',hint:`(${base} × ${p}) ÷ 100`,sub:`pct${p}`};}else if(t==='inc'){const p=pick([5,10,15,20,25,50]),base=rand(1,10)*100;return{q:`${base} økes med ${p}%. Nytt tall?`,ans:r2(base*(1+p/100)),type:'Prosent',hint:`${base} × ${1+p/100}`,sub:'pctinc'};}else{const p=pick([5,10,20,25,50]),base=rand(1,10)*100;return{q:`${base} reduseres med ${p}%. Nytt tall?`,ans:r2(base*(1-p/100)),type:'Prosent',hint:`${base} × ${1-p/100}`,sub:'pctdec'};}},fb:fbPct},
-    ]},
-  9:{c1:'#0f3460',c2:'#0b8793',badge:'#cffafe',tc:'#155e75',icon:'📐',label:'Pythagoras, statistikk, likninger',
-    topics:[
-      {id:'pyth9',icon:'📐',bg:'#cffafe',name:'Pytagoras',desc:'Finn den manglende siden i en rettvinklet trekant',
-        gen(g,id){const pytTriples=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15],[7,24,25]];const [a,b,c]=pick(pytTriples);const k=rand(1,3);const t=pick(['c','a','b']);if(t==='c')return{q:`a=${a*k}, b=${b*k} → c = ?`,ans:c*k,type:'Pytagoras',hint:'c² = a² + b²',sub:'pyth_c'};if(t==='a')return{q:`b=${b*k}, c=${c*k} → a = ?`,ans:a*k,type:'Pytagoras',hint:'a² = c² − b²',sub:'pyth_a'};return{q:`a=${a*k}, c=${c*k} → b = ?`,ans:b*k,type:'Pytagoras',hint:'b² = c² − a²',sub:'pyth_b'};},fb:fbPyth},
-      {id:'stat9',icon:'📊',bg:'#dcfce7',name:'Statistikk',desc:'Median, typetall og variasjonsbredde',
-        gen(g,id){const t=pick(['median','mode','range']);const vals=Array.from({length:rand(4,7)},()=>rand(1,15));if(t==='median'){const s=[...vals].sort((a,b)=>a-b);const mid=Math.floor(s.length/2);const ans=s.length%2===0?r2((s[mid-1]+s[mid])/2):s[mid];return{q:`Median av: ${vals.join(', ')} = ?`,ans,type:'Statistikk',hint:'Sorter, finn midterste',sub:'median'};}else if(t==='mode'){const freq={};vals.forEach(v=>freq[v]=(freq[v]||0)+1);const maxF=Math.max(...Object.values(freq));const modes=Object.keys(freq).filter(k=>freq[k]===maxF).map(Number);return{q:`Typetall i: ${vals.join(', ')} = ?`,ans:modes[0],type:'Statistikk',hint:'Tallet som forekommer flest ganger',sub:'mode'};}else{const mn=Math.min(...vals),mx=Math.max(...vals);return{q:`Variasjonsbredde av: ${vals.join(', ')} = ?`,ans:mx-mn,type:'Statistikk',hint:'Største − minste',sub:'range'};}},fb:fbStat},
-      {id:'alg9',icon:'🔣',bg:'#ede9fe',name:'Avansert algebra',desc:'Løs sammensatte likninger',
-        gen(g,id){const t=pick(['sys','quad_simple','expand']);if(t==='sys'){const x=rand(1,8),y=rand(1,8);return{q:`x + y = ${x+y}, x − y = ${x-y} → x = ?`,ans:x,type:'Algebra',hint:'Legg likningene sammen',sub:'sys'};}else if(t==='quad_simple'){const x=rand(1,8);return{q:`x² = ${x*x} → x = ?`,ans:x,type:'Algebra',hint:'Ta kvadratroten',sub:'quad'};}else{const a=rand(2,6),b=rand(1,5),c=rand(1,5);return{q:`${a}(x + ${b}) = ${a*c+a*b} → x = ?`,ans:c,type:'Algebra',hint:'Distribuer, løs for x',sub:'expand'};}},fb:fbAlg},
-    ]},
-  10:{c1:'#f7b733',c2:'#fc4a1a',badge:'#fff3cd',tc:'#92400e',icon:'🔭',label:'Funksjoner, trigonometri, sannsynlighet',
-    topics:[
-      {id:'func10',icon:'f(x)',bg:'#fff3cd',name:'Funksjoner',desc:'Beregn funksjonsverdier',
-        gen(g,id){const t=pick(['lin','quad','eval']);if(t==='lin'){const a=rand(1,5),b=rand(0,10),x=rand(1,8);return{q:`f(x) = ${a}x + ${b}, f(${x}) = ?`,ans:a*x+b,type:'Funksjon',hint:`Sett inn x = ${x}`,sub:'func_lin'};}else if(t==='quad'){const a=rand(1,3),x=rand(1,5);return{q:`f(x) = ${a}x², f(${x}) = ?`,ans:a*x*x,type:'Funksjon',hint:`${a} × ${x}² = ${a} × ${x*x}`,sub:'func_quad'};}else{const a=rand(1,4),b=rand(1,6),x=rand(1,6);return{q:`g(x) = ${a}x − ${b}, g(${x}) = ?`,ans:a*x-b,type:'Funksjon',hint:`Sett inn x = ${x}`,sub:'func_lin2'};}},fb:fbFunc},
-      {id:'trig10',icon:'sin',bg:'#cffafe',name:'Trigonometri',desc:'sin, cos og tan for vanlige vinkler',
-        gen(g,id){const known={0:{sin:0,cos:1,tan:0},30:{sin:0.5,cos:0.87,tan:0.58},45:{sin:0.71,cos:0.71,tan:1},60:{sin:0.87,cos:0.5,tan:1.73},90:{sin:1,cos:0,tan:'∞'}};const deg=pick([0,30,45,60]);const fn=pick(['sin','cos','tan']);const ans=known[deg][fn];return{q:`${fn}(${deg}°) = ?`,ans:typeof ans==='number'?ans:999,type:'Trigonometri',hint:`Tenk på enhetssirkelen`,sub:`trig_${fn}`};},fb:fbTrig},
-      {id:'prob10',icon:'🎲',bg:'#fce7f3',name:'Sannsynlighet',desc:'Beregn enkel sannsynlighet',
-        gen(g,id){const t=pick(['dice','cards','coin']);if(t==='dice'){const f=rand(1,5),d=6;return{q:`Kast terning: P(tall ≤ ${f}) = ? (brøk)`,ans:r2(f/d),type:'Sannsynlighet',hint:`${f} gunstige utfall av ${d}`,sub:'prob_dice'};}else if(t==='coin'){const n=rand(1,3);const pn=r2(1/Math.pow(2,n));return{q:`Mynt kastes ${n} gang${n>1?'er':''}. P(${n>1?'alle':'én'} kron${n>1?'er':''}) = ?`,ans:pn,type:'Sannsynlighet',hint:`(1/2)^${n}`,sub:'prob_coin'};}else{const tot=rand(4,10),fav=rand(1,tot-1);return{q:`Pose med ${tot} kuler, ${fav} er røde. P(rød) = ?`,ans:r2(fav/tot),type:'Sannsynlighet',hint:`${fav} / ${tot}`,sub:'prob_bag'};}},fb:fbProb},
-    ]},
-};
-
-function gcd(a,b){return b===0?a:gcd(b,a%b);}
-
-// =
-// FEEDBACK
-// =
-function fbAdd(q,g,c){const p=q.replace(' = ?','').split(/ \+ /);if(p.length!==2)return dflt(g,c);const[a,b]=[+p[0],+p[1]];if(g===a-b||g===a*b)return`Du regnet ${g}, men her skal du <strong>legge sammen</strong>! ${a} + ${b}: tell ${b} videre fra ${a} → svaret er <strong>${c}</strong>.`;if(Math.abs(g-c)===1)return`Nesten! Bare ett tall unna. ${a} + ${b} = <strong>${c}</strong>. Tell en gang til!`;return`Du svarte ${g}, men riktig er <strong>${c}</strong>. Start på ${a} og tell ${b} fremover.`;}
-function fbSub(q,g,c){const p=q.replace(' = ?','').split(' − ');if(p.length!==2)return dflt(g,c);const[a,b]=[+p[0],+p[1]];if(g===a+b)return`Du la dem <em>sammen</em>! ${a} − ${b} betyr at vi <strong>fjerner</strong> ${b} fra ${a}. Svaret er <strong>${c}</strong>.`;if(Math.abs(g-c)===1)return`Veldig nær! Du svarte ${g}, riktig er <strong>${c}</strong>. Tell ned ${b} fra ${a}.`;return`Du svarte ${g}. Riktig er <strong>${c}</strong>. ${a} minus ${b} = ${c}.`;}
-function fbMul(q,g,c){const p=q.replace(' = ?','').split(' × ');if(p.length!==2)return dflt(g,c);const[a,b]=[+p[0],+p[1]];if(g===a+b)return`Du la dem <em>sammen</em> i stedet for å gange! ${a} × ${b} betyr ${a} lagt til ${b} ganger. Svaret er <strong>${c}</strong>.`;return`Du svarte ${g}, men ${a} × ${b} = <strong>${c}</strong>. ${b}-gangen: ${Array.from({length:10},(_,i)=>(i+1)*b).join(', ')}.`;}
-function fbDiv(q,g,c){const p=q.replace(' = ?','').split(' ÷ ');if(p.length!==2)return dflt(g,c);const[a,b]=[+p[0],+p[1]];if(g===a*b)return`Du <em>ganget</em> i stedet for å dele! ${a} ÷ ${b}: "Hva × ${b} = ${a}?" Svaret er <strong>${c}</strong>.`;return`Du svarte ${g}. Tenk: ${b} × <strong>${c}</strong> = ${a}. Prøv ${b}-gangen!`;}
-function fbFrac(q,g,c){const m=q.match(/av (\d+)/);if(!m)return dflt(g,c);const w=+m[1],d=Math.round(w/c);return`Du svarte ${g}. Vi deler ${w} på ${d}: ${w} ÷ ${d} = <strong>${c}</strong>. Tenk pizza — delt i ${d} like deler! 🍕`;}
-function fbDec(q,g,c){return`Du svarte ${g}. Sett kommaene rett under hverandre når du regner, så det er lettere å se. Svaret er <strong>${c}</strong>. Bruk gjerne kladdebok!`;}
-function fbPct(q,g,c){const m=q.match(/(\d+)% av (\d+)/);if(!m)return dflt(g,c);const[,p,b]=[...m].map(Number);return`Du svarte ${g}. ${p}% av ${b}: del ${b} på ${100/p} → <strong>${c}</strong>. Husk: 10% = del på 10, 50% = del på 2!`;}
-function fbRound(q,g,c){return`Du svarte ${g}. Riktig svar er <strong>${c}</strong>. Husk: ser du 5 eller mer i neste siffer → rund opp. Under 5 → rund ned.`;}
-function fbFrOp(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Finn fellesnevner (felles bunntal), regn ut tellerne, og forenkle svaret.`;}
-function fbGeo(q,g,c){if(q.includes('Areal'))return`Du svarte ${g}. Areal = lengde × bredde. Riktig er <strong>${c}</strong>. Husk å bruke kladdebok!`;return`Du svarte ${g}. Omkrets = summen av alle sider. Riktig er <strong>${c}</strong>.`;}
-function fbNeg(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Negative tall: tenk på tallinja — pluss beveger deg til høyre, minus til venstre.`;}
-function fbAlg(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Husk: det du gjør på den ene siden av = må du gjøre på den andre siden også!`;}
-function fbRatio(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Forholdstall: multipliser begge ledd med samme tall for å holde forholdet likt.`;}
-function fbStat(q,g,c){if(q.includes('Median'))return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Sorter tallene, finn midtpunktet. Er det partall verdier tar du gjennomsnittet av de to midterste.`;if(q.includes('Typetall'))return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Typetallet er det tallet som forekommer flest ganger.`;if(q.includes('Gjennomsnitt'))return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Summer alle tall og del på antall: ${q.match(/[\d., ]+(?= =)/)?.[0]?.trim()}.`;return dflt(g,c);}
-function fbEq(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Strategi: flytt tall (ikke x) til høyre side, x til venstre. Gjør samme operasjon på begge sider!`;}
-function fbPow(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Potens = gang basen med seg selv det antall ganger eksponenten sier. Bruk kladdebok!`;}
-function fbPyth(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Pytagoras: a² + b² = c² i en rettvinklet trekant. Bruk kladdebok til utregningen!`;}
-function fbFunc(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Sett inn x-verdien i funksjonsuttrykket og regn steg for steg. Bruk kladdebok!`;}
-function fbTrig(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Husk de vanlige verdiene: sin(30°)=0.5, cos(60°)=0.5, sin(45°)=cos(45°)≈0.71, sin(90°)=1.`;}
-function fbProb(q,g,c){return`Du svarte ${g}. Riktig er <strong>${c}</strong>. Sannsynlighet = gunstige utfall ÷ alle mulige utfall. Svaret er alltid mellom 0 og 1.`;}
-function dflt(g,c){return`Du svarte ${g}, men riktig svar er <strong>${c}</strong>. Prøv igjen! 💪`;}
-
-const CORRECT=[
-  {t:'🎉 Riktig!',m:'Kjempebra jobbet!'},
-  {t:'✅ Ja!',m:'Du er flink!'},
-  {t:'🌟 Strålende!',m:'Det satt som et skudd!'},
-  {t:'🚀 Perfekt!',m:'Du er en mattehelt!'},
-  {t:'👏 Supert!',m:'Fortsett slik!'},
-  {t:'🏆 Bingo!',m:'Det hadde du full kontroll på!'},
-  {t:'💡 Riktig!',m:'Hjernen jobber bra!'},
-];
-
-// =
-// STATE + XP
-// =
-let S={grade:null,topicId:null,topic:null,gdata:null,questions:[],idx:0,score:0,streak:0,current:null,answered:false};
-const TQ=10;
-let prog=JSON.parse(localStorage.getItem('mh_prog2')||'{"xp":0,"coins":0}');
-function saveProg(){localStorage.setItem('mh_prog2',JSON.stringify(prog));}
-function lvlFor(l){return l*60;}
-function curLvl(){let l=1,x=prog.xp;while(x>=lvlFor(l)){x-=lvlFor(l);l++;}return l;}
-function xpInLvl(){let l=1,x=prog.xp;while(x>=lvlFor(l)){x-=lvlFor(l);l++;}return x;}
-function renderXP(){const l=curLvl(),pct=Math.round(xpInLvl()/lvlFor(l)*100);document.getElementById('xp-lvl').textContent=`⭐${l}`;document.getElementById('xp-fill').style.width=pct+'%';document.getElementById('coin-count').textContent=prog.coins;}
-
-// =
-// HELPERS
-// =
-function showScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const el=document.getElementById('screen-'+n);el.classList.add('active');el.scrollTop=0;window.scrollTo(0,0);}
-function setMascot(type,bubble){const m=document.getElementById('mascot'),sb=document.getElementById('speech');const faces={idle:'🦸',happy:'🥳',sad:'🤔',great:'🏆'};m.textContent=faces[type]||'🦸';m.className='mascot '+(type!=='idle'?type:'');if(bubble){sb.textContent=bubble;sb.classList.add('show');clearTimeout(m._t);m._t=setTimeout(()=>sb.classList.remove('show'),2500);}}
-let ac;function ga(){if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();return ac;}
-function tone(f,d,t='sine',v=.25){try{const c=ga(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch(e){}}
-function sndOk(){tone(523,.09);setTimeout(()=>tone(659,.09),75);setTimeout(()=>tone(784,.18),150);}
-function sndBad(){tone(300,.13,'sawtooth',.17);setTimeout(()=>tone(200,.17,'sawtooth',.17),130);}
-function sndLvl(){[523,587,659,698,784,880].forEach((f,i)=>setTimeout(()=>tone(f,.12,'sine',.2),i*70));}
-function launch(n=50){const w=document.getElementById('particles'),cols=['#ffd93d','#06d6a0','#118ab2','#ef476f','#a78bfa','#f093fb'];w.innerHTML='';for(let i=0;i<n;i++){const el=document.createElement('div');el.className='particle';el.style.cssText=`left:${Math.random()*100}vw;top:-10px;width:${7+Math.random()*9}px;height:${7+Math.random()*9}px;background:${pick(cols)};border-radius:${Math.random()>.5?'50%':'4px'};animation-delay:${Math.random()*.6}s;animation-duration:${1.3+Math.random()}s;`;w.appendChild(el);}setTimeout(()=>w.innerHTML='',3e3);}
-
-// =
-// BUILD GRADE PICKER
-// =
-function buildGradePicker(){
-  const barnesk=[1,2,3,4,5,6,7];
-  const ungdomsk=[8,9,10];
-  const gb=document.getElementById('grid-barnesk');
-  const gu=document.getElementById('grid-ungdomsk');
-  barnesk.forEach(g=>gb.appendChild(makeGradeCard(g)));
-  ungdomsk.forEach(g=>gu.appendChild(makeGradeCard(g)));
-}
-function makeGradeCard(g){
-  const d=CUR[g];
-  const el=document.createElement('div');
-  el.className='grade-card';
-  el.style.cssText=`--c1:${d.c1};--c2:${d.c2}`;
-  el.innerHTML=`<div class="gc-icon">${d.icon}</div><div class="gc-num">${g}.</div><div class="gc-lbl">klasse</div><div class="gc-topics">${d.label}</div>`;
-  el.onclick=()=>selectGrade(g);
-  return el;
-}
-
-function selectGrade(g){
-  S.grade=g;
-  const gd=CUR[g];
-  const list=document.getElementById('topic-list');
-  document.getElementById('topic-screen-title').textContent=`${g}. klasse — velg tema`;
-  list.innerHTML='';
-  gd.topics.forEach(t=>{
-    const best=getBest(g,t.id);
-    const hasWeak=checkWeak(g,t.id);
-    const btn=document.createElement('button');
-    btn.className='topic-btn';
-    const hasGuide=!!(LEARN_GUIDES[t.id]&&LEARN_GUIDES[t.id].length);
-    btn.innerHTML=`<div class="tb-icon" style="background:${t.bg||'#ede9fe'}">${t.icon}</div><div><div class="tb-name">${t.name}${hasWeak?'<span class="adapt-tag">🎯 Tilpasset</span>':''}</div><div class="tb-desc">${t.desc}</div>${best!==null?`<div style="font-size:.7rem;color:#059669;font-weight:800;margin-top:2px">Rekord: ${best}/10 ${'⭐'.repeat(Math.ceil(best/10*3))}</div>`:''}</div>${hasGuide?`<button class="topic-learn-btn" onclick="event.stopPropagation();showLearn(${g},'${t.id}')">📖 Lær</button>`:''}`;
-    btn.onclick=()=>startGame(g,t.id);
-    list.appendChild(btn);
-  });
-  showScreen('topics');
-}
-function getBest(g,id){const s=JSON.parse(localStorage.getItem(`hs_${g}_${id}`)||'[]');return s.length?s[0].score:null;}
-function checkWeak(g,id){for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(`adapt_${g}_${id}_`)){const v=JSON.parse(localStorage.getItem(k));if(v.a>=3&&v.e/v.a>.3)return true;}}return false;}
-
-// =
-// GAME
-// =
-function startGame(g,topicId){
-  const gd=CUR[g],topic=gd.topics.find(t=>t.id===topicId);
-  S={grade:g,topicId,topic,gdata:gd,questions:[],idx:0,score:0,streak:0,current:null,answered:false};
-  const qc=document.getElementById('q-card');
-  qc.style.setProperty('--qc1',gd.c1); qc.style.setProperty('--qc2',gd.c2);
-  qc.style.setProperty('--qbg',gd.badge); qc.style.setProperty('--qtxt',gd.tc);
-  buildNumpad(g);
-  setMascot('idle','Hei! Klar for matte? 😄');
-  loadQuestion(); renderXP(); showScreen('game');
-}
-function retrySession(){startGame(S.grade,S.topicId);}
-
-function buildNumpad(g){
-  const pad=document.getElementById('numpad'); pad.innerHTML='';
-  // For grades 5+ add decimal point button
-  const showDot=g>=5;
-  const keys=showDot?[7,8,9,'del',4,5,6,'neg',1,2,3,0,'.',null]:[7,8,9,'del',4,5,6,'neg',1,2,3,0];
-  keys.forEach(v=>{
-    if(v===null){const sp=document.createElement('div');pad.appendChild(sp);return;}
-    const btn=document.createElement('button');
-    if(v==='del'){btn.textContent='⌫';btn.className='n-del';btn.onclick=()=>{if(!S.answered){const i=document.getElementById('ans-input');i.value=i.value.slice(0,-1);}};}
-    else if(v==='neg'){btn.textContent='±';btn.className='n-neg';btn.onclick=()=>{if(!S.answered){const i=document.getElementById('ans-input');i.value=i.value.startsWith('-')?i.value.slice(1):'-'+i.value;}};}
-    else if(v==='.'){btn.textContent=',';btn.className='n-dot';btn.onclick=()=>{if(!S.answered){const i=document.getElementById('ans-input');if(!i.value.includes('.')){i.value+='.';}}};}
-    else{btn.textContent=v;btn.onclick=()=>{if(!S.answered)document.getElementById('ans-input').value+=v;};}
-    pad.appendChild(btn);
-  });
-}
-
-function loadQuestion(){
-  const qd=S.topic.gen(S.grade,S.topicId);
-  S.current=qd; S.answered=false;
-  document.getElementById('q-cat').textContent=qd.type||'';
-  const qt=document.getElementById('q-txt');
-  qt.textContent=qd.q; qt.style.animation='none'; void qt.offsetWidth; qt.style.animation='';
-  document.getElementById('q-hint').textContent=qd.hint||'';
-  const inp=document.getElementById('ans-input');
-  inp.value=''; inp.className='ans-input'; inp.disabled=false; inp.focus();
-  document.getElementById('sub-btn').disabled=false;
-  document.getElementById('fb-box').className='fb-box';
-  document.getElementById('fb-box').innerHTML='';
-  document.getElementById('next-btn').style.display='none';
-  document.getElementById('numpad').style.display='grid';
-  updateProg();
-}
-function updateProg(){
-  document.getElementById('prog-fill').style.width=(S.idx/TQ*100)+'%';
-  document.getElementById('prog-label').textContent=`Spørsmål ${Math.min(S.idx+1,TQ)} av ${TQ}`;
-  document.getElementById('score-label').textContent=`${S.score} riktige`;
-  document.getElementById('streak-num').textContent=S.streak;
-}
-
-document.getElementById('ans-input').addEventListener('keydown',e=>{if(e.key==='Enter'){if(S.answered)handleNext();else submitAnswer();}});
-
-function submitAnswer(){
-  const raw=document.getElementById('ans-input').value.trim();
-  if(raw==='')return;
-  const given=parseFloat(raw.replace(',','.')),correct=S.current.ans;
-  const inp=document.getElementById('ans-input'),fb=document.getElementById('fb-box');
-  S.answered=true; S.idx++;
-  inp.disabled=true; document.getElementById('sub-btn').disabled=true;
-  const ok=Math.abs(given-correct)<0.01;
-  S.questions.push({q:S.current.q,given,correct,ok,sub:S.current.sub||'?'});
-  recordAttempt(S.grade,S.topicId,S.current.sub||'_',ok);
-  if(ok){
-    S.score++; S.streak++;
-    inp.className='ans-input correct';
-    fb.className='fb-box correct';
-    const ph=pick(CORRECT);
-    fb.innerHTML=`<div class="fb-title">${ph.t}</div>${ph.m}`;
-    sndOk(); launch(S.streak>=3?75:38);
-    setMascot(S.streak>=5?'great':'happy',S.streak>=3?`${S.streak} på rad! 🔥`:pick(['Wohoo! 🎉','Flink deg! ⭐','Nydelig! 🌟']));
-    const xpG=10+(S.streak>=3?5:0);
-    const oldL=curLvl(); prog.xp+=xpG; prog.coins+=1; saveProg(); renderXP();
-    if(curLvl()>oldL){sndLvl();launch(90);}
-  }else{
-    S.streak=0;
-    inp.className='ans-input wrong';
-    fb.className='fb-box wrong';
-    fb.innerHTML=`<div class="fb-title">Ikke helt riktig 🤔</div>${S.topic.fb(S.current.q,given,correct)}`;
-    sndBad(); setMascot('sad','Nesten! Prøv igjen 💪');
-  }
-  document.getElementById('numpad').style.display='none';
-  updateProg();
-  const nb=document.getElementById('next-btn');
-  nb.textContent=S.idx>=TQ?'Se resultat 🏁':'Neste spørsmål →';
-  nb.style.display='block';
-}
-function handleNext(){if(S.idx>=TQ)showResults();else loadQuestion();}
-
-// =
-// RESULTS
-// =
-function showResults(){
-  const pct=S.score/TQ;
-  let mascot,title,sub;
-  if(pct===1){mascot='🏆';title='Perfekt! 10 av 10!';sub='Du er en ekte mattehelt!';}
-  else if(pct>=.8){mascot='🌟';title='Kjempebra!';sub='Nesten perfekt — du er flink!';}
-  else if(pct>=.6){mascot='😊';title='Bra jobbet!';sub='Øv litt mer, du klarer det!';}
-  else if(pct>=.4){mascot='💪';title='Ikke gi opp!';sub='Prøv igjen — du lærer av hvert forsøk!';}
-  else{mascot='📚';title='Øv og prøv igjen!';sub='Det er slik vi lærer — hold ut!';}
-  const stars=Math.ceil(pct*3);
-  document.getElementById('res-mascot').textContent=mascot;
-  document.getElementById('res-title').textContent=title;
-  document.getElementById('res-sub').textContent=sub;
-  document.getElementById('res-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
-  document.getElementById('res-num').textContent=S.score;
-  document.getElementById('res-ring').style.background=`conic-gradient(#06d6a0 ${Math.round(pct*360)}deg,#e2e8f0 0)`;
-  buildAdaptSec();
-  const rows=document.getElementById('res-rows'); rows.innerHTML='';
-  S.questions.forEach(q=>{const d=document.createElement('div');d.className='rb-row '+(q.ok?'ok':'bad');d.innerHTML=`<span class="rb-q">${q.q.replace(' = ?','').replace(' → x = ?','')}</span><span class="rb-a ${q.ok?'ok':'bad'}">${q.ok?`= ${q.correct} ✓`:`${q.given} ✗ (${q.correct})`}</span>`;rows.appendChild(d);});
-  saveHS(); renderHS();
-  showScreen('results');
-  if(pct>=.8)launch(90);
-}
-function buildAdaptSec(){
-  const sec=document.getElementById('adapt-sec');
-  const errs={};
-  S.questions.forEach(q=>{if(!q.ok)errs[q.sub]=(errs[q.sub]||0)+1;});
-  const subs=Object.entries(errs).sort((a,b)=>b[1]-a[1]);
-  if(!subs.length){sec.innerHTML='<div style="font-family:Fredoka One,cursive;font-size:.9rem;color:#059669">🎯 Ingen svake punkter denne runden — fantastisk!</div>';return;}
-  let h='<div class="adapt-title">🎯 Disse typene øves ekstra neste gang</div>';
-  subs.slice(0,3).forEach(([sub,n])=>{const tot=S.questions.filter(q=>q.sub===sub).length;const p=Math.round(n/tot*100);h+=`<div class="adapt-row"><span style="min-width:90px;font-size:.76rem">${fmtSub(sub)}</span><div class="adapt-bar-wrap"><div class="adapt-bar" style="width:${p}%;background:${p>60?'#ef476f':p>30?'#f59e0b':'#06d6a0'}"></div></div><span style="min-width:38px;text-align:right;font-size:.75rem">${n} feil</span></div>`;});
-  sec.innerHTML=h;
-}
-function fmtSub(s){if(s.startsWith('x'))return`${s.slice(1)}-gangen`;if(s.startsWith('d'))return`Del med ${s.slice(1)}`;if(s==='½'||s==='¼'||s==='⅓')return`Brøk ${s}`;if(s==='alg+')return'Algebra +';if(s==='alg-')return'Algebra −';if(s.startsWith('pct'))return`Prosent ${s.slice(3)}%`;if(s==='eq1')return'Likning ax=b';if(s==='eq2')return'Likning ax+b=c';if(s==='sq')return'Kvadrat n²';if(s==='cub')return'Kube n³';if(s.startsWith('geo'))return'Geometri';if(s==='median')return'Median';if(s==='avg')return'Gjennomsnitt';if(s.startsWith('trig'))return`Trig ${s.split('_')[1]}`;if(s.startsWith('func'))return'Funksjon';if(s.startsWith('prob'))return'Sannsynlighet';if(s==='pyth_c')return'Pytagoras c';return s;}
-function saveHS(){const k=`hs_${S.grade}_${S.topicId}`;const p=JSON.parse(localStorage.getItem(k)||'[]');p.push({score:S.score,date:new Date().toLocaleDateString('no-NO')});p.sort((a,b)=>b.score-a.score);localStorage.setItem(k,JSON.stringify(p.slice(0,5)));}
-function renderHS(){const k=`hs_${S.grade}_${S.topicId}`;const s=JSON.parse(localStorage.getItem(k)||'[]');const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];document.getElementById('hs-rows').innerHTML=s.length?s.map((s,i)=>`<div class="hs-row"><span>${medals[i]} ${s.date}</span><span class="hs-score">${s.score}/10 ${'⭐'.repeat(Math.ceil(s.score/10*3))}</span></div>`).join(''):'Ingen rekorder ennå — spill for å sette rekord!';}
-
-// =
-// PARENT REPORT
-// =
-function showParentReport(){
-  const pct=S.score/TQ,stars=Math.ceil(pct*3);
-  document.getElementById('pr-date').textContent=new Date().toLocaleDateString('no-NO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('pr-topic-name').textContent=S.topic.name;
-  document.getElementById('pr-grade-name').textContent=`${S.grade}. klasse`;
-  document.getElementById('pr-correct').textContent=S.score;
-  document.getElementById('pr-wrong').textContent=TQ-S.score;
-  document.getElementById('pr-pct').textContent=Math.round(pct*100)+'%';
-  document.getElementById('pr-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
-  const ok=S.questions.filter(q=>q.ok),bad=S.questions.filter(q=>!q.ok);
-  const strengths=document.getElementById('pr-strengths');
-  strengths.innerHTML=ok.length?`<div class="pr-strength">✅ Svarte riktig på ${ok.length} av ${TQ} oppgaver i "${S.topic.name}"</div>${S.streak>0?`<div class="pr-strength">🔥 Beste rekke: ${S.streak} riktige på rad</div>`:''}`:
-    '<div class="pr-weakness">Ingen riktige svar denne runden</div>';
-  const subE={};bad.forEach(q=>subE[q.sub]=(subE[q.sub]||0)+1);
-  document.getElementById('pr-weaknesses').innerHTML=Object.entries(subE).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`<div class="pr-weakness">⚠️ ${fmtSub(s)}: ${n} feil — anbefaler ekstra øving</div>`).join('')||'<div class="pr-strength">🌟 Ingen svake punkter!</div>';
-  document.getElementById('pr-breakdown').innerHTML=S.questions.map((q,i)=>`<div class="pr-qrow"><span>${i+1}. ${q.q.replace(' = ?','').replace(' → x = ?','')}</span><span style="color:${q.ok?'#059669':'#dc2626'};font-weight:800">${q.ok?`= ${q.correct} ✓`:`${q.given} ✗ (fasit: ${q.correct})`}</span></div>`).join('');
-  const rec=document.getElementById('pr-rec');
-  if(pct===1)rec.innerHTML='Perfekt resultat! Barnet ditt mestrer dette temaet utmerket. Prøv neste klassetrinn eller et vanskeligere tema for å holde fremgangen oppe.';
-  else if(pct>=.8)rec.innerHTML='Veldig bra resultat! Anbefaler noen runder til for å befeste kunnskapen, deretter gå videre.';
-  else if(pct>=.6){const tw=bad.length?fmtSub(bad[0].sub):'noen oppgaver';rec.innerHTML=`Greit resultat. Spillet vil gi ekstra trening på <strong>${tw}</strong> neste runde automatisk. Anbefaler 10 min daglig øving.`;}
-  else rec.innerHTML='Barnet trenger mer øving på dette temaet. Spillet er satt opp til å fokusere på de vanskeligste oppgavetypene. Ti minutter om dagen gir stor fremgang!';
-  showScreen('parent');
-}
-
-// =
-// LEARN GUIDES
-// =
-function dots(n,color,delay=0){return Array.from({length:n},(_,i)=>`<div class="dot" style="background:${color};animation-delay:${delay+i*40}ms"></div>`).join('');}
-function dotGroup(n,color,delay=0){return `<div class="dot-group">${dots(n,color,delay)}</div>`;}
-function numLine(from,to,jump,start){
-  const total=to-from, w=280;
-  let html=`<div class="nline-wrap"><div class="nline" style="min-width:${w+20}px">`;
-  html+=`<div class="nline-track"></div>`;
-  for(let i=from;i<=to;i++){const x=10+(i-from)/total*w;html+=`<div class="nline-tick" style="left:${x}px"></div><div class="nline-num" style="left:${x}px">${i}</div>`;}
-  html+=`<div class="nline-dot" style="left:${10+(start-from)/total*w}px"></div>`;
-  if(jump>0){const x1=10+(start-from)/total*w,x2=10+(start+jump-from)/total*w;html+=`<div class="nline-arrow" style="left:${x1}px;--w:${x2-x1}px"></div>`;}
-  html+=`</div></div>`;return html;
-}
-function fracBar(num,den,color='#667eea'){
-  return `<div class="frac-bar">${Array.from({length:den},(_,i)=>`<div class="frac-seg ${i<num?'filled':'empty'}" style="background:${color}"></div>`).join('')}</div>
-  <div style="text-align:center;margin-top:6px;font-family:'Fredoka One',cursive;font-size:1rem;color:var(--text)">${num}/${den} er uthevet</div>`;
-}
-function mulGrid(rows,cols,color='#667eea'){
-  let h=`<div class="mul-grid" style="grid-template-columns:repeat(${cols},28px)">`;
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)h+=`<div class="mul-cell" style="background:${color};color:#fff;animation-delay:${(r*cols+c)*30}ms">${r*cols+c+1<=rows*cols?'●':''}</div>`;
-  return h+'</div><div style="text-align:center;margin-top:8px;font-family:Fredoka One,cursive;font-size:.9rem;color:var(--muted)">${rows} rader × ${cols} kolonner = ${rows*cols}</div>';
-}
-function mulGridLabel(rows,cols,color='#667eea'){
-  let h=`<div class="mul-grid" style="grid-template-columns:repeat(${cols},28px)">`;
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)h+=`<div class="mul-cell" style="background:${color};color:#fff;animation-delay:${(r*cols+c)*30}ms">●</div>`;
-  return h+`</div><div style="text-align:center;margin-top:8px;font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--muted)">${rows} rader × ${cols} = ${rows*cols} totalt</div>`;
-}
-function workedEx(steps){
-  return `<div class="worked">${steps.map(([txt,ann,hl],i)=>`<div class="step ${hl?'hl':''}" style="animation-delay:${i*200}ms"><span>${txt}</span>${ann?`<span class="ann">${ann}</span>`:''}</div>`).join('')}</div>`;
-}
-function eqBox(txt){return `<div class="eq-box">${txt}</div>`;}
-
-const LEARN_GUIDES = {
-  // ── Gr.1 ──────────────────────────────────────────
-  add10:[
-    {icon:'➕',title:'Hva er addisjon?',text:'Addisjon betyr å <strong>slå sammen</strong> to grupper til én stor gruppe. Vi bruker plusstegnet +.',
-     visual:`<div class="dot-groups">${dotGroup(3,'#667eea')} <span class="dot-op">+</span> ${dotGroup(2,'#f093fb')} <span class="dot-eq">=</span> ${dotGroup(5,'#06d6a0',200)}</div><div style="margin-top:10px;font-family:'Fredoka One',cursive;font-size:1.1rem">3 + 2 = 5</div>`},
-    {icon:'📏',title:'Bruk tallinja',text:'Start på det første tallet og <strong>hopp fremover</strong> like mange steg som det andre tallet.',
-     visual:numLine(0,10,3,4)+`<div style="text-align:center;margin-top:8px;font-family:'Fredoka One',cursive">4 + 3: Start på 4, hopp 3 → <span style="color:var(--bg1)">7</span></div>`},
-    {icon:'🤲',title:'Tell videre',text:'En smart måte: start alltid på det <strong>største tallet</strong> og tell videre med det minste.',
-     visual:workedEx([['5 + 3 = ?','',false],['Start på 5...','(det største)',true],['6, 7, 8','(tell 3 videre)',true],['Svar: 8 ✓','',false]])},
-    {icon:'🎯',title:'Eksempel steg for steg',text:'La oss regne ut 6 + 4 sammen.',
-     visual:workedEx([['6 + 4 = ?','',false],['Begynn på 6','',false],['7... 8... 9... 10','(teller 4 fremover)',true],['6 + 4 = 10 ✓','',false]])}
-  ],
-  sub10:[
-    {icon:'➖',title:'Hva er subtraksjon?',text:'Subtraksjon betyr å <strong>ta bort</strong> noe fra en gruppe. Vi bruker minustegnet −.',
-     visual:`<div class="dot-groups">${dotGroup(5,'#667eea')} <span class="dot-op">−</span> <span style="font-size:1.1rem;font-weight:800;color:var(--red)">2</span> <span class="dot-eq">=</span> ${dotGroup(3,'#667eea',200)}</div><div style="margin-top:10px;font-family:'Fredoka One',cursive;font-size:1.1rem">5 − 2 = 3</div>`},
-    {icon:'📏',title:'Tell bakover på tallinja',text:'Start på det store tallet og <strong>hopp bakover</strong> like mange steg.',
-     visual:numLine(0,10,-3,7)+`<div style="text-align:center;margin-top:8px;font-family:'Fredoka One',cursive">7 − 3: Start på 7, hopp 3 bakover → <span style="color:var(--bg1)">4</span></div>`},
-    {icon:'🎯',title:'Steg for steg',text:'La oss regne 8 − 5 sammen.',
-     visual:workedEx([['8 − 5 = ?','',false],['Start på 8','',false],['7, 6, 5, 4, 3','(teller 5 bakover)',true],['8 − 5 = 3 ✓','',false]])}
-  ],
-  add20:[
-    {icon:'🔟',title:'Tiere og enere',text:'Tall fra 11 til 20 har <strong>én tier og noen enere</strong>. Del opp tallene for å gjøre det enklere!',
-     visual:`<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${['12=10+2','15=10+5','18=10+8'].map(s=>`<div style="background:#ede9fe;border-radius:10px;padding:8px 14px;font-family:'Fredoka One',cursive;font-size:1rem">${s}</div>`).join('')}</div>`},
-    {icon:'✂️',title:'Del opp og legg sammen',text:'Del opp begge tallene i tiere og enere. Legg så tiere for seg og enere for seg.',
-     visual:workedEx([['13 + 5 = ?','',false],['= (10 + 3) + 5','(del opp 13)',true],['= 10 + (3 + 5)','(grupper enere)',true],['= 10 + 8','',false],['= 18 ✓','',false]])},
-    {icon:'🎯',title:'Prøv med 14 + 6',text:'',
-     visual:workedEx([['14 + 6 = ?','',false],['= (10 + 4) + 6','(del opp 14)',true],['= 10 + (4 + 6)','(grupper enere)',true],['= 10 + 10','',false],['= 20 ✓','',false]])}
-  ],
-  // ── Gr.2 ──────────────────────────────────────────
-  add100:[
-    {icon:'💯',title:'Hundre-tallene',text:'Vi deler store tall inn i <strong>hundrere, tiere og enere</strong> for å gjøre det enklere å regne.',
-     visual:`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">${[['Hunder','100','#667eea'],['Tier','10','#f093fb'],['Ener','1','#06d6a0']].map(([n,v,c])=>`<div style="background:${c}22;border-radius:10px;padding:10px;border:2px solid ${c}"><div style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:${c}">${v}</div><div style="font-size:.72rem;font-weight:800;color:var(--muted)">${n}</div></div>`).join('')}</div>`},
-    {icon:'✂️',title:'Del opp tallene',text:'Del opp begge tallene og legg tiere og enere for seg.',
-     visual:workedEx([['34 + 25 = ?','',false],['= (30+4) + (20+5)','(del opp)',true],['= (30+20) + (4+5)','(grupper)',true],['= 50 + 9','',false],['= 59 ✓','',false]])},
-    {icon:'🎯',title:'Enda et eksempel',text:'',
-     visual:workedEx([['47 + 36 = ?','',false],['= (40+7) + (30+6)','',false],['= 70 + 13','(40+30, 7+6)',true],['= 83 ✓','',false]])}
-  ],
-  sub100:[
-    {icon:'✂️',title:'Subtraksjon med store tall',text:'Del opp tallene og trekk fra tier for tier og ener for ener.',
-     visual:workedEx([['67 − 34 = ?','',false],['= (60+7) − (30+4)','(del opp)',true],['= (60−30) + (7−4)','(trekk fra)',true],['= 30 + 3','',false],['= 33 ✓','',false]])},
-    {icon:'🔄',title:'Lån fra tieren',text:'Hvis enerne er for små, <strong>lån</strong> en tier og gjør den om til 10 enere.',
-     visual:workedEx([['52 − 17 = ?','',false],['Ener: 2 − 7 går ikke!','',false],['Lån en tier: 12 − 7 = 5','(52 → 40+12)',true],['Tier: 40 − 10 = 30','',true],['= 35 ✓','',false]])},
-    {icon:'🎯',title:'Eksempel',text:'',
-     visual:workedEx([['73 − 45 = ?','',false],['Lån: 13−5=8, 60−40=20','',true],['= 28 ✓','',false]])}
-  ],
-  mul25:[
-    {icon:'✖️',title:'Hva er ganging?',text:'Ganging er <strong>gjentatt addisjon</strong>. 3 × 4 betyr "legg til 4, tre ganger".',
-     visual:`<div class="dot-groups" style="flex-direction:column;align-items:center;gap:6px">${[0,1,2].map(i=>`<div style="display:flex;gap:4px">${dots(4,'#667eea',i*100)}</div>`).join('')}</div><div style="margin-top:8px;font-family:'Fredoka One',cursive">3 × 4 = 4 + 4 + 4 = 12</div>`},
-    {icon:'📊',title:'2-gangen',text:'2-gangen betyr alltid to like grupper. Tallet dobles!',
-     visual:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:300px;margin:0 auto">${[1,2,3,4,5].map(n=>`<div style="background:#ede9fe;border-radius:8px;padding:6px 10px;font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--bg1)">${n}×2 = ${n*2}</div>`).join('')}</div>`},
-    {icon:'⭐',title:'5-gangen og 10-gangen',text:'5-gangen slutter alltid på 0 eller 5. 10-gangen er bare å legge til en 0!',
-     visual:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${['5-gangen','10-gangen'].map((g,gi)=>`<div><div style="font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--text);margin-bottom:6px">${g}</div>${[1,2,3,4,5].map(n=>`<div style="font-family:'Fredoka One',cursive;font-size:.82rem;color:var(--muted)">${n}×${gi===0?5:10}=${n*(gi===0?5:10)}</div>`).join('')}</div>`).join('')}</div>`},
-    {icon:'🎯',title:'Prøv 4 × 5',text:'',
-     visual:workedEx([['4 × 5 = ?','',false],['= 5 + 5 + 5 + 5','(fire 5-ere)',true],['= 10 + 10','(par sammen)',true],['= 20 ✓','',false]])}
-  ],
-  // ── Gr.3 ──────────────────────────────────────────
-  mul15:[
-    {icon:'📋',title:'Gangetabellen 1–5',text:'La oss lære gangetabellen! Det er et fast mønster for hvert tall.',
-     visual:mulGridLabel(3,4,'#43e97b')},
-    {icon:'🔢',title:'3-gangen',text:'3-gangen: tell opp i tresteg. 3, 6, 9, 12, 15...',
-     visual:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div style="background:${n%2?'#dcfce7':'#a7f3d0'};border-radius:8px;padding:5px 10px;font-family:'Fredoka One',cursive;font-size:.9rem">${n}×3=${n*3}</div>`).join('')}</div>`},
-    {icon:'🎵',title:'Lær med rytme',text:'Tell i tresteg mens du tramper i takt: 3, 6, 9, 12, 15, 18, 21, 24, 27, 30!',
-     visual:workedEx([['3 × 7 = ?','',false],['Tell: 3, 6, 9, 12, 15, 18, 21','(7 steg)',true],['= 21 ✓','',false]])},
-    {icon:'🎯',title:'4-gangen og 5-gangen',text:'',
-     visual:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">${[4,5].map(t=>`<div><div style="font-family:'Fredoka One',cursive;margin-bottom:4px;color:var(--text)">${t}-gangen</div>${[1,2,3,4,5].map(n=>`<div style="font-size:.82rem;font-weight:800;color:var(--muted)">${n}×${t}=${n*t}</div>`).join('')}</div>`).join('')}</div>`}
-  ],
-  div25:[
-    {icon:'➗',title:'Hva er divisjon?',text:'Divisjon er å <strong>dele likt</strong>. 12 ÷ 3 betyr "del 12 i 3 like grupper".',
-     visual:`<div class="dot-groups">${[0,1,2].map(i=>dotGroup(4,['#667eea','#f093fb','#06d6a0'][i],i*100)).join('<span class="dot-op" style="font-size:1.2rem">|</span>')}</div><div style="margin-top:8px;font-family:'Fredoka One',cursive">12 ÷ 3 = 4 (fire i hver gruppe)</div>`},
-    {icon:'🔄',title:'Divisjon er omvendt ganging',text:'Vet du gangetabellen? Da kan du dele! 4 × 3 = 12, så 12 ÷ 3 = 4.',
-     visual:workedEx([['20 ÷ 5 = ?','',false],['Tenk: ? × 5 = 20','(snu om!)',true],['4 × 5 = 20 ✓','',false],['20 ÷ 5 = 4 ✓','',false]])},
-    {icon:'🎯',title:'Prøv 18 ÷ 2',text:'',
-     visual:workedEx([['18 ÷ 2 = ?','',false],['Tenk: ? × 2 = 18','',false],['9 × 2 = 18','(fra 2-gangen)',true],['18 ÷ 2 = 9 ✓','',false]])}
-  ],
-  add100r:[
-    {icon:'🔟',title:'Runde tall er enkle!',text:'Tiere (10, 20, 30...) og hundrere (100, 200...) er enkle å legge sammen — bare legg til endrene!',
-     visual:workedEx([['30 + 50 = ?','',false],['3 tiere + 5 tiere = 8 tiere','',true],['= 80 ✓','',false]])},
-    {icon:'🎯',title:'Enda et eksempel',text:'',
-     visual:workedEx([['400 + 300 = ?','',false],['4 hundrere + 3 hundrere = 7 hundrere','',true],['= 700 ✓','',false]])}
-  ],
-  // ── Gr.4 ──────────────────────────────────────────
-  mul110:[
-    {icon:'📋',title:'Hele gangetabellen',text:'Du kan lære hele gangetabellen! Her er et triks: 6×7 = 7×6, så du trenger bare å huske halvparten.',
-     visual:`<div style="font-size:.75rem;font-weight:800;color:var(--muted);text-align:center;margin-bottom:8px">De vanskeligste å huske:</div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${[[6,7],[6,8],[7,8],[6,9],[7,9],[8,9]].map(([a,b])=>`<div style="background:#fce7f3;border-radius:8px;padding:6px 12px;font-family:'Fredoka One',cursive;font-size:.9rem">${a}×${b}=${a*b}</div>`).join('')}</div>`},
-    {icon:'🧠',title:'Husketriks',text:'For 6, 7, 8, 9: prøv "knoke-metoden" eller regn via enkle tall du kan.',
-     visual:workedEx([['8 × 7 = ?','',false],['= 8 × 5 + 8 × 2','(del opp 7)',true],['= 40 + 16','',false],['= 56 ✓','',false]])},
-    {icon:'🎯',title:'Prøv 9-gangen',text:'9-gangen har et fint mønster: sifrene summerer alltid til 9!',
-     visual:`<div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div style="background:#fff3cd;border-radius:8px;padding:5px 10px;font-family:'Fredoka One',cursive;font-size:.85rem">${n}×9=<span style="color:var(--orange)">${n*9}</span></div>`).join('')}</div>`}
-  ],
-  div110:[
-    {icon:'➗',title:'Divisjon og gangetabellen',text:'Divisjon er omvendt ganging. Kjenner du gangetabellen? Da kan du dele alle tall!',
-     visual:workedEx([['56 ÷ 7 = ?','',false],['Tenk: ? × 7 = 56','(snu om)',true],['8 × 7 = 56','(fra 7-gangen)',true],['56 ÷ 7 = 8 ✓','',false]])},
-    {icon:'🎯',title:'Prøv 63 ÷ 9',text:'',
-     visual:workedEx([['63 ÷ 9 = ?','',false],['Tenk: ? × 9 = 63','',false],['7 × 9 = 63','(fra 9-gangen)',true],['63 ÷ 9 = 7 ✓','',false]])}
-  ],
-  frac4:[
-    {icon:'🍕',title:'Hva er en brøk?',text:'En brøk viser deler av en helhet. 1/4 betyr én av fire like deler.',
-     visual:`<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">${[[1,2,'#667eea'],[1,4,'#f093fb'],[1,3,'#06d6a0']].map(([n,d,c])=>`<div style="text-align:center"><div style="margin-bottom:6px">${fracBar(n,d,c)}</div><div style="font-family:'Fredoka One',cursive">${n}/${d}</div></div>`).join('')}</div>`},
-    {icon:'📐',title:'Finn brøk av et tall',text:'For å finne ½ av et tall: del på 2. For ¼: del på 4. For ⅓: del på 3.',
-     visual:workedEx([['½ av 16 = ?','',false],['Del 16 på 2','(nevneren er 2)',true],['16 ÷ 2 = 8','',false],['½ av 16 = 8 ✓','',false]])},
-    {icon:'🎯',title:'Prøv ¼ av 20',text:'',
-     visual:workedEx([['¼ av 20 = ?','',false],['Del 20 på 4','(nevneren er 4)',true],['20 ÷ 4 = 5','',false],['¼ av 20 = 5 ✓','',false]])}
-  ],
-  // ── Gr.5 ──────────────────────────────────────────
-  dec5:[
-    {icon:'.',title:'Desimaltall',text:'Desimaltall har en komma. <strong>Før komma</strong> er hele tall, <strong>etter komma</strong> er deler av et helt.',
-     visual:`<div style="font-family:'Fredoka One',cursive;font-size:1.3rem;text-align:center"><span style="color:var(--bg1)">3</span><span style="color:var(--red);font-size:1.8rem">.</span><span style="color:var(--orange)">7</span><br><div style="font-size:.75rem;display:flex;gap:20px;justify-content:center;margin-top:4px"><span style="color:var(--bg1)">3 hele</span><span style="color:var(--orange)">7 tideler</span></div></div>`},
-    {icon:'📏',title:'Sett komma rett under komma',text:'Når du adderer eller subtraherer desimaltall, er viktigste regel: <strong>komma under komma</strong>!',
-     visual:`<div style="font-family:'Fredoka One',cursive;font-size:1.1rem;text-align:right;background:#fff;border-radius:10px;padding:12px 20px;border:2px solid #ede9fe"><div>3<span style="color:var(--red)">.</span>4</div><div>+&nbsp;2<span style="color:var(--red)">.</span>1</div><div style="border-top:2px solid #2d1b69;margin-top:4px">5<span style="color:var(--red)">.</span>5 ✓</div></div>`},
-    {icon:'🎯',title:'Prøv 4.6 + 2.3',text:'',
-     visual:workedEx([['4.6 + 2.3 = ?','',false],['Enere: 4 + 2 = 6','',false],['Tideler: 6 + 3 = 9','',false],['= 6.9 ✓','',false]])}
-  ],
-  pct5:[
-    {icon:'%',title:'Hva er prosent?',text:'Prosent betyr "per hundre". 50% = 50 av 100 = halvparten!',
-     visual:`<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${[[50,'Halvparten','#667eea'],[25,'En kvart','#f093fb'],[10,'En tidel','#06d6a0']].map(([p,n,c])=>`<div style="text-align:center"><div class="frac-bar" style="max-width:80px">${Array.from({length:10},(_,i)=>`<div class="frac-seg ${i<p/10?'filled':'empty'}" style="background:${c}"></div>`).join('')}</div><div style="font-family:'Fredoka One',cursive;font-size:.85rem;margin-top:4px">${p}% = ${n}</div></div>`).join('')}</div>`},
-    {icon:'📐',title:'Regne ut prosent',text:'10% = del på 10. 50% = del på 2. 25% = del på 4. Enkelt!',
-     visual:workedEx([['25% av 80 = ?','',false],['25% = ¼','(del på 4)',true],['80 ÷ 4 = 20','',false],['25% av 80 = 20 ✓','',false]])},
-    {icon:'🎯',title:'Prøv 10% av 350',text:'',
-     visual:workedEx([['10% av 350 = ?','',false],['10% = del på 10','',true],['350 ÷ 10 = 35','',false],['= 35 ✓','',false]])}
-  ],
-  round5:[
-    {icon:'〰️',title:'Avrunding',text:'Avrunding betyr å finne det <strong>nærmeste runde tallet</strong>. Se på neste siffer: 5 eller over → rund opp, under 5 → rund ned.',
-     visual:numLine(3,5,0,3)+`<div style="text-align:center;font-family:'Fredoka One',cursive;margin-top:8px">3.7 er nærmere 4 → rund OPP til 4</div>`},
-    {icon:'🎯',title:'Eksempel: 3.7 → 4, 3.2 → 3',text:'',
-     visual:workedEx([['Rund av 3.7','',false],['Se på tidelen: 7','',false],['7 ≥ 5 → rund OPP','',true],['= 4 ✓','',false]])}
-  ],
-  // ── Gr.6 ──────────────────────────────────────────
-  frac6:[
-    {icon:'➕',title:'Legg til brøker',text:'For å legge til brøker må de ha <strong>samme nevner</strong> (bunntal).',
-     visual:workedEx([['1/4 + 2/4 = ?','(samme nevner)',true],['= (1+2)/4','(tell tellerne)',false],['= 3/4 ✓','',false]])},
-    {icon:'🔄',title:'Ulike nevnere? Finn fellesnevner!',text:'Hvis nevnerne er ulike, finn et tall begge går opp i.',
-     visual:workedEx([['1/2 + 1/4 = ?','',false],['1/2 = 2/4','(gang med 2/2)',true],['2/4 + 1/4 = 3/4','(samme nevner nå!)',true],['= 3/4 ✓','',false]])}
-  ],
-  geo6:[
-    {icon:'📐',title:'Areal og omkrets',text:'<strong>Areal</strong> = plassen inni. <strong>Omkrets</strong> = lengden rundt kanten.',
-     visual:`<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">${[['Areal','l × b = ?','#667eea'],['Omkrets','2×(l+b) = ?','#f093fb']].map(([n,f,c])=>`<div style="text-align:center;background:${c}22;border-radius:10px;padding:12px 16px;border:2px solid ${c}"><div style="font-size:1.5rem">⬜</div><div style="font-family:'Fredoka One',cursive;font-size:.95rem;color:${c}">${n}</div><div style="font-size:.78rem;font-weight:800;color:var(--muted)">${f}</div></div>`).join('')}</div>`},
-    {icon:'🎯',title:'Rektangel 5 × 3',text:'',
-     visual:workedEx([['Rektangel 5 × 3','',false],['Areal = 5 × 3 = 15','(ruteenheter)',true],['Omkrets = 2×(5+3)','',false],['= 2 × 8 = 16','',false],['Areal=15, Omkrets=16 ✓','',false]])}
-  ],
-  neg6:[
-    {icon:'−',title:'Negative tall',text:'Negative tall er tall som er <strong>mindre enn null</strong>. Tenk på temperatur under null!',
-     visual:numLine(-5,5,0,0)+`<div style="text-align:center;font-family:'Fredoka One',cursive;margin-top:6px">Negative ← 0 → Positive</div>`},
-    {icon:'🌡️',title:'Regn med negative tall',text:'På tallinja: pluss = gå til høyre, minus = gå til venstre.',
-     visual:workedEx([['-3 + 5 = ?','',false],['Start på -3','',false],['Hopp 5 til høyre','',true],['-3 + 5 = 2 ✓','',false]])}
-  ],
-  // ── Gr.7 ──────────────────────────────────────────
-  alg7:[
-    {icon:'🔣',title:'Hva er algebra?',text:'I algebra bruker vi bokstaven <strong>x</strong> for et ukjent tall. Vi løser "gåten" om hva x er.',
-     visual:eqBox('x + 5 = 12  →  x = ?')},
-    {icon:'⚖️',title:'Vektprinsippet',text:'En likning er som en vekt: <strong>begge sider må alltid veie like mye</strong>. Gjør du noe på en side, gjør det på begge!',
-     visual:workedEx([['x + 5 = 12','',false],['Trekk fra 5 på begge sider','',true],['x + 5 − 5 = 12 − 5','',false],['x = 7 ✓','',false]])},
-    {icon:'🎯',title:'Prøv: 3x = 18',text:'',
-     visual:workedEx([['3x = 18','',false],['Del begge sider med 3','',true],['x = 18 ÷ 3','',false],['x = 6 ✓','',false]])}
-  ],
-  ratio7:[
-    {icon:'⚖️',title:'Forholdstall',text:'Et forholdstall viser forholdet mellom to størrelser. 2:3 betyr "2 deler mot 3 deler".',
-     visual:`<div style="display:flex;gap:4px;justify-content:center;align-items:flex-end"><div style="width:40px;height:40px;background:var(--bg1);border-radius:8px 8px 0 0"></div><div style="width:40px;height:60px;background:var(--orange);border-radius:8px 8px 0 0"></div><div style="margin-left:8px;font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--muted);align-self:center">2:3 → samme faktor</div></div>`},
-    {icon:'🔢',title:'Finn ukjent verdi',text:'Multipliser begge ledd med samme faktor for å beholde forholdet.',
-     visual:workedEx([['2 : 3 = 8 : ?','',false],['2 → 8: gang med 4','(faktor = 4)',true],['3 × 4 = 12','',false],['2 : 3 = 8 : 12 ✓','',false]])}
-  ],
-  stat7:[
-    {icon:'📊',title:'Gjennomsnitt',text:'Gjennomsnitt = <strong>summer alle tall</strong>, del på <strong>antall tall</strong>.',
-     visual:workedEx([['Gjennomsnitt av 4, 8, 6, 10, 2','',false],['Summer: 4+8+6+10+2 = 30','',true],['Antall: 5 tall','',false],['Gjennomsnitt = 30 ÷ 5 = 6 ✓','',false]])}
-  ],
-  // ── Gr.8 ──────────────────────────────────────────
-  eq8:[
-    {icon:'=',title:'Lineære likninger',text:'En lineær likning har x i første potens (ingen x², x³ osv). Vi isolerer x steg for steg.',
-     visual:eqBox('2x + 3 = 11')},
-    {icon:'⚖️',title:'Løsningsmetode',text:'1) Flytt tall (uten x) til høyre side. 2) Del på koeffisienten foran x.',
-     visual:workedEx([['2x + 3 = 11','',false],['2x = 11 − 3','(flytt 3)',true],['2x = 8','',false],['x = 8 ÷ 2','(del på 2)',true],['x = 4 ✓','',false]])}
-  ],
-  pow8:[
-    {icon:'²',title:'Potenser',text:'En potens er gjentatt multiplikasjon. 3² = 3 × 3 = 9. Eksponenten sier hvor mange ganger.',
-     visual:`<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${[[2,2],[2,3],[3,2],[4,2]].map(([b,e])=>`<div style="background:#ede9fe;border-radius:8px;padding:6px 12px;font-family:'Fredoka One',cursive"><span>${b}</span><sup style="font-size:.7rem">${e}</sup><span> = ${Math.pow(b,e)}</span></div>`).join('')}</div>`},
-    {icon:'🎯',title:'Prøv 5²',text:'',
-     visual:workedEx([['5² = ?','',false],['= 5 × 5','(to faktorer av 5)',true],['= 25 ✓','',false]])}
-  ],
-  pct8:[
-    {icon:'%',title:'Prosentvis økning og reduksjon',text:'Økning med p%: gang med (1 + p/100). Reduksjon: gang med (1 − p/100).',
-     visual:workedEx([['200 økes med 20%','',false],['= 200 × 1.20','(1 + 20/100)',true],['= 240 ✓','',false]])},
-    {icon:'🎯',title:'Reduksjon med 25%',text:'',
-     visual:workedEx([['400 reduseres med 25%','',false],['= 400 × 0.75','(1 − 0.25)',true],['= 300 ✓','',false]])}
-  ],
-  // ── Gr.9 ──────────────────────────────────────────
-  pyth9:[
-    {icon:'📐',title:'Pytagoras\' setning',text:'I en <strong>rettvinklet trekant</strong>: summen av kvadratene på katetene er lik kvadratet på hypotenusen.',
-     visual:`<div style="text-align:center"><div style="font-family:'Fredoka One',cursive;font-size:1.3rem">a² + b² = c²</div><div style="margin:10px auto;font-size:2.5rem">📐</div><div style="font-size:.8rem;font-weight:800;color:var(--muted)">c er alltid den lengste siden (hypotenusen)</div></div>`},
-    {icon:'🎯',title:'Eksempel: a=3, b=4',text:'',
-     visual:workedEx([['a=3, b=4 → c=?','',false],['c² = 3² + 4²','',false],['c² = 9 + 16 = 25','',true],['c = √25 = 5 ✓','',false]])}
-  ],
-  stat9:[
-    {icon:'📊',title:'Median og typetall',text:'<strong>Median</strong> = midterste verdi når sortert. <strong>Typetall</strong> = det som forekommer flest ganger.',
-     visual:workedEx([['Tallrekke: 3, 7, 2, 7, 5','',false],['Sortert: 2, 3, 5, 7, 7','',true],['Median = 5','(midterste)',true],['Typetall = 7','(forekommer 2×)',true]])}
-  ],
-  alg9:[
-    {icon:'🔣',title:'Avansert algebra',text:'Sammensatte likninger løses steg for steg. Hold styr på hva du gjør!',
-     visual:workedEx([['3(x + 2) = 21','',false],['3x + 6 = 21','(distribuer)',true],['3x = 15','(trekk fra 6)',true],['x = 5 ✓','(del på 3)',true]])}
-  ],
-  // ── Gr.10 ──────────────────────────────────────────
-  func10:[
-    {icon:'f(x)',title:'Funksjoner',text:'En funksjon er en "maskin": gi inn x, få ut f(x). f(x) = 2x + 1 betyr: doble x og legg til 1.',
-     visual:`<div style="font-family:'Fredoka One',cursive;text-align:center"><div style="font-size:1.1rem;margin-bottom:10px">f(x) = 2x + 3</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${[1,2,3,4,5].map(x=>`<div style="background:#ede9fe;border-radius:8px;padding:5px 10px;font-size:.9rem">f(${x})=${2*x+3}</div>`).join('')}</div></div>`},
-    {icon:'🎯',title:'Sett inn x-verdien',text:'',
-     visual:workedEx([['f(x) = 3x − 2, f(4) = ?','',false],['Sett inn x = 4','',true],['= 3×4 − 2','',false],['= 12 − 2 = 10 ✓','',false]])}
-  ],
-  trig10:[
-    {icon:'sin',title:'Trigonometri',text:'sin, cos og tan beskriver forholdet mellom <strong>vinkler og sider</strong> i rettvinklede trekanter.',
-     visual:`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center">${[['sin','motstående/hypotenus','#667eea'],['cos','hosliggende/hypotenus','#f093fb'],['tan','motstående/hosliggende','#06d6a0']].map(([fn,def,c])=>`<div style="background:${c}22;border-radius:10px;padding:8px;border:2px solid ${c}"><div style="font-family:'Fredoka One',cursive;color:${c};font-size:1rem">${fn}</div><div style="font-size:.65rem;font-weight:800;color:var(--muted)">${def}</div></div>`).join('')}</div>`},
-    {icon:'📋',title:'Standardverdier',text:'Lær deg disse utenat!',
-     visual:`<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font-family:'Fredoka One',cursive;font-size:.85rem"><tr style="background:#ede9fe"><th style="padding:6px 8px">Vinkel</th><th>sin</th><th>cos</th><th>tan</th></tr>${[[0,'0','1','0'],[30,'0.5','0.87','0.58'],[45,'0.71','0.71','1'],[60,'0.87','0.5','1.73'],[90,'1','0','∞']].map(([d,...v])=>`<tr style="border-bottom:1px solid #ede9fe"><td style="padding:5px 8px">${d}°</td>${v.map(x=>`<td style="text-align:center">${x}</td>`).join('')}</tr>`).join('')}</table></div>`}
-  ],
-  prob10:[
-    {icon:'🎲',title:'Sannsynlighet',text:'Sannsynlighet = (gunstige utfall) ÷ (alle mulige utfall). Svaret er alltid mellom 0 og 1.',
-     visual:workedEx([['Terning: P(6) = ?','',false],['Gunstige: 1 (bare 6)','',false],['Mulige: 6 (1,2,3,4,5,6)','',false],['P(6) = 1/6 ≈ 0.17 ✓','',false]])},
-    {icon:'🎯',title:'P(partall) med terning',text:'',
-     visual:workedEx([['P(partall) = ?','',false],['Partall: 2, 4, 6 → 3 utfall','',true],['Alle utfall: 6','',false],['P = 3/6 = 0.5 ✓','',false]])}
-  ],
-};
-
-// =
-// LEARN NAVIGATION
-// =
-let learnState={grade:null,topicId:null,steps:[],idx:0};
-
-function showLearn(grade,topicId){
-  const gd=CUR[grade],topic=gd.topics.find(t=>t.id===topicId);
-  const steps=LEARN_GUIDES[topicId];
-  if(!steps||!steps.length){alert('Guide for dette temaet kommer snart!');return;}
-  learnState={grade,topicId,steps,idx:0};
-  const card=document.getElementById('learn-card');
-  card.style.setProperty('--lc1',gd.c1);
-  card.style.setProperty('--lc2',gd.c2);
-  document.getElementById('learn-topic-name').textContent=topic.name;
-  buildLearnDots();
-  renderLearnStep();
-  showScreen('learn');
-}
-
-function buildLearnDots(){
-  const wrap=document.getElementById('learn-dots');
-  wrap.innerHTML=learnState.steps.map((_,i)=>`<div class="learn-dot" id="ldot${i}"></div>`).join('');
-}
-
-function renderLearnStep(){
-  const {steps,idx}=learnState;
-  const step=steps[idx];
-  const body=document.getElementById('learn-body');
-  body.style.opacity='0';
-  setTimeout(()=>{
-    document.getElementById('learn-step-lbl').textContent=`Steg ${idx+1} av ${steps.length}`;
-    document.getElementById('learn-icon').textContent=step.icon;
-    document.getElementById('learn-title').textContent=step.title;
-    document.getElementById('learn-text').innerHTML=step.text;
-    document.getElementById('learn-visual').innerHTML=step.visual||'';
-    // dots
-    steps.forEach((_,i)=>{
-      const d=document.getElementById(`ldot${i}`);
-      d.className='learn-dot'+(i<idx?' done':i===idx?' active':'');
-    });
-    // next button
-    const nb=document.getElementById('learn-next');
-    nb.textContent=idx>=steps.length-1?'🚀 Prøv nå!':'Neste →';
-    nb.className='learn-next'+(idx>=steps.length-1?' finish':'');
-    // prev button
-    document.getElementById('learn-prev').style.display=idx>0?'block':'none';
-    body.style.opacity='1';
-    body.style.transition='opacity .25s';
-  },120);
-}
-
-function learnNext(){
-  const {steps,idx}=learnState;
-  if(idx>=steps.length-1){
-    startGame(learnState.grade,learnState.topicId);
-  } else {
-    learnState.idx++;
-    renderLearnStep();
-  }
-}
-function learnPrev(){
-  if(learnState.idx>0){learnState.idx--;renderLearnStep();}
-}
-
-// =
-// INIT
-// =
-buildGradePicker();
-renderXP();
-</script>
+  </div>
+</div>
+<button class="scratch-toggle-btn" id="scratch-toggle" onclick="toggleScratch()">✏️</button>
+<script src="game.js"></script>
 </body>
 </html>
-
-

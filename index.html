@@ -169,10 +169,10 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 .story-sub{font-size:.95rem;color:rgba(255,255,255,.65);font-weight:700;max-width:320px;line-height:1.6;}
 .story-hero{font-size:4rem;animation:heroPop .5s cubic-bezier(.34,1.56,.64,1);}
 @keyframes heroPop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
-.story-btn{padding:14px 40px;font-family:'Fredoka One',cursive;font-size:1.1rem;background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;border:none;border-radius:var(--rs);cursor:pointer;box-shadow:var(--glow-p);margin-top:8px;}
+.story-btn{padding:14px 40px;font-family:'Fredoka One',cursive;font-size:1.1rem;background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;border:none;border-radius:var(--rs);cursor:pointer;box-shadow:var(--glow-p);margin-top:8px;position:relative;z-index:10;pointer-events:all;}
 .story-btn:hover{transform:scale(1.05);}
-.story-skip{position:absolute;top:16px;right:16px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:4px 14px;font-size:.75rem;font-weight:800;color:rgba(255,255,255,.4);cursor:pointer;}
-.story-skip:hover{color:rgba(255,255,255,.7);}
+.story-skip{position:absolute;top:16px;right:16px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:8px 18px;font-size:.8rem;font-weight:800;color:rgba(255,255,255,.5);cursor:pointer;z-index:10;pointer-events:all;}
+.story-skip:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.08);}
 .story-dots{display:flex;gap:8px;margin-top:8px;}
 .story-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);}
 .story-dot.active{background:var(--cyan);}
@@ -526,7 +526,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 </div>
 
 <!-- STORY INTRO -->
-<div class="story-overlay" id="story-overlay">
+<div class="story-overlay hidden" id="story-overlay">
   <button class="story-skip" onclick="skipStory()">Hopp over</button>
   <div class="story-panel active" id="story-p0">
     <div style="font-size:3rem">🏰✨🌿</div>

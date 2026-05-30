@@ -91,11 +91,18 @@ setTimeout(()=>resizeCanvas(),200);
 let storyPanel=0;
 function storyNext(){
   storyPanel++;
-  document.querySelectorAll('.story-panel').forEach((p,i)=>p.classList.toggle('active',i===storyPanel));
+  const panels=document.querySelectorAll('.story-panel');
+  if(storyPanel>=panels.length){skipStory();return;}
+  panels.forEach((p,i)=>p.classList.toggle('active',i===storyPanel));
 }
 function skipStory(){
   document.getElementById('story-overlay').classList.add('hidden');
   localStorage.setItem('mh_story_seen','1');
+}
+function showStory(){
+  storyPanel=0;
+  document.querySelectorAll('.story-panel').forEach((p,i)=>p.classList.toggle('active',i===0));
+  document.getElementById('story-overlay').classList.remove('hidden');
 }
 
 // ============================================================
@@ -1362,7 +1369,6 @@ if(savedPlayer){
   buildAdventureMap();
   showScreen('grades');
 } else if(!localStorage.getItem('mh_story_seen')){
-  // Show story intro for new players
-  document.getElementById('story-overlay').classList.remove('hidden');
+  showStory();
 }
 renderHUD();

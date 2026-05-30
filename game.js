@@ -366,15 +366,34 @@ const GRADE_POS=[
   [65,45],[52,32],[68,21],[80,33],[88,14],
 ];
 
+// ============================================================
+// MASTERY SYSTEM
+// ============================================================
+function getMastery(g,topicId){return parseInt(localStorage.getItem(`mh_mst_${g}_${topicId}`)||'0');}
+function addMastery(g,topicId,score){
+  const cur=getMastery(g,topicId);
+  localStorage.setItem(`mh_mst_${g}_${topicId}`,Math.min(200,cur+score*10));
+}
+function isTopicPassed(g,topicId){return getMastery(g,topicId)>=70;}
+function isTopicMastered(g,topicId){return getMastery(g,topicId)>=100;}
+
+function masteryLabel(pct){
+  if(pct>=100)return{txt:'🏆 Mestret!',col:'var(--green)'};
+  if(pct>=70)return{txt:`⭐ ${pct}%`,col:'var(--gold)'};
+  if(pct>0)return{txt:`${pct}%`,col:'var(--orange)'};
+  return{txt:'Ny',col:'var(--muted)'};
+}
+
 function isGradeUnlocked(gradeNum){
   if(gradeNum===1)return true;
-  return(CUR[gradeNum-1]?.topics||[]).some(t=>getBest(gradeNum-1,t.id)!==null);
+  const prev=CUR[gradeNum-1]?.topics||[];
+  return prev.length>0&&prev.every(t=>isTopicMastered(gradeNum-1,t.id));
 }
 
 function isTopicUnlocked(gradeNum,topicIdx){
   if(topicIdx===0)return true;
   const prev=CUR[gradeNum]?.topics[topicIdx-1];
-  return prev?getBest(gradeNum,prev.id)!==null:false;
+  return prev?isTopicPassed(gradeNum,prev.id):false;
 }
 
 function getGradeStars(gradeNum){
@@ -425,10 +444,13 @@ function buildGradeMap(){
     const node=document.createElement('div');
     node.className='map-node'+(unlocked?'':' locked');
     node.style.cssText=`left:${lx}%;top:${ly}%;--nc:${gi.color};--ng:${gi.glow}`;
+    const topics=CUR[gi.num]?.topics||[];
+    const masteredCount=topics.filter(t=>isTopicMastered(gi.num,t.id)).length;
+    const progressTxt=unlocked?(masteredCount===topics.length?'🏆 Fullført!':masteredCount>0?`${masteredCount}/${topics.length} mestret`:'Start her!'):'🔒 Låst';
     node.innerHTML=`
       <div class="map-node-icon">${gi.icon}${!unlocked?'<div class="map-node-lock">🔒</div>':''}</div>
       <div class="map-node-name">${gi.num}. kl · ${gi.mapName}</div>
-      <div class="map-node-stars">${stars}</div>`;
+      <div class="map-node-stars" style="color:${masteredCount===topics.length&&unlocked?'var(--green)':'inherit'}">${progressTxt}</div>`;
     if(unlocked)node.onclick=()=>openGradePopup(gi);
     nodes.appendChild(node);
   });
@@ -509,17 +531,22 @@ function buildTopicMap(gradeNum){
     const unlocked=isTopicUnlocked(gradeNum,i);
     const best=getBest(gradeNum,t.id);
     const hasWeak=checkWeak(gradeNum,t.id);
-    const stars=best===null?'○○○':best>=9?'⭐⭐⭐':best>=6?'⭐⭐○':'⭐○○';
+    const mastery=getMastery(gradeNum,t.id);
+    const masteryPct=Math.min(100,mastery);
+    const mastered=isTopicMastered(gradeNum,t.id);
+    const passed=isTopicPassed(gradeNum,t.id);
+    const ml=masteryLabel(masteryPct);
+    const fillCol=mastered?'var(--green)':passed?'var(--gold)':'var(--orange)';
     const node=document.createElement('div');
-    node.className='map-node'+(unlocked?'':' locked');
-    node.style.cssText=`left:${lx}%;top:${ly}%;--nc:${gi.color};--ng:${gi.glow}`;
+    node.className='map-node'+(unlocked?mastered?' mastered':'':' locked');
+    node.style.cssText=`left:${lx}%;top:${ly}%;--nc:${mastered?'var(--green)':gi.color};--ng:${mastered?'rgba(0,255,136,.5)':gi.glow}`;
     node.innerHTML=`
       <div class="map-node-icon" style="font-size:1.5rem;width:54px;height:54px">
         ${t.icon}${!unlocked?'<div class="map-node-lock">🔒</div>':''}
-        ${hasWeak&&unlocked?'<div class="map-node-lock" style="background:rgba(255,217,61,.9);font-size:.7rem">🎯</div>':''}
+        ${hasWeak&&unlocked&&!mastered?'<div class="map-node-lock" style="background:rgba(255,217,61,.9);font-size:.7rem">🎯</div>':''}
       </div>
       <div class="map-node-name">${t.name}</div>
-      <div class="map-node-stars">${stars}</div>`;
+      ${unlocked?`<div class="topic-mst-wrap"><div class="topic-mst-track"><div class="topic-mst-fill" style="width:${masteryPct}%;background:${fillCol}"></div></div><div class="topic-mst-lbl" style="color:${ml.col}">${ml.txt}</div></div>`:'<div class="map-node-stars">🔒</div>'}`;
     if(unlocked){
       node.onclick=()=>startGame(gradeNum,t.id);
     } else {
@@ -1032,17 +1059,34 @@ function showChest(){
   const xpEarned=S.score*10+(pct>=1?50:pct>=.8?20:0);
   const coinsEarned=S.score+(pct>=1?5:0);
   const stars=Math.ceil(pct*3);
+
+  // Add mastery before calculating display
+  const masteryBefore=getMastery(S.grade,S.topicId);
+  addMastery(S.grade,S.topicId,S.score);
+  const masteryAfter=Math.min(100,getMastery(S.grade,S.topicId));
+  const masteryGained=Math.min(100,masteryAfter)-Math.min(100,masteryBefore);
+  const nowPassed=isTopicPassed(S.grade,S.topicId);
+  const nowMastered=isTopicMastered(S.grade,S.topicId);
+
   let emoji,title,sub;
   if(pct===1){emoji='💎';title='PERFEKT SEIER!';sub='Du er en legende!';}
   else if(pct>=.8){emoji='🏆';title='Stor seier!';sub='Nesten perfekt!';}
   else if(pct>=.5){emoji='⚔️';title='Bra kamp!';sub='Øv mer og kom sterkere tilbake!';}
   else{emoji='🛡️';title='Tap — men du lærte!';sub='Prøv igjen, du blir sterkere!';}
+
+  // Mastery status message
+  let mstMsg='';
+  if(nowMastered&&masteryBefore<100)mstMsg='<div style="color:var(--green);font-family:\'Fredoka One\',cursive;font-size:.95rem;margin-top:4px">🏆 Emne mestret! Neste låses opp!</div>';
+  else if(nowPassed&&masteryBefore<70)mstMsg='<div style="color:var(--gold);font-family:\'Fredoka One\',cursive;font-size:.9rem;margin-top:4px">⭐ Passert! Neste emne låst opp!</div>';
+  else if(!nowMastered)mstMsg=`<div style="color:var(--muted);font-size:.8rem;font-weight:700;margin-top:4px">Mestring: ${masteryAfter}% — trenger ${nowPassed?100:70}% for ${nowPassed?'å mestre':'å låse opp neste'}</div>`;
+
   document.getElementById('chest-emoji').textContent=emoji;
   document.getElementById('chest-title').textContent=title;
-  document.getElementById('chest-sub').textContent=sub;
+  document.getElementById('chest-sub').innerHTML=sub+mstMsg;
   document.getElementById('chest-rewards').innerHTML=`
     <div class="chest-reward"><span class="chest-reward-icon">⭐</span><div class="chest-reward-val">${'⭐'.repeat(stars)}</div></div>
     <div class="chest-reward"><span class="chest-reward-icon">✨</span><div class="chest-reward-val">+${xpEarned} XP</div></div>
+    <div class="chest-reward"><span class="chest-reward-icon">🎯</span><div class="chest-reward-val">+${masteryGained}% mst</div></div>
     <div class="chest-reward"><span class="chest-reward-icon">🪙</span><div class="chest-reward-val">+${coinsEarned}</div></div>
   `;
   prog.xp+=xpEarned;prog.coins+=coinsEarned;saveProg();renderHUD();

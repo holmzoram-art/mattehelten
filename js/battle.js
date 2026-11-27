@@ -344,5 +344,6 @@ function showParentReport(){
   if(perfect)rec.textContent='Perfekt resultat!'+goal;
   else if(pct>=.8)rec.textContent='Veldig bra!'+goal;
   else{const tw=bad.length?fmtSub(bad[0].sub):'noen oppgaver';rec.innerHTML=`Spillet gir ekstra trening på <strong>${tw}</strong> automatisk. 10 min om dagen gir stor fremgang!`+goal;}
+  if(typeof parentsLink==='function')parentsLink(); // «Se hele oversikten» (parents.js)
   showScreen('parent');
 }

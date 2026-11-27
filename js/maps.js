@@ -71,6 +71,7 @@ function buildGradeMap(){
   });
   bossDecorateGradeMap();
   if(typeof trollDecorate==='function')trollDecorate('grades'); // «Trollet er tilbake!» (review.js)
+  if(typeof parentsEntry==='function')parentsEntry(); // «👪 Hold inne for voksne» (parents.js)
 
   // You-marker
   const you=document.getElementById('map-you');

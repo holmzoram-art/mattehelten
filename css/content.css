@@ -1,1 +1,74 @@
 /* Mattehelten – Nye temaer: klokke, mynter, tiere/enere, sammenligning */
+
+/* Temakart med mange temaer (slangesti, se getTopicPositions i maps.js) */
+#topic-map-wrap{transition:height .25s ease;}
+#topic-map-svg path{vector-effect:non-scaling-stroke;}
+#topic-map-nodes .map-node-name{max-width:96px;}
+@media(max-width:479px){#topic-map-nodes .map-node-name{max-width:88px;font-size:.7rem;}}
+
+/* Felles */
+.t12-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+.t12-cap{text-align:center;margin-top:6px;font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--white);}
+
+/* Klokke */
+.t12-clock-wrap{display:flex;justify-content:center;}
+.t12-clock{display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,.45));}
+.t12-cl-n{font-family:'Fredoka One','Nunito',sans-serif;font-size:27px;fill:#1d1840;text-anchor:middle;dominant-baseline:central;}
+.t12-clocks{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.t12-clk-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.t12-clk-tag{font-size:1.5rem;line-height:1;}
+@media(max-width:360px){.t12-clocks .t12-clock{width:80px;height:80px;}}
+
+/* Mynter */
+.t12-coins{display:flex;flex-wrap:wrap;gap:6px 8px;justify-content:center;align-items:center;max-width:340px;margin:0 auto;}
+.t12-coin{display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.45));}
+.t12-coin-n{font-family:'Fredoka One','Nunito',sans-serif;text-anchor:middle;dominant-baseline:central;}
+.t12-coin-k{font-family:'Nunito',sans-serif;font-weight:900;font-size:15px;text-anchor:middle;dominant-baseline:central;}
+
+/* Plassverditabell: tiere | enere */
+.t12-pv{display:inline-flex;gap:6px;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.14);border-radius:14px;padding:6px;}
+.t12-pv-col{display:flex;flex-direction:column;align-items:center;min-width:64px;}
+.t12-pv-col+.t12-pv-col{border-left:2px dashed rgba(255,255,255,.2);padding-left:6px;}
+.t12-pv-h{font-family:'Fredoka One',cursive;font-size:.8rem;color:var(--gold);margin-bottom:4px;}
+.t12-pv-b{min-height:108px;display:flex;align-items:flex-end;justify-content:center;}
+.t12-tens{gap:4px;max-width:150px;flex-wrap:wrap;}
+.t12-bar{display:inline-flex;flex-direction:column;gap:1px;padding:1px;border-radius:3px;background:#0891b2;}
+.t12-bar i{display:block;width:10px;height:9px;border-radius:2px;background:#5eead4;}
+.t12-ones{display:grid;grid-template-columns:repeat(5,14px);gap:3px;align-content:end;width:82px;}
+.t12-one{display:block;width:14px;height:14px;border-radius:3px;background:#ffd93d;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2);}
+.t12-pv-dig{margin-top:6px;font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--white);line-height:1;}
+
+/* Par (partall/oddetall) */
+.t12-pairs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:320px;margin:0 auto;}
+.t12-pair{display:flex;flex-direction:column;gap:4px;align-items:center;padding:5px 4px;border-radius:12px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.18);min-width:36px;}
+.t12-pit{font-size:1.5rem;line-height:1.1;}
+.t12-pdot{display:block;width:22px;height:22px;border-radius:50%;background:#a855f7;}
+.t12-pgap{display:block;width:26px;height:26px;border-radius:8px;border:2px dashed rgba(255,217,61,.7);}
+
+/* Sammenligne to rader */
+.t12-cmp{display:flex;flex-direction:column;gap:6px;align-items:flex-start;margin:0 auto;}
+.t12-cmp-row{display:flex;align-items:center;gap:6px;}
+.t12-cmp-who{font-size:1.7rem;width:36px;text-align:center;flex-shrink:0;}
+.t12-cmp-items{display:flex;}
+.t12-it{display:inline-block;width:22px;text-align:center;font-size:1.15rem;line-height:1.4;}
+@media(max-width:360px){.t12-it{width:19px;font-size:1rem;}}
+
+/* Vekt (likhetstegnet) */
+.t12-scale{display:block;width:100%;max-width:320px;height:auto;margin:0 auto;}
+.t12-pan{fill:rgba(124,92,240,.22);stroke:#a78bfa;stroke-width:3;}
+.t12-sc-t{font-family:'Fredoka One',cursive;font-size:25px;fill:#fff;text-anchor:middle;dominant-baseline:central;}
+.t12-sc-eq{font-family:'Fredoka One',cursive;font-size:30px;fill:#ffd93d;text-anchor:middle;dominant-baseline:central;}
+.t12-q{fill:#ffd93d;}
+
+/* Lær: prikk som er tatt bort */
+.tf-cell .dot.t12-gone{background:rgba(124,58,237,.28)!important;position:relative;}
+.tf-cell .dot.t12-gone::after{content:'✕';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ff4466;font-weight:900;font-size:16px;}
+
+/* Små inn-animasjoner (bare når barnet ikke har bedt om mindre bevegelse) */
+@media (prefers-reduced-motion:no-preference){
+  .t12-bar,.t12-one{animation:t12Pop .3s ease backwards;animation-delay:var(--d,0ms);}
+  .t12-coin{animation:t12Pop .3s ease backwards;}
+  .t12-coin:nth-child(2){animation-delay:60ms}.t12-coin:nth-child(3){animation-delay:120ms}.t12-coin:nth-child(4){animation-delay:180ms}.t12-coin:nth-child(5){animation-delay:240ms}.t12-coin:nth-child(n+6){animation-delay:300ms}
+}
+@keyframes t12Pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){#topic-map-wrap{transition:none;}}

@@ -55,7 +55,7 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
    ok(n>300,`sibling: found for most questions (${n})`);ok(same,'sibling: same strategy (strat, else sub)');ok(diff,'sibling: other numbers (other loopKey)');}
   // Ja/Nei i «Er det likt?»: søsken er en annen påstand
   reset();R("startGame(1,'eq1')");
-  {let tf=0,okTF=true;for(let i=0;i<200;i++){const q=R("CUR[1].topics.find(t=>t.id==='eq1').gen(1,'eq1')");if(q.sub!=='e1s')continue;R('S').current=q;R('S').questions=[];R('S').lp=null;
+  {let tf=0,okTF=true;for(let i=0;i<800;i++){const q=R("CUR[1].topics.find(t=>t.id==='eq1').gen(1,'eq1')");if(q.sub!=='e1s')continue;R('S').current=q;R('S').questions=[];R('S').lp=null;
      const sib=R('loopSibling(S.current)');if(!sib)continue;tf++;if(sib.q===q.q||R('loopKey')(sib)===R('loopKey')(q)||sib.sub!=='e1s')okTF=false;}
    ok(tf>30&&okTF,`sibling: a «Stemmer det?» gets another statement, not the same (${tf})`);}
   // Finnes ingen søsken → ingen revansj (og ingen «kommer igjen»-melding)

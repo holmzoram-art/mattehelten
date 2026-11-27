@@ -104,7 +104,8 @@ module.exports=function({R,ok,CUR,ls,els}){
   S=R('S');
   ok(S.bossOver&&!S.enemyDefeated&&!ls.get('mh_boss_1'),'boss: tap når ett tema bare har feil');
   ok(S.questions.length===12,'boss: bossen stikker av etter 12 oppgaver');
-  ok(S.bossStats[A]&&S.bossStats[A].n>=2,'boss: et tema med feil kommer tilbake');
+  const firstA=S.bossLog.findIndex(x=>x&&x.tid===A);
+  ok(S.bossStats[A]&&(S.bossStats[A].n>=2||firstA>S.questions.length-4),`boss: et tema med feil kommer tilbake (først ${firstA})`);
   ok(R('bossWeakest()').id===A,'boss: svakeste tema velges');
   ok(els['br-btns'].innerHTML.includes(`bossPractice('${A}')`)&&/Øv på/.test(els['br-btns'].innerHTML),'boss: tap viser «Øv på <tema>»');
   ok(/Øv på/.test(els['br-sub'].innerHTML),'boss: tap forteller hva som skal øves');

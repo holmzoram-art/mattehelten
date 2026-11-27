@@ -14,7 +14,7 @@ function renderHUD(){
   document.getElementById('hud-lvl').innerHTML=`⭐ Nivå ${l} · <span id="hud-name">${getPlayer().name}</span>`;
   document.getElementById('hud-fill').style.width=pct+'%';
   document.getElementById('hud-coins').textContent=prog.coins;
-  document.getElementById('hud-streak').textContent=prog.streak;
+  document.getElementById('hud-streak').textContent=typeof funDays==='function'?funDays():prog.streak; // 🌙 spilledager (fun.js)
   document.getElementById('hud-char').textContent=getPlayer().emoji;
   if(localStorage.getItem('mh_player'))updatePlayerEmoji(); // keep evolved emoji + rank badge
   pgHud(); // PROGRESSION: XP goal, smooth fill, shop items on the hero
@@ -26,16 +26,26 @@ function getPlayer(){return JSON.parse(localStorage.getItem('mh_player')||'{"emo
 // ============================================================
 const BADGES=[
   {id:'first_correct', icon:'⚡', name:'Første treff!',   desc:'Svar riktig for første gang', secret:false},
+  // Vekstmerker (fun.js: funCheckBadges) – de handler om læring, ikke om mynter
+  {id:'g_fix10',       icon:'💪', name:'Gir aldri opp!',  desc:'Rett opp svaret selv 10 ganger', secret:false},
+  {id:'g_rev10',       icon:'🔁', name:'Revansj-helt!',   desc:'Vinn 10 revansjer',           secret:false},
+  {id:'g_pass5',       icon:'🌟', name:'Fem temaer!',     desc:'Få ⭐ på 5 temaer',           secret:false},
+  {id:'g_stars15',     icon:'✨', name:'Stjernesamler',   desc:'Samle 15 ⭐',                 secret:false},
+  {id:'g_star3',       icon:'🏆', name:'Første mestring!',desc:'Få ⭐⭐⭐ på et tema',         secret:false},
+  {id:'g_master3',     icon:'🧠', name:'Tre mestret!',    desc:'Få ⭐⭐⭐ på 3 temaer',        secret:false},
+  {id:'g_boss1',       icon:'🛡️', name:'Første boss!',    desc:'Slå en boss',                 secret:false},
+  {id:'g_days5',       icon:'🌙', name:'Fem spilledager', desc:'Spill matte på 5 ulike dager', secret:false},
   {id:'streak5',       icon:'🔥', name:'På strak arm!',   desc:'5 riktige på rad',            secret:false},
   {id:'streak10',      icon:'🌋', name:'Ustoppelig!',     desc:'10 riktige på rad i en boss-kamp', secret:true},
   {id:'perfect',       icon:'💎', name:'Perfekt runde!',  desc:'Ingen feil i en hel kamp',    secret:false},
   {id:'ko',            icon:'💀', name:'K.O. Mester!',    desc:'Slå ut monsteret med combo',    secret:false},
   {id:'lvlup',         icon:'⭐', name:'Nivå opp!',       desc:'Nå et nytt nivå',             secret:false},
-  {id:'lvl5',          icon:'🔥', name:'Mester!',         desc:'Nå nivå 5',                   secret:false},
-  {id:'lvl8',          icon:'🌟', name:'Legende!',        desc:'Nå nivå 8',                   secret:true},
-  {id:'lvl12',         icon:'🌌', name:'Mattegud!',       desc:'Det høyeste nivå — du klarte det!', secret:true},
-  {id:'coins100',      icon:'🪙', name:'Pengesekken!',    desc:'Samle 100 mynter',            secret:false},
-  {id:'coins50',       icon:'💰', name:'Rik helt!',       desc:'Samle 50 mynter',             secret:false},
+  {id:'lvl5',          icon:'🔥', name:'Nivå 5!',         desc:'Nå nivå 5',                   secret:false},
+  {id:'lvl8',          icon:'🌟', name:'Nivå 8!',         desc:'Nå nivå 8',                   secret:true},
+  {id:'lvl12',         icon:'🌌', name:'Nivå 12!',        desc:'Nå nivå 12',                  secret:true},
+  // legacy: myntmerker deles ikke ut lenger, men vises for dem som har dem
+  {id:'coins100',      icon:'🪙', name:'Pengesekken!',    desc:'Samle 100 mynter',            secret:false, legacy:true},
+  {id:'coins50',       icon:'💰', name:'Rik helt!',       desc:'Samle 50 mynter',             secret:false, legacy:true},
   {id:'world1',        icon:'🌿', name:'Dalens hersker',  desc:'Fullfør Tallenes Dal',        secret:false},
   {id:'world2',        icon:'🌲', name:'Skogens mester',  desc:'Fullfør Gangeskogen',         secret:false},
   {id:'world3',        icon:'🏔️', name:'Fjellkongen',    desc:'Fullfør Desimalfjellene',     secret:false},
@@ -50,7 +60,7 @@ const ACHIEVEMENTS=Object.fromEntries(BADGES.map(b=>
 let unlockedAchievements=JSON.parse(localStorage.getItem('mh_ach')||'{}');
 
 function unlockAchievement(id){
-  if(unlockedAchievements[id])return;
+  if(unlockedAchievements[id]||BADGES.some(b=>b.id===id&&b.legacy))return;
   unlockedAchievements[id]=Date.now();
   localStorage.setItem('mh_ach',JSON.stringify(unlockedAchievements));
   const a=ACHIEVEMENTS[id];if(!a)return;
@@ -122,11 +132,11 @@ function shareHeroCard(){
 }
 
 function openBadges(){
-  const grid=document.getElementById('badge-grid');
-  const unlocked=BADGES.filter(b=>unlockedAchievements[b.id]).length;
-  document.getElementById('badge-count').textContent=`${unlocked} / ${BADGES.length}`;
+  const grid=document.getElementById('badge-grid'),list=BADGES.filter(b=>!b.legacy||unlockedAchievements[b.id]); // gamle myntmerker bare hvis du har dem
+  const unlocked=list.filter(b=>unlockedAchievements[b.id]).length;
+  document.getElementById('badge-count').textContent=`${unlocked} / ${list.length}`;
   grid.innerHTML='';
-  BADGES.forEach(b=>{
+  list.forEach(b=>{
     const got=!!unlockedAchievements[b.id];
     const div=document.createElement('div');
     div.className='badge-card'+(got?' unlocked':'')+(b.secret&&!got?' secret':'');

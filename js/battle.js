@@ -17,8 +17,9 @@ function startGame(g,topicId){
   const p=getPlayer();
   document.getElementById('player-avatar').textContent=p.emoji;
   document.getElementById('player-name').textContent=p.name;
-  document.getElementById('enemy-avatar').textContent=ENEMIES[g]||'👾';
-  document.getElementById('enemy-name').textContent=({1:'Tall-larven',2:'Minus-billen',3:'Gange-øglen',4:'Dele-krokodillen',5:'Komma-dinoen',6:'Brøk-dragen',7:'Algebra-trollet',8:'Likningszombien',9:'Pytha-romvesenet',10:'Funksjons-ufoen'})[g]||'Tallmonsteret';
+  const mo=typeof funMonster==='function'?funMonster(g,topicId):{e:ENEMIES[g]||'👾',n:'Tallmonsteret'},ea=document.getElementById('enemy-avatar'); // eget monster per tema (fun.js)
+  ea.textContent=mo.e;if(mo.a)ea.setAttribute('data-fun-idle',mo.a);else ea.removeAttribute('data-fun-idle');
+  document.getElementById('enemy-name').textContent=mo.n;
   document.getElementById('player-hp').style.width='100%';
   document.getElementById('enemy-hp').style.width='100%';
   const qc=document.getElementById('q-card');
@@ -168,15 +169,13 @@ function submitAnswer(){
     if(!S.enemyDefeated){const speeches=second?['Du fant det! 🌟','Sånn ja! 💪','Godt jobba! ⚔️']:S.combo>=5?['LEGENDE! 🏆','COMBO x'+S.combo+'! 🔥','USTOPPELIG! ⚡']:['Riktig! 💥','Godt treff! ⚔️','Matematikk-mester! 🌟'];setSpeech(pick(speeches));}
     document.getElementById('player-avatar').classList.add('happy');
     setTimeout(()=>document.getElementById('player-avatar').classList.remove('happy'),600);
-    // XP & coins
-    const xpG=second?6:10+(S.combo>=3?8:0)+(S.combo>=5?5:0);
+    // XP & coins: mynter bare for riktig på første forsøk (fun.js: 2 i tema som ikke er mestret, 1 i mestret)
+    const xpG=second?6:10+(S.combo>=3?8:0)+(S.combo>=5?5:0),cG=typeof funOnRight==='function'?funOnRight(e,second):second?0:1;
     const oldL=curLvl();
-    prog.xp+=xpG;prog.coins+=1;saveProg();renderHUD();
+    prog.xp+=xpG;prog.coins+=cG;S.funCoins=(S.funCoins||0)+cG;saveProg();renderHUD();
     const newL=curLvl();
     if(newL>oldL){checkEvolution(oldL,newL);sndLvl();launch(100);unlockAchievement('lvlup');if(newL>=5)unlockAchievement('lvl5');if(newL>=8)unlockAchievement('lvl8');if(newL>=12)unlockAchievement('lvl12');} // evolution waits for the chest (NIVÅ OPP first)
     updatePlayerEmoji();
-    if(prog.coins>=50)unlockAchievement('coins50');
-    if(prog.coins>=100)unlockAchievement('coins100');
     if(S.streak===1&&!unlockedAchievements.first_correct)unlockAchievement('first_correct');
     if(S.streak===5)unlockAchievement('streak5');
     if(S.combo>=5)unlockAchievement('combo5');
@@ -248,29 +247,25 @@ function showChest(){
   const res=recordRound(g,tid,c,n); // mestring v2 (mh_learn): {from,to}
   const newStars=Math.max(0,res.to-res.from);
   const xpEarned=s10*10+(pct>=1?50:pct>=.8?20:0);
-  const coinsEarned=s10+(pct>=1?5:0)+newStars*3; // en ny stjerne gir litt ekstra
+  // Mynter for læring (fun.js): svarene ga mynter underveis; ny ⭐ og «Ny rekord!» gir ekstra. 1.–2. klasse: enkel kiste.
+  const fc=typeof funChest==='function'?funChest(res,s10):{bonus:s10+newStars*3,total:s10+newStars*3,rec:false,small:false},coinsEarned=fc.total;
   const nx=mstNext(g,tid),h=mstRoundHead(pct,perfect);
   if(S.enemyDefeated)h.sub='💥 K.O.! '+h.sub;
 
   document.getElementById('chest-emoji').textContent=h.emoji;
   document.getElementById('chest-title').textContent=h.title;
   document.getElementById('chest-sub').innerHTML=`${h.sub}<div class="mst-chest-stars">${mstStarsHTML(res.to,res.from,hasCrown(g,tid))}</div><div class="mst-tip">${nx.txt}</div>`;
-  document.getElementById('chest-rewards').innerHTML=`
-    <div class="chest-reward"><span class="chest-reward-icon">✅</span><div class="chest-reward-val">${c} av ${n}</div></div>
-    <div class="chest-reward"><span class="chest-reward-icon">✨</span><div class="chest-reward-val">+${xpEarned}</div></div>
-    <div class="chest-reward"><span class="chest-reward-icon">🪙</span><div class="chest-reward-val">+${coinsEarned}</div></div>
-  `;
+  document.getElementById('chest-rewards').innerHTML=typeof funChestTiles==='function'?funChestTiles(fc,c,n,xpEarned):`<div class="chest-reward"><span class="chest-reward-icon">🪙</span><div class="chest-reward-val">+${coinsEarned}</div></div>`;
   const oldL=curLvl();
-  prog.xp+=xpEarned;prog.coins+=coinsEarned;saveProg();renderHUD();
+  prog.xp+=xpEarned;prog.coins+=fc.bonus;saveProg();renderHUD();
   const newL=curLvl();
   if(newL>oldL){checkEvolution(oldL,newL);unlockAchievement('lvlup');if(newL>=5)unlockAchievement('lvl5');if(newL>=8)unlockAchievement('lvl8');if(newL>=12)unlockAchievement('lvl12');}
-  if(prog.coins>=50)unlockAchievement('coins50');if(prog.coins>=100)unlockAchievement('coins100');
   document.getElementById('chest-overlay').classList.add('show');
   launch(pct>=.8?120:60);
   if(perfect)unlockAchievement('perfect');
   sidekickReact(pct>=.8?'celebrate':'happy');
   pgChest(res,xpEarned,coinsEarned,pct); // PROGRESSION: count-ups, star stamps, streak, NIVÅ OPP
-  mstSay(`${h.title} ${newStars?(res.to>=3?'Mestret!':'Ny stjerne!'):''} ${nx.say}`);
+  mstSay(`${h.title} ${newStars?(res.to>=3?'Mestret!':'Ny stjerne!'):''} ${fc.rec?'Ny rekord!':''} ${nx.say}`);
 }
 
 function closeChest(){

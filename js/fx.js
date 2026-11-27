@@ -102,7 +102,7 @@ function fxHit(pre){
     if(!rm){fxSpawn('fx-slash','',B.x,B.y,340,0,{'--fxc':lv===3?'#06d6ff':lv===2?'#ff6b35':'#ffd93d'});if(lv===3||slow)fxSpawn('fx-slash x','',B.x,B.y,340,40,{'--fxc':'#ffd93d'});fxSparks(B,slow?8:lv===3?6:lv===2?4:3,lv===3?['⚡','✨']:lv===2?['🔥','✨']:['⭐','✨'],slow?110:70);}
     if(lv>=2||slow)fxFlash(B,lv===3||slow?'rgba(255,245,170,.55)':'rgba(255,140,60,.4)',slow?600:380);
     if(dmg>0)fxSpawn('fx-dmg'+(lv===3||slow?' big':''),'-'+dmg,B.x+16,B.y-B.h*.3,950,40);
-    if(dxp>0)fxHudPop('xp','+'+dxp+' XP',80);
+    if(dxp>0)fxHudPop('xp','+'+dxp+' ✨',80); // ikke ordet «XP» for barnet
     if(dco>0)fxHudPop('coin','+'+dco+' 🪙',220);
     if(ko){fxShake(true);fxSpawn('fx-stamp','K.O.!',fxClampX(B.x,95),B.y,1800,90);
       if(S.boss){if(!rm)fxLater(()=>fxSpawn('fx-dizzy','💫',B.x,B.y-B.h*.55,2500,0),1100);}

@@ -223,86 +223,55 @@ const CHARS=[
   {emoji:'🦄',name:'Enhørningen'},{emoji:'🚀',name:'Raketten'},
 ];
 
-// 5 evolusjonsstadier per karakter (nivå 1→3→5→8→12)
-const EVOLUTIONS = [
-  ['🧙','🧙‍♂️','🔮','🌟','🌌'],   // Trollmannen
-  ['🦸','🦸‍♂️','💪','⚡','🏆'],   // Superhelten
-  ['🥷','🗡️','⚔️','🌑','💀'],    // Ninjaen
-  ['🧚','🧚‍♀️','🦋','🌈','✨'],   // Alven
-  ['🤖','⚙️','🔧','💎','🛸'],    // Roboten
-  ['🦊','🐺','🦁','🔱','🐉'],    // Reven
-  ['🐉','🔥','💥','🌋','🌠'],    // Dragen
-  ['⚡','🌩️','🌪️','💫','☄️'],   // Lynet
-  ['🦄','🌈','✨','🌟','💎'],    // Enhørningen
-  ['🚀','🛸','🌙','⭐','🌌'],    // Raketten
-];
-
+// Helten forblir helten: samme figur hele veien. Rangen gir pynt rundt figuren (glød, vinger, krone, stjernestøv – fun.js/css/fun.css).
+// Rangen følger boss-seire (fun.js: funTier): Lærling → Kriger (1 boss) → Mester (2) → Legende (4) → Mattegud (alle bosser).
+// lvl = gammel nivågrense (brukes bare til farge på heltekortet); gift = det helten får.
 const RANKS = [
-  {name:'Lærling 🌱', lvl:1,  color:'#8878cc', desc:'Du har akkurat begynt eventyret ditt!'},
-  {name:'Kriger ⚔️',  lvl:3,  color:'#06d6ff', desc:'Du har vist styrke i kampen mot tallene!'},
-  {name:'Mester 🔥',  lvl:5,  color:'#ff6b35', desc:'Tallene frykter deg nå!'},
-  {name:'Legende ⭐', lvl:8,  color:'#ffd93d', desc:'Du er blant de beste matteheltene!'},
-  {name:'Mattegud 🌌',lvl:12, color:'#a855f7', desc:'Du har nådd toppen av matteuniverset!'},
+  {name:'Lærling 🌱', lvl:1,  color:'#8878cc', gift:'mot',         desc:'Du har akkurat begynt eventyret ditt!'},
+  {name:'Kriger ⚔️',  lvl:3,  color:'#06d6ff', gift:'glød',        desc:'Du slo din første boss!'},
+  {name:'Mester 🔥',  lvl:5,  color:'#ff6b35', gift:'vinger',      desc:'To bosser er slått!'},
+  {name:'Legende ⭐', lvl:8,  color:'#ffd93d', gift:'krone',       desc:'Fire bosser er slått!'},
+  {name:'Mattegud 🌌',lvl:12, color:'#a855f7', gift:'stjernestøv', desc:'Alle bossene er slått!'},
 ];
 
-function getEvoTier(level) {
-  if(level >= 12) return 4;
-  if(level >= 8)  return 3;
-  if(level >= 5)  return 2;
-  if(level >= 3)  return 1;
-  return 0;
-}
-
-function getRank(level) {
-  let rank = RANKS[0];
-  RANKS.forEach(r => { if(level >= r.lvl) rank = r; });
-  return rank;
-}
-
-function getCharEmoji(charIdx, level) {
-  const tier = getEvoTier(level);
-  return EVOLUTIONS[charIdx]?.[tier] || CHARS[charIdx].emoji;
-}
+function getEvoTier() { return typeof funTier==='function' ? funTier() : 0; } // 0–4 (nivå teller ikke lenger)
+function getRank() { return RANKS[getEvoTier()] || RANKS[0]; }
+function getCharEmoji(charIdx) { return CHARS[charIdx]?.emoji || (typeof getPlayer==='function' ? getPlayer().emoji : CHARS[0].emoji); }
 
 function getCharIdx() {
-  return parseInt(localStorage.getItem('mh_char_idx') || '0');
+  const v = localStorage.getItem('mh_char_idx');
+  if(v == null && typeof getPlayer === 'function') { const i = CHARS.findIndex(c => c.emoji === getPlayer().emoji); if(i >= 0) return i; }
+  return parseInt(v || '0') || 0;
 }
 
 let pendingEvolution = null;
 
-function checkEvolution(oldLevel, newLevel) {
-  const oldTier = getEvoTier(oldLevel);
-  const newTier = getEvoTier(newLevel);
-  if(newTier > oldTier) {
-    const charIdx = getCharIdx();
-    pendingEvolution = {
-      oldEmoji: EVOLUTIONS[charIdx][oldTier],
-      newEmoji: EVOLUTIONS[charIdx][newTier],
-      rank: getRank(newLevel),
-    };
-  }
+// Steg rangen (boss-seier)? Da kommer «sterkere»-skjermen. Kalles også med gamle nivå-argumenter; de betyr ingenting nå.
+function checkEvolution() {
+  const up = typeof funRankUp === 'function' ? funRankUp() : null;
+  if(up) pendingEvolution = {from:up.from, to:up.to, rank:RANKS[up.to]};
 }
 
 function showEvolution() {
   if(!pendingEvolution) return;
-  const {oldEmoji, newEmoji, rank} = pendingEvolution;
-  document.getElementById('evo-old').textContent = oldEmoji;
-  document.getElementById('evo-new').textContent = newEmoji;
+  const {from, to, rank} = pendingEvolution, emoji = getCharEmoji(getCharIdx());
+  const eo = document.getElementById('evo-old'), en = document.getElementById('evo-new');
+  eo.textContent = emoji; en.textContent = emoji; // samme helt, nå sterkere
+  if(typeof applyHeroDecor === 'function') { applyHeroDecor(eo, {pet:false, tier:from}); applyHeroDecor(en, {pet:false, tier:to}); }
   document.getElementById('evo-rank-badge').textContent = rank.name;
   document.getElementById('evo-rank-badge').style.background = `linear-gradient(135deg,${rank.color},${rank.color}99)`;
   document.getElementById('evo-desc').textContent = rank.desc;
   // reset animation
-  const en = document.getElementById('evo-new');
   en.style.animation = 'none'; void en.offsetWidth; en.style.animation = '';
   document.getElementById('evo-overlay').classList.add('show');
-  launch(120, ['#ffd93d','#a855f7','#06d6ff','#ff6b35','#00ff88']);
+  if(typeof funEvoShow === 'function') funEvoShow(pendingEvolution); else launch(120, ['#ffd93d','#a855f7','#06d6ff','#ff6b35','#00ff88']);
   sndLvl();
   pendingEvolution = null;
 }
 
 function closeEvolution() {
   document.getElementById('evo-overlay').classList.remove('show');
-  updatePlayerEmoji();
+  if(typeof renderHUD === 'function') renderHUD(); else updatePlayerEmoji(); // ny pynt i HUD
 }
 
 function updatePlayerEmoji() {

@@ -328,6 +328,7 @@ function showBossResult(win){
   const first=win&&!isBossDefeated(g),wasOpen=g<10&&isGradeUnlocked(g+1);
   const xp=win?(first?150:50):20,coins=win?(first?25:10):3;
   if(win)localStorage.setItem('mh_boss_'+g,'1');
+  if(win)checkEvolution(); // rangen følger boss-seire (fun.js): «sterkere»-skjermen når barnet går videre
   const oldL=curLvl();
   prog.xp+=xp;prog.coins+=coins;saveProg();renderHUD();
   const newL=curLvl();
@@ -394,13 +395,14 @@ function bossRetry(){
 }
 
 function bossExit(to){
-  const g=S.grade;
+  const g=S.grade,evo=pendingEvolution;
   document.getElementById('boss-result').classList.remove('show');
   bossCleanup();
   bossRestore(); // ends a ?boss= test session (no-op otherwise)
   if(!localStorage.getItem('mh_player')){showScreen('chars');return;}
   buildGradeMap();
   if(to==='topics')selectGrade(g);else showScreen('grades');
+  if(evo&&!pendingEvolution)pendingEvolution=evo; // testmodus: vis «sterkere»-skjermen likevel (lagringen er rullet tilbake)
   if(pendingEvolution)showEvolution();
 }
 

@@ -496,9 +496,9 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 .clear-btn{background:rgba(255,68,102,.15);border:1px solid rgba(255,68,102,.3);border-radius:7px;padding:3px 9px;font-size:.72rem;font-weight:800;color:var(--red);cursor:pointer;font-family:'Nunito',sans-serif;}
 .clear-btn:hover{background:rgba(255,68,102,.25);}
 
+.scratch-toggle-btn{display:none;position:fixed;bottom:16px;right:16px;z-index:100;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:1.3rem;cursor:pointer;box-shadow:var(--glow-p);}
 @media(min-width:921px){.scratch-col{display:block!important;}.scratch-toggle-btn{display:none!important;}}
 @media(max-width:920px){.scratch-col.mobile-hidden{display:none;}.scratch-toggle-btn{display:flex;align-items:center;justify-content:center;}}
-.scratch-toggle-btn{display:none;position:fixed;bottom:16px;right:16px;z-index:100;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:1.3rem;cursor:pointer;box-shadow:var(--glow-p);}
 .particles{position:fixed;inset:0;pointer-events:none;z-index:9999;}
 .particle{position:absolute;border-radius:50%;opacity:0;animation:pFall 2s ease-in forwards;}
 @keyframes pFall{0%{transform:translateY(-20px) rotate(0) scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(100vh) rotate(540deg) scale(.3);opacity:0}}
@@ -659,7 +659,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 .boss-crown{position:absolute;top:-13px;left:-7px;font-size:1.15rem;transform:rotate(-18deg);filter:drop-shadow(0 0 6px rgba(255,217,61,.9));pointer-events:none;}
 .boss-replay-btn{display:block;margin:12px auto 0;padding:12px 26px;font-family:'Fredoka One',cursive;font-size:1rem;background:linear-gradient(135deg,var(--gold),var(--orange));color:var(--dark);border:none;border-radius:var(--rs);cursor:pointer;box-shadow:var(--glow-gold);}
 .boss-replay-btn:hover{transform:scale(1.05);}
-.boss-overlay{position:fixed;inset:0;z-index:650;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;overflow-y:auto;overflow-x:hidden;background:radial-gradient(ellipse at center,rgba(255,68,102,.4) 0%,transparent 70%),rgba(13,11,30,.96);}
+.boss-overlay{position:fixed;inset:0;z-index:650;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;text-align:center;padding:24px;overflow-y:auto;overflow-x:hidden;background:radial-gradient(ellipse at center,rgba(255,68,102,.4) 0%,transparent 70%),rgba(13,11,30,.96);}
 .boss-overlay.show{display:flex;animation:bossFade .3s ease;}
 .boss-overlay.final{background:radial-gradient(ellipse at center,rgba(168,85,247,.5) 0%,rgba(255,68,102,.2) 40%,transparent 75%),rgba(5,3,16,.97);}
 .boss-overlay.win{background:radial-gradient(ellipse at center,rgba(255,217,61,.38) 0%,transparent 70%),rgba(13,11,30,.96);}
@@ -863,6 +863,12 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
   .fx-boom,.fx-dmg,.fx-pop,.fx-word,.fx-stamp,.fx-shield,.fx-ring{animation-name:fxFadeRM;}
 }
 </style>
+<link rel="stylesheet" href="css/mastery.css"/>
+<link rel="stylesheet" href="css/loop.css"/>
+<link rel="stylesheet" href="css/small.css"/>
+<link rel="stylesheet" href="css/content.css"/>
+<link rel="stylesheet" href="css/fun.css"/>
+<link rel="stylesheet" href="css/parents.css"/>
 </head>
 <body>
 <div class="stars" id="stars"></div>
@@ -883,7 +889,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
         <div class="hc-lvl-row"><span id="hc-lvl-txt">Nivå 1</span><span id="hc-xp-txt">0 XP</span></div>
         <div class="hc-xp-track"><div class="hc-xp-fill" id="hc-xp-fill" style="width:0%"></div></div>
       </div>
-      <div class="hc-worlds-lbl">Verdener oppdaget</div>
+      <div class="hc-worlds-lbl">Verdener</div>
       <div class="hc-world-row" id="hc-world-row"></div>
       <div class="hc-stats-row">
         <div class="hc-stat"><div class="hc-stat-n" id="hc-badges">0</div><div class="hc-stat-l">Merker</div></div>
@@ -899,26 +905,34 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 <!-- STORY INTRO -->
 <div class="story-overlay hidden" id="story-overlay">
   <button class="story-skip" onclick="skipStory()">Hopp over</button>
+  <button class="tts-btn story-tts" onclick="storySay(true)" aria-label="Les opp" title="Les opp">🔊</button>
   <div class="story-panel active" id="story-p0">
     <div style="font-size:3rem">🏰✨🌿</div>
-    <div class="story-big">I kongeriket <span class="gold">Talland</span> lever alle i harmoni med tallene...</div>
-    <div class="story-sub">Matematikk er magi. Alle kan plusse, gange og dele — og verden er vakker.</div>
+    <div class="story-big">I landet <span class="gold">Talland</span> elsker alle tall.</div>
+    <div class="story-sub">Alle kan regne, og alle er glade.</div>
     <div class="story-dots"><div class="story-dot active"></div><div class="story-dot"></div><div class="story-dot"></div></div>
     <button class="story-btn" onclick="storyNext()">Neste →</button>
   </div>
   <div class="story-panel" id="story-p1">
     <div class="story-villain">👹</div>
-    <div class="story-big">Men så kom det mørke monsteret... <span class="red">NULLIUS!</span></div>
-    <div class="story-sub">Det stjal all matematikk fra kongeriket. Tallene ble kaotiske. Ingen kan lenger plusse, gange eller dele!</div>
+    <div class="story-big">Men så kom monsteret <span class="red">NULLIUS!</span></div>
+    <div class="story-sub">Han tok alle tallene. Nå kan ingen regne!</div>
     <div class="story-dots"><div class="story-dot"></div><div class="story-dot active"></div><div class="story-dot"></div></div>
     <button class="story-btn" onclick="storyNext()">Neste →</button>
   </div>
   <div class="story-panel" id="story-p2">
     <div class="story-hero">⚔️</div>
-    <div class="story-big">Bare <span class="gold">én helt</span> kan redde kongeriket!</div>
-    <div class="story-sub">Reis gjennom 5 verdener, beseir Nullius' monstre, og bring matematikken tilbake til Talland!</div>
+    <div class="story-big">Bare <span class="gold">du</span> kan redde Talland!</div>
+    <div class="story-sub">Regn riktig og slå monstrene. Er du klar?</div>
     <div class="story-dots"><div class="story-dot"></div><div class="story-dot"></div><div class="story-dot active"></div></div>
-    <button class="story-btn" onclick="skipStory()">🚀 Jeg er klar!</button>
+    <button class="story-btn" onclick="storyNext()">🚀 Jeg er klar!</button>
+  </div>
+  <div class="story-panel" id="story-ask">
+    <div class="story-big">Hvilken klasse går&nbsp;du&nbsp;i?</div>
+    <div class="grade-picks">
+      <button class="grade-pick" data-g="1" onclick="pickStartGrade(1)"><span class="gp-num">1</span><span class="gp-txt">Jeg går i 1.&nbsp;klasse</span></button>
+      <button class="grade-pick" data-g="2" onclick="pickStartGrade(2)"><span class="gp-num">2</span><span class="gp-txt">Jeg går i 2.&nbsp;klasse</span></button>
+    </div>
   </div>
 </div>
 
@@ -939,8 +953,9 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
     <div class="wp-name" id="wp-name">Tallenes Dal</div>
     <div class="wp-story" id="wp-story"></div>
     <div class="wp-btns">
-      <button class="wp-cancel" onclick="closeWorldPopup()">← Tilbake</button>
-      <button class="wp-go" id="wp-go">⚔️ Gå til kamp!</button>
+      <button class="wp-cancel" onclick="closeWorldPopup()" aria-label="Tilbake">←</button>
+      <button class="tts-btn" onclick="speak(document.getElementById('wp-name').textContent+'. '+document.getElementById('wp-story').textContent,{force:true})" aria-label="Les opp" title="Les opp">🔊</button>
+      <button class="wp-go" id="wp-go">🗺️ Gå inn ▶</button>
     </div>
   </div>
 </div>
@@ -969,9 +984,39 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
   <div class="evo-desc" id="evo-desc">Du har blitt sterkere!</div>
   <button class="evo-btn" onclick="closeEvolution()">🚀 Fortsett eventyret!</button>
 </div>
+<!-- STOPPE KAMPEN? (← i kamp når minst én oppgave er besvart, se learn.js) -->
+<div class="bk-overlay" id="bk-overlay" role="dialog" aria-modal="true" aria-labelledby="bk-title" onclick="if(event.target===this)battleBackStay()">
+  <div class="bk-card">
+    <div class="bk-faces"><span id="bk-hero">🦸</span><span class="bk-vs">⚔️</span><span id="bk-enemy">👾</span></div>
+    <div class="bk-title" id="bk-title">Vil du stoppe kampen?</div>
+    <div class="bk-sub">Stopper du, må du begynne på nytt.</div>
+    <div class="bk-btns">
+      <button class="bk-stay" id="bk-stay" onclick="battleBackStay()">Fortsett ⚔️</button>
+      <button class="bk-stop" onclick="battleBackStop()">🛑 Stopp</button>
+    </div>
+  </div>
+</div>
+<!-- INGEN NORSK STEMME: beskjed til voksne (speech.js: ttsNoteMaybe) -->
+<div class="tts-note" id="tts-note" role="dialog" aria-modal="true" aria-labelledby="tts-note-title">
+  <div class="tts-note-card">
+    <div class="tts-note-icon">🔇</div>
+    <div class="tts-note-lbl">👪 Til deg som er voksen</div>
+    <div class="tts-note-title" id="tts-note-title">Høytlesing mangler</div>
+    <p>Denne enheten har ingen norsk stemme. Derfor kan ikke spillet lese oppgavene høyt.</p>
+    <p class="tts-note-how">Slik får du norsk stemme:</p>
+    <ul>
+      <li><b>iPad og iPhone:</b> Innstillinger → Tilgjengelighet → Opplest innhold → Stemmer → Norsk. Last ned en stemme.</li>
+      <li><b>Android:</b> Innstillinger → søk etter «tekst til tale» → velg Google og last ned norsk.</li>
+      <li><b>PC:</b> Innstillinger → Tid og språk → Tale → legg til norsk stemme.</li>
+    </ul>
+    <p>Start spillet på nytt etterpå.</p>
+    <p class="tts-note-kid">Kan ikke barnet lese ennå? Da er det fint med en voksen i nærheten.</p>
+    <button class="tts-note-ok" id="tts-note-ok" onclick="ttsNoteClose()">OK, skjønner 👍</button>
+  </div>
+</div>
 
 <div class="app">
-  <div class="hdr"><div class="hdr-title">⚔️ Mattehelten</div><div class="hdr-sub">Bli en legendarisk mattehelt!</div></div>
+  <div class="hdr"><div class="hdr-title">⚔️ Mattehelten</div><div class="hdr-sub">Regn riktig og slå monstrene!</div></div>
   <div class="hud" id="hud">
     <div class="hud-char" id="hud-char">🦸</div>
     <div class="hud-sidekick" id="hud-sidekick" title="Din sidekick!" onclick="void 0">🐱</div>
@@ -989,21 +1034,21 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 
       <div id="screen-chars" class="screen active">
         <div class="cs-title">Velg din helt! ⚔️</div>
-        <div class="cs-sub">Din karakter følger deg gjennom alle matteoppgavene</div>
         <div class="char-grid" id="char-grid"></div>
         <div class="sidekick-pick">
-          <div class="sidekick-pick-lbl">Velg din sidekick 🐾</div>
+          <div class="sidekick-pick-lbl">Velg en venn 🐾</div>
           <div class="sidekick-grid" id="sidekick-grid"></div>
         </div>
         <div class="cs-name-wrap">
-          <div class="cs-name-lbl">Hva heter helten din?</div>
-          <input type="text" id="cs-name" class="cs-name-input" placeholder="Skriv navnet ditt..." maxlength="20"/>
+          <div class="cs-name-lbl">Navn <span class="cs-name-opt">(trenger du ikke)</span></div>
+          <input type="text" id="cs-name" class="cs-name-input" placeholder="Helt" maxlength="20" autocomplete="off" enterkeyhint="go"/>
         </div>
-        <button class="start-btn" onclick="saveCharacter()">🚀 Start eventyret!</button>
+        <button class="start-btn" onclick="saveCharacter()">⚔️ Start!</button>
       </div>
 
       <div id="screen-grades" class="screen">
         <div class="wm-title">🗺️ Eventyrkart</div>
+        <button class="go-fight" id="go-fight" onclick="goFight()"><span class="gf-main">⚔️ Gå til kamp!</span><span class="gf-sub" id="go-fight-sub"></span></button>
         <div class="pg-map-bar"><button class="pg-goal" id="pg-goal" onclick="pgGoalGo()"></button><button class="pg-shop-btn" onclick="openShop()"><span>🛒 Butikk</span><span class="pg-shop-tip" id="pg-shop-tip"></span></button></div>
         <div class="adv-map-wrap" id="adv-map-wrap">
           <div class="adv-map-bg"></div>
@@ -1030,7 +1075,8 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
       <div id="screen-game" class="screen">
         <div class="battle-top">
           <button class="battle-back" onclick="showScreen('grades')">←</button>
-          <button class="fx-mute" id="fx-mute" onclick="fxToggleMute()" aria-label="Skru av lyd" title="Lyd på">🔊</button>
+          <button class="fx-mute" id="fx-mute" onclick="fxToggleMute()" aria-label="Skru av lyd" title="Lyd på">🎵</button>
+          <button class="fx-mute scratch-top-btn" onclick="toggleScratch()" aria-label="Kladdebok" title="Kladdebok">✏️</button>
           <div class="battle-prog-wrap">
             <div class="battle-prog-lbl"><span id="prog-label">Spørsmål 1 av 10</span><span id="score-label" style="color:var(--green)">0 riktige</span></div>
             <div class="battle-prog-track"><div class="battle-prog-fill" id="prog-fill" style="width:0%"></div></div>
@@ -1054,13 +1100,15 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
         <div class="q-card" id="q-card">
           <div class="q-cat" id="q-cat">Addisjon</div>
           <div class="q-txt" id="q-txt">3 + 2 = ?</div>
+          <div class="q-vis" id="q-vis" style="display:none"></div>
           <div class="q-hint" id="q-hint"></div>
           <div class="combo-flash" id="combo-flash"></div>
         </div>
         <div class="ans-row">
-          <input type="text" id="ans-input" class="ans-input" placeholder="?" autocomplete="off" inputmode="decimal"/>
+          <input type="text" id="ans-input" class="ans-input" placeholder="?" autocomplete="off" inputmode="none"/>
           <button class="sub-btn" id="sub-btn" onclick="submitAnswer()">⚔️</button>
         </div>
+        <div class="q-choices" id="q-choices" style="display:none"></div>
         <div class="numpad" id="numpad"></div>
         <div class="fb-box" id="fb-box"></div>
         <button class="next-btn" id="next-btn" onclick="handleNext()">Neste →</button>
@@ -1111,8 +1159,10 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
       <div id="screen-learn" class="screen">
         <div class="learn-card">
           <div class="learn-top-bar">
-            <button class="learn-back" onclick="showScreen('topics')">←</button>
-            <div><div class="learn-topic-name" id="learn-topic-name">Addisjon</div><div class="learn-step-lbl" id="learn-step-lbl">Steg 1 av 4</div></div>
+            <button class="learn-back" onclick="learnBack()" aria-label="Tilbake">←</button>
+            <div class="learn-top-mid"><div class="learn-topic-name" id="learn-topic-name">Addisjon</div><div class="learn-step-lbl" id="learn-step-lbl">Steg 1 av 4</div></div>
+            <button class="tts-btn" onclick="learnSay(true)" aria-label="Les opp" title="Les opp">🔊</button>
+            <button class="learn-skip" id="learn-skip" onclick="learnFight()" aria-label="Til kamp" title="Til kamp">⚔️</button>
           </div>
           <div class="learn-dots" id="learn-dots"></div>
           <div class="learn-body" id="learn-body">
@@ -1122,7 +1172,7 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
             <div class="learn-visual" id="learn-visual"></div>
           </div>
           <div class="learn-nav">
-            <button class="learn-prev" id="learn-prev" onclick="learnPrev()">← Tilbake</button>
+            <button class="learn-prev" id="learn-prev" onclick="learnPrev()" aria-label="Forrige">←</button>
             <button class="learn-next" id="learn-next" onclick="learnNext()">Neste →</button>
           </div>
         </div>
@@ -1219,6 +1269,24 @@ html,body{font-family:'Nunito',sans-serif;background:var(--dark);color:var(--whi
 </div>
 <!-- BATTLE FX layer (attack/shield/damage pops; pointer-events:none) -->
 <div class="fx-layer" id="fx-layer" aria-hidden="true"></div>
-<script src="game.js"></script>
+<script src="js/core.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/mastery.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/curriculum.js"></script>
+<script src="js/vis.js"></script>
+<script src="js/state.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/learning.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/review.js"></script>
+<script src="js/learn.js"></script>
+<script src="js/topics12.js"></script>
+<script src="js/progression.js"></script>
+<script src="js/boss.js"></script>
+<script src="js/parents.js"></script>
+<script src="js/fun.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/init.js"></script>
 </body>
 </html>

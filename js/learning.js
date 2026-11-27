@@ -19,7 +19,7 @@ function loopKey(qd){const o=qd&&qd.ops,N=n=>typeof n==='number'&&isFinite(n);
     if(o.op==='-')return o.unk?`+?${o.a-o.b}|${o.a}`:`+?${o.b}|${o.a}`;
     return `${o.op}${o.a}|${o.b}`;}
   if(o&&N(o.a)&&(o.op==='dbl'||o.op==='half'))return o.op+o.a;
-  return String(qd&&(qd.eq||qd.q));}
+  return String(qd&&(qd.key||qd.eq||qd.q));} // qd.key: bildeoppgaver med lik tekst (topics12.js)
 // «0-oppgave»: + 0, − 0 eller n − n
 function isZeroQ(qd){const o=qd&&qd.ops;return !!(qd&&(qd.strat==='null'||o&&(o.op==='+'||o.op==='-')&&(o.a===0||o.b===0||o.op==='-'&&!o.unk&&o.a===o.b)));}
 function loopWeak(qd,tid){return !!(qd&&qd.strat&&typeof famWeak==='function'&&famWeak(S.grade,tid,qd.strat));}

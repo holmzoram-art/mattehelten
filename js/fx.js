@@ -43,7 +43,7 @@ function fxSndRoar(at){fxOsc(175,55,.9,'sawtooth',.1,at);fxOsc(186,58,.9,'sawtoo
 function fxSndTick(low){fxOsc(low?380:640,low?340:600,.045,'triangle',.05);}
 
 // ---- Mute toggle (🔊/🔇 in the battle top bar) ----
-function fxMuteSync(){const b=fxE('fx-mute');if(!b)return;const m=fxMuted();b.textContent=m?'🔇':'🔊';b.classList.toggle('off',m);b.setAttribute('aria-pressed',m?'true':'false');b.setAttribute('aria-label',m?'Skru på lyd':'Skru av lyd');b.title=m?'Lyd av':'Lyd på';}
+function fxMuteSync(){const b=fxE('fx-mute');if(!b)return;const m=fxMuted();b.textContent=m?'🔇':'🎵';b.classList.toggle('off',m);b.setAttribute('aria-pressed',m?'true':'false');b.setAttribute('aria-label',m?'Skru på lyd':'Skru av lyd');b.title=m?'Lyd av':'Lyd på';}
 function fxToggleMute(){const m=!fxMuted();try{localStorage.setItem('mh_muted',m?'1':'0');}catch(e){}fxMuteSync();if(!m){try{if(ac&&ac.resume)ac.resume();}catch(e){}tone(660,.08,'triangle',.15);setTimeout(()=>tone(880,.1,'triangle',.15),70);}}
 
 // ---- Shop decoration from agent D's shop (optional, only if getHeroDecor exists) ----

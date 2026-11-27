@@ -83,6 +83,7 @@ function funNodeMonster(node,g,tid,open){
 // MYNTER FOR LÆRING + «NY REKORD!»
 // ============================================================
 // Riktig på første forsøk: 2 🪙 i tema som ikke er mestret, 1 🪙 i mestret tema. Ny ⭐ og ny rekord gir +5 i kista.
+// Bare to valg (Ja/Nei, også ⚡ Lynoppgave) gir 1 🪙 (lett å gjette); en svak regnemåte (e.w) gir +1 🪙. Revansj (søskenoppgave) gir vanlige mynter.
 const FUN_STAR_COINS=5,FUN_REC_COINS=5;
 function funAnswerCoins(g,tid){return typeof isTopicMastered==='function'&&isTopicMastered(g,tid)?1:2;}
 // Hook i submitAnswer ved riktig svar: teller vekst (rettet selv, revansj) og gir myntene for svaret
@@ -91,7 +92,9 @@ function funOnRight(e,second){
   if(second){st.fix=(st.fix||0)+1;st.fx=(st.fx||0)+1;}
   if(e&&e.revenge)st.rev=(st.rev||0)+1;
   if(second||(e&&e.revenge)){funSave(st);funCheckBadges(true);}
-  return second?0:funAnswerCoins(S.grade,S.topicId);
+  if(second)return 0;
+  const c=funAnswerCoins(S.grade,S.topicId);
+  return (e&&e.c2?1:c)+(e&&e.w&&!e.c2?1:0);
 }
 function funBest(g,tid){try{return typeof getBest==='function'?getBest(g,tid):null;}catch(e){return null;}}
 // Kista (hook i showChest etter recordRound). Myntene for svarene er gitt underveis (S.funCoins).

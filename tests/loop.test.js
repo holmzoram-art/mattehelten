@@ -10,17 +10,19 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   const words=t=>String(t).replace(/<[^>]*>/g,' ').split(/\s+/).filter(w=>/[a-zæøåA-ZÆØÅ]/.test(w)).length;
   const BAD=/undefined|NaN|Infinity|\[object|null/;
   const loopKey=R('loopKey'),isZeroQ=R('isZeroQ'),detectMisc=R('detectMisc'),loopHint=R('loopHint'),loopReveal=R('loopReveal'),renderVis=R('renderVis');
-  // Spiller en hel runde. answer(qd,forsøk) gir svaret (forsøk 0 eller 1)
+  // Spiller en hel runde (8 nye oppgaver + ekstra revansj/mini). answer(qd,forsøk) gir svaret (forsøk 0 eller 1)
   function round(g,id,answer){
     R(`startGame(${g},'${id}')`);
-    for(let i=0;i<8;i++){
+    for(let i=0;i<20;i++){
       const q=S().current;ans(answer(q,0));
       if(!S().answered)ans(answer(q,1));
       ok(S().answered,`round ${id}: question not resolved after two tries`);
-      if(i<7)R('handleNext()');
+      if(R('loopRoundOver()'))break;
+      R('handleNext()');
     }
     return S().questions;
   }
+  const newQ=qs=>qs.filter(x=>!x.revenge&&!x.mini);
   const right=q=>Array.isArray(q.choices)&&q.choices.length?String(q.ansTxt??q.ans):q.ans;
   const wrongOf=q=>Array.isArray(q.choices)&&q.choices.length?String(q.choices.find(c=>String(c)!==String(q.ansTxt??q.ans))):q.ans+1;
 
@@ -53,7 +55,10 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   const fbh=el('fb-box').innerHTML;
   ok(/<strong>6<\/strong>/.test(fbh)&&/loop-vis/.test(fbh)&&/Se her/.test(fbh),'two wrongs: answer, picture and title shown');
   ok(words(fbh.replace(/<div class="loop-(vis|again)">[\s\S]*$/,''))<=12,'two wrongs: feedback is short');
-  ok(s.lp&&s.lp.rev.length===2&&s.lp.rev.every(r=>r.at>=s.idx),'missed questions queued for revenge (also fixed ones)');
+  // 8 + 5 (rettet) får en søskenoppgave i add20; 9 − 3 (tenk-pluss) har ingen søsken i add20, så den revansjen droppes
+  ok(s.lp&&s.lp.rev.length===1&&s.lp.rev.every(r=>r.at>=s.idx),'missed questions queued for revenge (also fixed ones), only when a sibling exists');
+  {const r0=s.lp.rev[0]&&s.lp.rev[0].qd;ok(r0&&r0.strat==='over-tier'&&loopKey(r0)!==loopKey({ops:{a:8,b:5,op:'+'}})&&r0.ans!==undefined,`revenge is a sibling: same strategy, new numbers (${r0&&r0.q})`);}
+  ok(!/Snart får du/.test(fbh),'no «comes back» message when there is no sibling');
   // valg: 2 valg → fasit med en gang; 3 valg → nytt forsøk
   R("startGame(1,'add10')");
   setQ({q:'7 + 5 = 12. Stemmer det?',ans:'Ja',choices:['Ja','Nei'],sub:'tf'});R("submitChoice('Nei',null)");
@@ -66,34 +71,34 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   R("startGame(4,'mul110')");setQ({q:'7 · 8 = ?',ans:56,type:'Ganging',hint:'8-gangen',sub:'x8'});ans(54);
   ok(!S().answered&&/8-gangen/.test(el('loop-help').innerHTML),'grade 4: retry with qd.hint');
 
-  // ---- Revansj: kommer 2–3 oppgaver senere, maks 2 per runde, runden er alltid 8 ----
+  // ---- Revansj: søskenoppgave 2–3 oppgaver senere, ekstra (runden har alltid 8 nye), maks 2 ekstra per runde ----
   ls.clear();
   let revPosOK=true,revMax=0,len8=true;
   for(let r=0;r<40;r++){
     let missAt=-1;
     const qs=round(1,'add10',(q,t)=>{const i=S().idx;if(missAt<0&&i===1){missAt=i;}return i===1&&!q.revenge?wrongOf(q):right(q);});
-    len8=len8&&qs.length===8;
+    len8=len8&&newQ(qs).length===8&&qs.length===9;
     const rv=qs.map((x,i)=>x.revenge?i:-1).filter(i=>i>=0);
     revMax=Math.max(revMax,rv.length);
-    if(!(rv.length===1&&(rv[0]===3||rv[0]===4)&&qs[rv[0]].k===qs[1].k))revPosOK=false;
+    if(!(rv.length===1&&(rv[0]===3||rv[0]===4)&&qs[rv[0]].k!==qs[1].k&&qs[rv[0]].strat===qs[1].strat))revPosOK=false;
   }
-  ok(len8,'round is always 8 questions');
-  ok(revPosOK,'missed question 2 comes back as revenge at question 4 or 5');
+  ok(len8,'round is always 8 new questions, the revenge comes on top');
+  ok(revPosOK,'missed question 2 comes back as a sibling (same strategy, other fact) at question 4 or 5');
   ok(revMax<=1,'revenge only for missed questions');
   let revAll=0,revRounds=0;
-  for(let r=0;r<30;r++){const qs=round(1,'sub10',(q,t)=>wrongOf(q));const n=qs.filter(x=>x.revenge).length;revAll=Math.max(revAll,n);if(n===2)revRounds++;ok(qs.length===8,'all wrong: still 8 questions');}
+  for(let r=0;r<30;r++){const qs=round(1,'sub10',(q,t)=>wrongOf(q));const n=qs.filter(x=>x.revenge).length,x=qs.filter(x=>x.revenge||x.mini).length;revAll=Math.max(revAll,x);if(n===2)revRounds++;ok(newQ(qs).length===8&&qs.length<=10,'all wrong: still 8 new questions, at most 2 extra');}
   ok(revAll===2&&revRounds>20,'max 2 revenges per round');
   ok(R('S').enemyDefeated===false,'no K.O. when everything is wrong');
 
-  // ---- K.O. først på siste oppgave ----
+  // ---- K.O. først når alle de nye oppgavene er gjort ----
   ls.clear();
-  {let early=false;R("startGame(1,'add10')");for(let i=0;i<8;i++){ans(right(S().current));if(i<7&&S().enemyDefeated)early=true;if(i<7)R('handleNext()');}
-   ok(!early&&S().enemyDefeated&&S().idx===8,'perfect round: K.O. on the last question, not before');}
+  {let early=false;R("startGame(1,'add10')");for(let i=0;i<12;i++){ans(right(S().current));if(R('loopNewDone()')<8&&S().enemyDefeated)early=true;if(R('loopRoundOver()'))break;R('handleNext()');}
+   ok(!early&&S().enemyDefeated&&R('loopNewDone()')===8,'perfect round: K.O. on the last new question, not before');}
 
   // ---- S.maxQ (f.eks. repetisjonskamp med 6 oppgaver) ----
   ls.clear();
-  {R("startGame(1,'add10');S.maxQ=6");for(let i=0;i<6;i++){ans(right(S().current));if(i<5)R('handleNext()');}
-   ok(S().idx===6&&S().enemyDefeated&&el('next-btn').textContent==='Se resultat 🏁','S.maxQ=6: round ends after 6 with K.O. and result button');}
+  {R("startGame(1,'add10');S.maxQ=6");for(let i=0;i<10;i++){ans(right(S().current));if(R('loopRoundOver()'))break;R('handleNext()');}
+   ok(R('loopNewDone()')===6&&S().enemyDefeated&&el('next-btn').textContent==='Se resultat 🏁','S.maxQ=6: round ends after 6 new with K.O. and result button');}
 
   // ---- Autoneste etter riktig svar, ikke etter feil eller siste ----
   {const orig=ctx.setTimeout,cbs=[];ctx.setTimeout=(f,ms)=>{cbs.push({f,ms});return cbs.length;};
@@ -105,8 +110,8 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
      cbs.length=0;ans(wrongOf(S().current));ans(wrongOf(S().current));ok(!cbs.some(c=>c.ms===1200),'no autonext after two wrongs');
      R('handleNext()');cbs.length=0;ans(right(S().current));const b=cbs.filter(c=>c.ms===1200);R('handleNext()');const i2=S().idx;if(b[0])b[0].f();
      ok(S().idx===i2&&!S().answered,'tap skips the wait (timer does nothing afterwards)');
-     for(let i=S().idx;i<8;i++){cbs.length=0;ans(right(S().current));if(i<7)R('handleNext()');}
-     ok(!cbs.some(c=>c.ms===1200)&&S().idx===8,'no autonext after the last question');
+     for(let i=0;i<12;i++){cbs.length=0;ans(right(S().current));if(R('loopRoundOver()'))break;R('handleNext()');}
+     ok(!cbs.some(c=>c.ms===1200)&&R('loopNewDone()')===8,'no autonext after the last question');
    }finally{ctx.setTimeout=orig;el('screen-game').classList={add(){},remove(){},toggle(){},contains(){return false;}};}}
 
   // ---- Fordeling i runden: ingen gjentakelse, maks én 0-oppgave, første oppgave ikke svak ----
@@ -114,8 +119,8 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
     ls.clear();let dup=0,zero=0;
     for(let r=0;r<25;r++){
       const qs=round(g,id,(q,t)=>Math.random()<.8?right(q):wrongOf(q));
-      const ks=qs.filter(x=>!x.revenge).map(x=>x.k);if(new Set(ks).size<ks.length)dup++;
-      if(qs.filter(x=>!x.revenge&&x.z).length>1)zero++;
+      const ks=newQ(qs).map(x=>x.k);if(new Set(ks).size<ks.length)dup++;
+      if(newQ(qs).filter(x=>x.z).length>1)zero++;
     }
     ok(dup===0,`${id}: no repeated fact in a round`);
     ok(zero===0,`${id}: at most one 0-question per round`);
@@ -123,8 +128,8 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   // Tak på svake familier: barnet bommer alltid på tierovergang i add20
   ls.clear();
   {let over=0,first=0,sumW=0;const cross=q=>q.ops&&q.ops.op==='+'&&Math.max(q.ops.a,q.ops.b)<10&&q.ops.a+q.ops.b>10;
-   for(let r=0;r<40;r++){const qs=round(1,'add20',(q,t)=>cross(q)?q.ans+1:q.ans);const w=qs.filter(x=>!x.revenge&&x.w).length;sumW+=w;if(w>3)over++;if(qs[0].w)first++;}
-   ok(over===0,'add20: at most 3 of 8 from weak families');
+   for(let r=0;r<40;r++){const qs=round(1,'add20',(q,t)=>cross(q)?q.ans+1:q.ans);const w=newQ(qs).filter(x=>x.w).length;sumW+=w;if(w>5)over++;if(qs[0].w)first++;}
+   ok(over===0,'add20: at most 5 of 8 from weak families (cap 60 %)');
    ok(first===0,'first question of a round is never from a weak family');
    ok(sumW/40>=2.2,`add20: weak families still practised (${(sumW/40).toFixed(1)} per round)`);}
   // Kort hukommelse: feilrate over de siste 8
@@ -217,8 +222,8 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
     ok(S().answered&&S().bossStats[tid0]&&S().bossStats[tid0].n===1&&S().bossStats[tid0].ok===0,'boss: fixed answer counts as not first-try');
     ok(S().bossPts===pts0,'boss: no damage on second try');
     let found=false;
-    for(let i=0;i<4&&!found;i++){R('handleNext()');const q=S().current;if(q.revenge){found=true;ok(S().topicId===tid0&&S().bossTopic&&S().bossTopic.id===tid0,'boss: revenge restores the topic');}ans(right(q));}
-    ok(found,'boss: revenge comes back');
+    for(let i=0;i<6;i++){R('handleNext()');const q=S().current;if(q.revenge||q.mini)found=true;ans(right(q));}
+    ok(!found&&!(S().lp&&S().lp.rev.length),'boss: no revenge or mini question in the boss');
     ok(S().bossPts<pts0,'boss: first-try right hits the boss');
     R('bossCleanup()');
   }

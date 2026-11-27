@@ -75,13 +75,14 @@ module.exports=function({R,ok,CUR,ls}){
   // ---- 6) Neste stjerne (tekst for voksne) ----
   reset();
   ok(/6 av 8.*⭐\./.test(R("parNextStar(1,'add10',0).txt")),'par: 0 stjerner → 6 av 8 gir ⭐');
-  rr(1,'add10',7,8,day(1));
-  let nx=R("parNextStar(1,'add10',topicStars(1,'add10'))");ok(nx.gap===0&&/Én runde til/.test(nx.txt),`par: ⭐⭐ med god runde i går → én runde til (${nx.txt})`);
-  reset();rr(1,'add10',7,8,day(0));
+  rr(1,'add10',7,8,day(2));rr(1,'add10',7,8,day(1)); // ⭐⭐⭐ = 21 av 24 i de tre siste rundene, på minst to dager
+  let nx=R("parNextStar(1,'add10',topicStars(1,'add10'))");ok(nx.gap===0&&/Én runde til med 7 av 8/.test(nx.txt),`par: ⭐⭐ med to gode runder en annen dag → én runde til (${nx.txt})`);
+  reset();rr(1,'add10',8,8,day(0));nx=R("parNextStar(1,'add10',topicStars(1,'add10'))");ok(nx.gap>1&&/21 av 24/.test(nx.txt),`par: ⭐⭐ med bare én runde → tre runder trengs (${nx.txt})`);
+  reset();rr(1,'add10',7,8,day(0));rr(1,'add10',7,8,day(0));
   nx=R("parNextStar(1,'add10',topicStars(1,'add10'))");ok(nx.gap===.5&&/i morgen/.test(nx.txt),`par: ⭐⭐ med god runde bare i dag → i morgen (${nx.txt})`);
   reset();rr(1,'add10',6,8,day(2));
   nx=R("parNextStar(1,'add10',1)");ok(nx.gap===1&&/7 av 8.*⭐⭐\./.test(nx.txt),`par: ⭐ → 7 av 8 gir ⭐⭐ (${nx.txt})`);
-  reset();rr(1,'add10',7,8,day(1));rr(1,'add10',8,8,day(0));
+  reset();rr(1,'add10',7,8,day(1));rr(1,'add10',7,8,day(1));rr(1,'add10',8,8,day(0));
   nx=R("parNextStar(1,'add10',3)");ok(nx.gap===99&&/Mestret/.test(nx.txt),'par: mestret');
 
   // ---- 7) Anbefaling ----
@@ -94,7 +95,7 @@ module.exports=function({R,ok,CUR,ls}){
   // b) Lavest treff vinner over nærmest neste stjerne
   reset();
   const T=CUR[1].topics.map(t=>t.id); // add10, sub10, ten1, …
-  rr(1,T[0],7,8,day(3));rr(1,T[0],8,8,day(1)); // ⭐⭐⭐
+  rr(1,T[0],7,8,day(3));rr(1,T[0],7,8,day(3));rr(1,T[0],8,8,day(1)); // ⭐⭐⭐
   rr(1,T[1],6,8,day(2));                       // ⭐
   rr(1,T[2],6,8,day(2));rr(1,T[2],7,8,day(1)); // ⭐⭐, god runde i går → nær ⭐⭐⭐
   const st={};st[day(1)]={ms:400000,n:32,ok:20,t:{[`1:${T[1]}`]:[16,6],[`1:${T[2]}`]:[16,14]},m:{pluss:3,en:2}};
@@ -109,19 +110,19 @@ module.exports=function({R,ok,CUR,ls}){
   st[day(1)].t[`1:${T[1]}`]=[16,14];st[day(2)].t[`1:${T[1]}`]=[8,7];ls.set('mh_stats',J(st));
   r=rec();ok(r.kind==='near'&&r.r.id===T[2]&&r.r.nx.gap===0,`par: nærmest neste stjerne (${r.kind} ${r.r&&r.r.id})`);
   // d) Alle påbegynte mestret → nytt tema
-  reset();rr(1,T[0],7,8,day(2));rr(1,T[0],7,8,day(1));
+  reset();rr(1,T[0],7,8,day(2));rr(1,T[0],7,8,day(1));rr(1,T[0],7,8,day(1));
   r=rec();ok(r.kind==='new'&&r.r.id===T[1],`par: nytt tema når alt påbegynt er mestret (${r.kind} ${r.r&&r.r.id})`);
   ok(html().includes('Nytt tema'),'par: tekst for nytt tema');
   // e) Alt åpent er mestret → repetisjon, og bossen er klar
   reset();
-  for(const t of CUR[1].topics){rr(1,t.id,7,8,day(3));rr(1,t.id,8,8,day(1));}
+  for(const t of CUR[1].topics){rr(1,t.id,7,8,day(3));rr(1,t.id,7,8,day(3));rr(1,t.id,8,8,day(1));}
   r=rec();ok(r.kind==='done'&&!r.r,`par: alt mestret (${r.kind})`);
   h=html();ok(h.includes('Alt som er åpnet, er mestret')&&h.includes('Bossen i 1. klasse er klar'),'par: tekst når alt er mestret, og hint om bossen');
   ok(h.includes('venter! Alle temaer har ⭐'),'par: klassetrinnet viser at bossen venter');
   // f) Valgfritt tema anbefales ikke som nytt
   reset();ls.set('mh_boss_1','1');
-  for(const t of CUR[2].topics.filter(t=>!t.optional)){rr(2,t.id,7,8,day(3));rr(2,t.id,8,8,day(1));}
-  for(const t of CUR[1].topics){rr(1,t.id,7,8,day(3));rr(1,t.id,8,8,day(1));}
+  for(const t of CUR[2].topics.filter(t=>!t.optional)){rr(2,t.id,7,8,day(3));rr(2,t.id,7,8,day(3));rr(2,t.id,8,8,day(1));}
+  for(const t of CUR[1].topics){rr(1,t.id,7,8,day(3));rr(1,t.id,7,8,day(3));rr(1,t.id,8,8,day(1));}
   r=rec();ok(r.kind==='done',`par: valgfritt tema (mul25) anbefales ikke som nytt (${r.kind} ${r.r&&r.r.id})`);
   ok(html().includes('slått'),'par: slått boss vises');
 

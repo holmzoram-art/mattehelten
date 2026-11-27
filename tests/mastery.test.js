@@ -16,16 +16,30 @@ module.exports=function({R,ok,CUR,ls,els}){
   r=rr(1,A,7,8);ok(r.to===2,'mst: 7/8 gir ⭐⭐');
   r=rr(1,A,8,8);ok(r.to===2,'mst: to runder ≥ 7/8 samme dag gir ikke ⭐⭐⭐');
   let nx=R(`mstNext(1,'${A}')`);ok(nx.now===false&&/i morgen/.test(nx.txt),`mst: tipset sier «i morgen»: ${nx.txt}`);
-  reset();rr(1,A,7,8,D1);r=rr(1,A,7,8,D0);ok(r.to===3&&R(`isTopicMastered(1,'${A}')`),'mst: 7/8 på to ulike dager gir ⭐⭐⭐');
-  reset();rr(1,A,7,8,D3);rr(1,A,3,8,D2);r=rr(1,A,8,8,D1);ok(r.to===3,'mst: 2 av de 3 siste ≥ 7/8 (dårlig runde mellom) gir ⭐⭐⭐');
+  // ⭐⭐⭐ (F1): de 3 siste rundene ≥ 21/24 til sammen, på minst 2 ulike dager
+  reset();rr(1,A,7,8,D1);r=rr(1,A,7,8,D0);ok(r.to===2,'mst: to runder 7/8 på to dager er ikke nok for ⭐⭐⭐');
+  r=rr(1,A,7,8,D0);ok(r.to===3&&R(`isTopicMastered(1,'${A}')`),'mst: 3 runder med 21/24 på to dager gir ⭐⭐⭐');
+  reset();rr(1,A,7,8,D0);rr(1,A,7,8,D0);r=rr(1,A,8,8,D0);ok(r.to===2,'mst: 22/24 samme dag gir ikke ⭐⭐⭐');
+  reset();rr(1,A,8,8,D2);rr(1,A,8,8,D1);r=rr(1,A,4,8,D0);ok(r.to===2,'mst: 20/24 gir ikke ⭐⭐⭐');
+  reset();rr(1,A,8,8,D2);rr(1,A,8,8,D1);r=rr(1,A,5,8,D0);ok(r.to===3,'mst: 8 + 8 + 5 = 21/24 gir ⭐⭐⭐');
+  reset();rr(1,A,7,8,D3);rr(1,A,3,8,D2);r=rr(1,A,8,8,D1);ok(r.to===2,'mst: en dårlig runde blant de 3 siste stopper ⭐⭐⭐');
   reset();rr(1,A,7,8,D4);rr(1,A,2,8,D3);rr(1,A,2,8,D2);r=rr(1,A,8,8,D1);ok(r.to===2,'mst: god runde utenfor de 3 siste teller ikke for ⭐⭐⭐');
-  nx=R(`mstNext(1,'${A}')`);ok(nx.now===true&&/nå/.test(nx.txt),`mst: tipset sier «nå» når forrige dag var god: ${nx.txt}`);
+  nx=R(`mstNext(1,'${A}')`);ok(nx.now===true&&/Tre runder/.test(nx.txt),`mst: tipset sier tre runder når én runde ikke er nok: ${nx.txt}`);
+  reset();rr(1,A,8,8,D2);rr(1,A,7,8,D1);nx=R(`mstNext(1,'${A}')`);ok(nx.now===true&&/Få 6 riktige nå/.test(nx.txt),`mst: tipset sier «nå» med antallet som trengs: ${nx.txt}`);
   r=rr(1,A,0,8);ok(r.to===2,'mst: stjerner tas aldri bort');
-  reset();rr(1,A,7,8,D1);rr(1,A,7,8,D0);[0,1,0,2].forEach(c=>rr(1,A,c,8));ok(stars(1,A)===3,'mst: mestret forblir mestret etter dårlige runder');
-  // Innsatsregel: 3 runder med snitt ≥ 40 %
-  reset();rr(1,A,3,8);rr(1,A,3,8);ok(stars(1,A)===0,'mst: to svake runder gir ikke ⭐ ennå');
-  r=rr(1,A,4,8);ok(r.to===1,'mst: innsatsregel – 3 runder med snitt ≥ 40 % gir ⭐');
-  reset();rr(1,A,2,8);rr(1,A,3,8);r=rr(1,A,3,8);ok(r.to===0,'mst: snitt 33 % gir ikke ⭐');
+  reset();rr(1,A,7,8,D1);rr(1,A,7,8,D1);rr(1,A,7,8,D0);[0,1,0,2].forEach(c=>rr(1,A,c,8));ok(stars(1,A)===3,'mst: mestret forblir mestret etter dårlige runder');
+  // Innsats (F1): 3 runder med snitt ≥ 40 % gir 💪 «Øvd godt», ikke ⭐: neste tema åpnes, men bossen teller den ikke
+  reset();rr(1,A,3,8);rr(1,A,3,8);ok(stars(1,A)===0&&!R(`topicEffort(1,'${A}')`),'mst: to svake runder gir ikke 💪 ennå');
+  r=rr(1,A,4,8);ok(r.to===0&&r.eff===true&&R(`topicEffort(1,'${A}')`)&&!R(`isTopicPassed(1,'${A}')`),'mst: innsatsregel – 3 runder med snitt ≥ 40 % gir 💪, ikke ⭐');
+  ok(R('isTopicUnlocked(1,1)'),'mst: 💪 åpner neste tema');
+  ok(/💪/.test(R(`mstNext(1,'${A}')`).txt)&&/💪/.test(R(`mstGoalShort(1,'${A}')`))&&/mst-eff/.test(R('mstStarsHTML(0,null,false,1)')),'mst: 💪 vises i tips, på kartet og som stjerne');
+  r=rr(1,A,4,8);ok(r.eff===false,'mst: 💪 meldes bare første gang');
+  r=rr(1,A,6,8);ok(r.to===1&&!R(`topicEffort(1,'${A}')`),'mst: ⭐ etter 💪 – da er det en ekte stjerne');
+  reset();rr(1,A,2,8);rr(1,A,3,8);r=rr(1,A,3,8);ok(r.to===0&&!r.eff,'mst: snitt 33 % gir ikke 💪');
+  // Gamle lagringer: en ⭐ som allerede er gitt (f.eks. fra den gamle innsatsregelen), og ⭐⭐⭐ fra den gamle regelen, blir stående
+  reset();ls.set('mh_learn',JSON.stringify({[`1:${A}`]:{r:[[D2,3,8],[D1,3,8],[D0,4,8]],s:1},[`1:${T1[1].id}`]:{r:[[D1,7,8],[D0,7,8]],s:3}}));
+  ok(stars(1,A)===1&&R(`isTopicPassed(1,'${A}')`)&&!R(`topicEffort(1,'${A}')`),'mig: gammel innsats-⭐ beholdes');
+  ok(stars(1,T1[1].id)===3,'mig: gammel ⭐⭐⭐ beholdes');rr(1,T1[1].id,0,8);ok(stars(1,T1[1].id)===3,'mig: gammel ⭐⭐⭐ tas ikke bort av en ny runde');
   reset();r=rr(1,A,7,7);ok(r.to===2,'mst: K.O.-runde 7/7 teller som ≥ 7/8');
   reset();r=rr(1,A,2,2);ok(r.to===0,'mst: en bitteliten runde (2 oppgaver) gir ingen stjerne');
   ok(R(`hasCrown(1,'${A}')`)===false,'mst: ingen krone uten trollet');
@@ -62,7 +76,7 @@ module.exports=function({R,ok,CUR,ls,els}){
   // ---- 4) Klassetrinn og boss ----
   reset();
   ok(!R('isGradeUnlocked(2)'),'grade: 2. klasse er låst i starten');
-  T1.forEach(t=>{rr(1,t.id,8,8,D1);rr(1,t.id,8,8,D0);});
+  T1.forEach(t=>{rr(1,t.id,8,8,D1);rr(1,t.id,8,8,D1);rr(1,t.id,8,8,D0);});
   ok(T1.every(t=>R(`isTopicMastered(1,'${t.id}')`)),'grade: alle temaer i 1. klasse mestret');
   ok(!R('isGradeUnlocked(2)'),'grade: omveien «alle mestret» åpner ikke 2. klasse – bossen må slås');
   ok(R('isBossUnlocked(1)'),'boss: åpnes når alle temaer har ⭐');
@@ -74,6 +88,11 @@ module.exports=function({R,ok,CUR,ls,els}){
   ok(!R('isBossUnlocked(1)'),'boss: låst når et tema mangler ⭐');
   T1[T1.length-1].optional=true;ok(R('isBossUnlocked(1)'),'boss: valgfritt tema teller ikke');
   delete T1[T1.length-1].optional;
+  {const eff1=()=>ls.set('mh_learn',JSON.stringify(Object.assign(JSON.parse(ls.get('mh_learn')||'{}'),{[`1:${T1[1].id}`]:{r:[[D2,3,8],[D1,3,8],[D0,4,8]],s:0,eff:1}})));
+   reset();T1.forEach((t,i)=>{if(i!==1)rr(1,t.id,6,8);});eff1();
+   ok(!R('isBossUnlocked(1)'),'boss: 💪 teller ikke som ⭐ for bossen');
+   reset();rr(1,T1[0].id,6,8);eff1();ok(R('isTopicUnlocked(1,2)')&&!R('isTopicUnlocked(1,3)'),'unl: 💪 åpner neste tema');
+   ok(R('nextFight(1)').topic.id===T1[1].id,'unl: «Gå til kamp» øver videre på 💪-temaet (det er ikke ⭐)');}
   ok(R('bossVerdict({a:{ok:2,n:2},b:{ok:1,n:2}},9,9)')===true,'boss: 9 riktige og alle temaer med minst én riktig = seier');
   ok(R('bossVerdict({a:{ok:0,n:2},b:{ok:3,n:3}},10,9)')===false,'boss: et tema med bare feil = ikke seier');
   ok(R('bossVerdict({a:{ok:2,n:2}},8,9)')===false,'boss: under 75 % = ikke seier');
@@ -91,23 +110,29 @@ module.exports=function({R,ok,CUR,ls,els}){
 
   reset();T1.forEach(t=>rr(1,t.id,6,8));
   R('startBoss(1)');ok(R('S.boss')&&R('S.bossQ')===12,'boss: ca. 12 oppgaver');
+  {const P=[R('S.current.bossTid')].concat(R('S.bossPlan').map(i=>R('S.bossTopics')[i].id)),core=R('BOSS_CORE[1]'); // første oppgave er alt tatt fra planen
+   ok(P.length===12&&core.every(id=>P.filter(x=>x===id).length===2)&&core.every(id=>P.slice(0,6).includes(id)&&P.slice(6).includes(id)),`boss: kjernetemaene 2 ganger, én i hver halvdel (${P})`);
+   ok(new Set(P).size===8&&P.filter(x=>!core.includes(x)).length===4,'boss: de 4 andre plassene fordeles på de andre temaene');}
   fight(()=>true);
   let S=R('S');
   ok(S.bossOver&&S.enemyDefeated&&ls.get('mh_boss_1')==='1','boss: seier ved nok riktige lagres');
   ok(S.questions.length>=9&&S.questions.length<=12,`boss: seier etter ${S.questions.length} oppgaver`);
-  ok(new Set(S.bossLog.filter(Boolean).map(x=>x.tid)).size===Math.min(R('mstCore(1)').length,S.questions.length),'boss: blander alle temaene');
+  ok(new Set(S.bossLog.filter(Boolean).map(x=>x.tid)).size>=6&&R('BOSS_CORE[1]').every(id=>S.bossStats[id]&&S.bossStats[id].n>=1),'boss: blander temaene, alle kjernetemaene er med');
   ok(S.bossLog.length===S.questions.length,'boss: hver oppgave logges én gang');
   ok(R('isGradeUnlocked(2)'),'boss: seier åpner neste trinn');
 
+  // Et kjernetema med 0 av 2 = tap, selv om alt annet er riktig
+  const K='sub20';
   reset();T1.forEach(t=>rr(1,t.id,6,8));
-  R('startBoss(1)');fight(q=>q.bossTid!==A);
+  R('startBoss(1)');fight(q=>q.bossTid!==K);
   S=R('S');
-  ok(S.bossOver&&!S.enemyDefeated&&!ls.get('mh_boss_1'),'boss: tap når ett tema bare har feil');
+  ok(S.bossOver&&!S.enemyDefeated&&!ls.get('mh_boss_1'),'boss: tap når et kjernetema bare har feil (0 av 2)');
   ok(S.questions.length===12,'boss: bossen stikker av etter 12 oppgaver');
-  const firstA=S.bossLog.findIndex(x=>x&&x.tid===A);
-  ok(S.bossStats[A]&&(S.bossStats[A].n>=2||firstA>S.questions.length-4),`boss: et tema med feil kommer tilbake (først ${firstA})`);
-  ok(R('bossWeakest()').id===A,'boss: svakeste tema velges');
-  ok(els['br-btns'].innerHTML.includes(`bossPractice('${A}')`)&&/Øv på/.test(els['br-btns'].innerHTML),'boss: tap viser «Øv på <tema>»');
+  ok(S.bossStats[K]&&S.bossStats[K].n===2&&S.bossStats[K].ok===0,`boss: kjernetemaet fikk 2 oppgaver (${JSON.stringify(S.bossStats[K])})`);
+  {const ix=S.bossLog.map((x,i)=>x&&x.tid===K?i:-1).filter(i=>i>=0);ok(ix.length===2&&ix[1]-ix[0]>=2&&ix[1]-ix[0]<=3,`boss: et kjernetema med feil kommer igjen ca. 3 oppgaver senere (${ix})`);}
+  ok(!S.questions.some(q=>q.revenge),'boss: ingen revansj');
+  ok(R('bossWeakest()').id===K,'boss: svakeste tema velges');
+  ok(els['br-btns'].innerHTML.includes(`bossPractice('${K}')`)&&/Øv på/.test(els['br-btns'].innerHTML),'boss: tap viser «Øv på <tema>»');
   ok(/Øv på/.test(els['br-sub'].innerHTML),'boss: tap forteller hva som skal øves');
   ok(!/XP/.test(els['br-rewards'].innerHTML),'boss: ingen XP-ord');
 
@@ -115,38 +140,63 @@ module.exports=function({R,ok,CUR,ls,els}){
   R('startBoss(1)');fight(()=>false);
   S=R('S');ok(S.bossOver&&!S.enemyDefeated&&!ls.get('mh_boss_1')&&S.questions.length===12,'boss: alt feil = tap, ingen lagring');
   R('bossCleanup()');
+  // Et tema som ikke er kjerne (1 oppgave) og er feil, stopper ikke seieren; ett kjernetema som får 1 av 2, er nok
+  reset();T1.forEach(t=>rr(1,t.id,6,8));
+  R('startBoss(1)');{let seenK=false;fight(q=>{if(q.bossTid===A)return false;if(q.bossTid==='eq1'&&!seenK){seenK=true;return false;}return true;});}
+  S=R('S');ok(S.enemyDefeated&&S.bossStats.eq1&&S.bossStats.eq1.ok>=1,`boss: seier med et svakt tema utenom kjernen og 1 av 2 i et kjernetema (${JSON.stringify(S.bossStats[A])})`);
+  R('bossCleanup()');
+  // 2. klasse: replikkene lover ikke ganging (mul25 er valgfritt og ikke med i bossen)
+  ok(!/gang/i.test(R('BOSSES[2].skills')+R('BOSSES[2].taunt')+R('BOSSES[2].ko'))&&!R('mstCore(2)').some(t=>t.id==='mul25'),'boss: 2.-klassebossen nevner ikke ganging');
 
   // ---- 5) «Trollet er tilbake!» ----
-  const B=T1[1].id,C=T1[2].id;
+  const B=T1[1].id,C=T1[2].id,D5=day(-5),D7=day(-7),D9=day(-9);
+  const master=(id,d)=>{rr(1,id,8,8,d[0]);rr(1,id,8,8,d[1]);rr(1,id,8,8,d[2]);}; // ⭐⭐⭐: tre runder på flere dager
   reset();ok(R('trollToday()')===null,'troll: ingen troll for ny spiller');
-  reset();rr(1,A,8,8,D1);rr(1,A,8,8,D0);ok(R('trollToday()')===null,'troll: tema øvd i dag repeteres ikke i dag');
-  reset();rr(1,A,8,8,D3);rr(1,A,8,8,D2);rr(1,B,8,8,D2);rr(1,B,8,8,D1);rr(1,C,6,8,D1);
+  reset();rr(1,A,6,8,D3);rr(1,A,7,8,D2);ok(R('trollToday()')===null,'troll: uten ⭐⭐⭐ kommer ikke trollet (ingen krone å vinne)');
+  reset();master(A,[D2,D1,D0]);ok(R('trollToday()')===null,'troll: tema øvd i dag repeteres ikke i dag');
+  reset();master(A,[D3,D2,D1]);ok(R('trollToday()')===null,'troll: tema øvd i går er ikke modent (minst 2 dager)');
+  reset();master(A,[D5,D4,D3]);master(B,[D4,D3,D2]);rr(1,C,6,8,D9);
   let p=R('trollToday()');
-  ok(p&&p.g===1&&p.ids[0]===A&&p.ids.includes(B)&&!p.ids.includes(C)&&p.mastered,`troll: velger mestrede temaer, eldst først: ${JSON.stringify(p)}`);
+  ok(p&&p.g===1&&p.ids[0]===A&&p.ids.includes(B)&&!p.ids.includes(C)&&p.mastered,`troll: velger modne mestrede temaer, eldst først: ${JSON.stringify(p)}`);
   ok(JSON.stringify(R('trollToday()'))===JSON.stringify(p),'troll: samme valg hele dagen');
   R('startTroll()');ok(R('S.troll')&&R('S.boss')&&R('S.bossQ')===6,'troll: 6 oppgaver');
   fight(()=>true);S=R('S');
-  ok(S.bossOver&&S.enemyDefeated&&S.questions.length===5,`troll: seier ved 5 riktige (${S.questions.length})`);
-  ok(R(`hasCrown(1,'${A}')`)&&R(`hasCrown(1,'${B}')`),'troll: seier gir 👑 på temaene');
+  ok(S.bossOver&&S.enemyDefeated&&S.questions.length===6,`troll: seier etter alle 6 oppgavene (${S.questions.length})`);
+  ok(!S.questions.some(q=>q.revenge||q.mini),'troll: ingen revansj eller minioppgave');
+  ok(R(`hasCrown(1,'${A}')`)&&R(`hasCrown(1,'${B}')`),'troll: seier med alt riktig gir 👑 på temaene');
   ok(!ls.get('mh_boss_1'),'troll: lagrer ikke boss-seier');
   ok(R('trollToday()')===null,'troll: ferdig for i dag etter seier');
   ok(R(`mstLastDay(1,'${A}')`)===D0,'troll: repetisjonen teller som øvd i dag');
   rr(1,A,0,8);ok(R(`hasCrown(1,'${A}')`)&&stars(1,A)===3,'troll: kronen tas aldri bort');
   ok(R(`mstNext(1,'${A}')`).txt.includes('👑'),'troll: tipset viser kronen');
   R('bossCleanup()');
+  // Etter krone: tidligst om 7 dager
+  ls.delete('mh_review');{const L=JSON.parse(ls.get('mh_learn'));[A,B].forEach(id=>{L[`1:${id}`].rv=D3;L[`1:${id}`].cr=D3;L[`1:${id}`].r=L[`1:${id}`].r.map(x=>[D5,x[1],x[2]]);});ls.set('mh_learn',JSON.stringify(L));}
+  ok(R('trollToday()')===null,'troll: tema med 👑 kommer ikke igjen før det har gått 7 dager');
+  {const L=JSON.parse(ls.get('mh_learn'));L[`1:${A}`].rv=D7;L[`1:${A}`].cr=D7;L[`1:${A}`].r=L[`1:${A}`].r.map(x=>[D9,x[1],x[2]]);ls.set('mh_learn',JSON.stringify(L));}
+  p=R('trollToday()');ok(p&&p.ids.length===1&&p.ids[0]===A&&!p.mastered,`troll: 7 dager etter 👑 er temaet modent igjen (ingen ny krone å vinne): ${JSON.stringify(p)}`);
+  R('startTroll()');fight(()=>true);ok(R('S.enemyDefeated')&&/husker fortsatt/.test(els['br-sub'].innerHTML),'troll: seier uten ny krone sier at barnet husker');
+  R('bossCleanup()');
 
-  reset();rr(1,A,8,8,D3);rr(1,A,8,8,D2);
-  R('startTroll()');fight(()=>false);S=R('S');
+  // Tap: temaer med feil får ikke ny repetisjonsdag, men «✨ Puss opp» og kommer først neste dag
+  reset();master(A,[D5,D4,D3]);master(B,[D5,D4,D2]);
+  R('startTroll()');fight(q=>q.bossTid!==A);S=R('S');
   ok(S.bossOver&&!S.enemyDefeated&&S.questions.length===6,'troll: tap etter 6 oppgaver');
-  ok(!R(`hasCrown(1,'${A}')`),'troll: tap gir ingen krone');
+  ok(!R(`hasCrown(1,'${A}')`)&&!R(`hasCrown(1,'${B}')`),'troll: tap gir ingen krone');
+  ok(R(`mstGet(1,'${A}')`).pu===D0&&R(`mstGet(1,'${A}')`).rv!==D0&&R(`mstLastDay(1,'${A}')`)===D3,'troll: glemt tema får «Puss opp», ikke ny repetisjonsdag');
+  ok(R(`mstGet(1,'${B}')`).rv===D0&&!R(`mstGet(1,'${B}')`).pu,'troll: husket tema får ny repetisjonsdag');
   ok(R('trollToday()')!==null,'troll: etter tap kan barnet prøve igjen');
   ok(/bossRetry/.test(els['br-btns'].innerHTML),'troll: tap viser «Prøv igjen»');
   R('bossCleanup()');
-
-  reset();rr(1,A,6,8,D1);
-  p=R('trollToday()');ok(p&&p.ids[0]===A&&!p.mastered,'troll: uten mestrede temaer brukes ⭐-temaer');
-  R('startTroll()');fight(()=>true);
-  ok(!R(`hasCrown(1,'${A}')`)&&R('trollToday()')===null,'troll: ingen krone på tema som ikke er mestret');
+  ls.delete('mh_review');{const L=JSON.parse(ls.get('mh_learn'));L[`1:${A}`].pu=D1;ls.set('mh_learn',JSON.stringify(L));}
+  master(C,[D9,D9,D7]);
+  p=R('trollToday()');ok(p&&p.ids[0]===A&&p.pu&&p.pu.includes(A)&&!p.ids.includes(B),`troll: neste dag kommer det glemte temaet først med «Puss opp» (husket tema venter 2 dager): ${JSON.stringify(p)}`);
+  R('trollDecorate("grades")');ok(/Puss opp/.test(els['troll-offer-g']?els['troll-offer-g'].innerHTML:''),'troll: tilbudet viser «✨ Puss opp»');
+  // Krone krever 2 av 2 på temaets trolloppgaver
+  R('startTroll()');{let missC=false;fight(q=>{if(q.bossTid===C&&!missC){missC=true;return false;}return true;});}S=R('S');
+  ok(S.enemyDefeated&&R(`hasCrown(1,'${A}')`)&&!R(`hasCrown(1,'${C}')`)&&R(`mstGet(1,'${C}')`).pu===D0,`troll: seier med 5 av 6 gir 👑 bare der alt var riktig (${JSON.stringify(S.bossStats)})`);
+  ok(/alle riktige gir 👑/.test(els['br-sub'].innerHTML),'troll: forteller hvorfor kronen mangler');
+  ok(!R(`mstGet(1,'${A}')`).pu,'troll: «Puss opp» fjernes når temaet huskes');
   R('bossCleanup()');
 
   // ---- 6) Vanlig runde: kiste, resultat og rekorder ----
@@ -174,7 +224,7 @@ module.exports=function({R,ok,CUR,ls,els}){
   R('if(window.__mstX===undefined)delete window.EXTRA_SUBS;else window.EXTRA_SUBS=window.__mstX;delete window.__mstX');
 
   // ---- 8) Kartene bygges uten feil med gamle og nye lagringer ----
-  reset();ls.set(`mh_mst_1_${A}`,'120');rr(1,B,7,8,D1);rr(1,B,7,8,D0);R(`mstSetCrown(1,'${B}')`);
+  reset();ls.set(`mh_mst_1_${A}`,'120');rr(1,B,7,8,D1);rr(1,B,7,8,D1);rr(1,B,7,8,D0);R(`mstSetCrown(1,'${B}')`);
   thr=null;try{R('buildGradeMap();buildTopicMap(1);buildTopicMap(2);pgGoalCard();')}catch(x){thr=x;}
   ok(!thr,`maps: kartene bygges uten feil: ${thr&&thr.message}`);
   ok(R('getGradeStars(1)')!=='○○○'&&R('getWorldStars([1,2])')!=='○○○','maps: stjerner for trinn og verden');

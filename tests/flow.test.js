@@ -36,7 +36,7 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   n=NF();ok(n.boss&&n.g===1,'alle temaer ⭐: bossen');
   // Trollet: etter temaer som kan gi stjerne i dag, før temaer som må vente til i morgen
   fresh(1);core(1).forEach(t=>set(1,t.id,2,[[today,7,8],[today,7,8]]));optOk(1);ls.set('mh_boss_1','1');
-  ls.set('mh_review',JSON.stringify({day:today,g:1,ids:[core(1)[0].id],won:false,mastered:false}));
+  {const d4=R('mhDay(-4)'),d3=R('mhDay(-3)');set(1,core(1)[0].id,3,[[d4,8,8],[d4,8,8],[d3,8,8]]);} // trollet kommer bare for et modent ⭐⭐⭐-tema (F1)
   ok(R(`mstNext(1,'${core(1)[0].id}').now`)===false,'testoppsett: ⭐⭐⭐ må vente til i morgen');
   n=NF();ok(!!n.troll&&n.g===1,`trollet når ingen tema kan gi stjerne i dag (fikk ${JSON.stringify(n&&{g:n.g,t:n.topic&&n.topic.id,b:!!n.boss})})`);
   ok(R('fightGrade()')===1,'fightGrade hopper over trollet');

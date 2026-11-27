@@ -180,42 +180,33 @@ function handleNext(){if(S.boss)return bossNext();if(S.idx>=TQ||S.enemyDefeated)
 // ============================================================
 // CHEST + RESULTS
 // ============================================================
-// Round score: % of questions actually answered (a K.O. ends early), on the 0-10 scale used by mastery/high scores; 10 only if no mistakes
-function roundScore(){const n=S.questions.length||TQ,perfect=S.score>=n,s10=perfect?10:Math.min(9,Math.round(S.score/n*10));return{n,s10,pct:s10/10,perfect};}
+// Runde: c = riktige på første forsøk (S.questions[i].ok), n = antall oppgaver (en K.O. kan avslutte tidlig).
+// s10 = 0–10-skala for rekorder (hs_*), 10 bare uten feil. Stjernene per tema ligger i mastery.js (recordRound).
+function roundScore(){const Q=S.questions||[],n=Q.length||TQ,c=Q.filter(q=>q.ok).length,perfect=Q.length>0&&c>=n,s10=perfect?10:Math.min(9,Math.round(c/n*10));return{n,c,s10,pct:c/n,perfect};}
+function mstSay(t){if(typeof speak==='function')try{speak(t);}catch(e){}} // opplesing (speech.js), følger innstillingen
+// Kort, barnevennlig overskrift for en runde (ingen prosent)
+function mstRoundHead(pct,perfect){
+  if(perfect)return{emoji:'💎',title:'PERFEKT!',sub:'Alle riktige!'};
+  if(pct>=MST_GOOD-1e-9)return{emoji:'🏆',title:'Kjempebra!',sub:'Nesten alle riktige!'};
+  if(pct>=MST_PASS-1e-9)return{emoji:'⭐',title:'Bra jobba!',sub:'Du kan mye nå!'};
+  if(pct>=.5)return{emoji:'⚔️',title:'God kamp!',sub:'Øv litt til, så går det!'};
+  return{emoji:'💪',title:'God trening!',sub:'Se hvordan, og prøv igjen!'};
+}
 function showChest(){
-  const {s10,pct,perfect}=roundScore();
+  const {n,c,s10,pct,perfect}=roundScore(),g=S.grade,tid=S.topicId;
+  const res=recordRound(g,tid,c,n); // mestring v2 (mh_learn): {from,to}
+  const newStars=Math.max(0,res.to-res.from);
   const xpEarned=s10*10+(pct>=1?50:pct>=.8?20:0);
-  const coinsEarned=s10+(pct>=1?5:0);
-  const stars=Math.ceil(pct*3);
+  const coinsEarned=s10+(pct>=1?5:0)+newStars*3; // en ny stjerne gir litt ekstra
+  const nx=mstNext(g,tid),h=mstRoundHead(pct,perfect);
+  if(S.enemyDefeated)h.sub='💥 K.O.! '+h.sub;
 
-  // Add mastery before calculating display
-  const masteryBefore=getMastery(S.grade,S.topicId);
-  addMastery(S.grade,S.topicId,s10);
-  const masteryAfter=Math.min(100,getMastery(S.grade,S.topicId));
-  const masteryGained=Math.min(100,masteryAfter)-Math.min(100,masteryBefore);
-  const nowPassed=isTopicPassed(S.grade,S.topicId);
-  const nowMastered=isTopicMastered(S.grade,S.topicId);
-
-  let emoji,title,sub;
-  if(perfect){emoji='💎';title='PERFEKT SEIER!';sub='Du er en legende!';}
-  else if(pct>=.8){emoji='🏆';title='Stor seier!';sub='Nesten perfekt!';}
-  else if(pct>=.5){emoji='⚔️';title='Bra kamp!';sub='Øv mer og kom sterkere tilbake!';}
-  else{emoji='🛡️';title='Tap — men du lærte!';sub='Prøv igjen, du blir sterkere!';}
-  if(S.enemyDefeated)sub='💥 K.O.! '+sub;
-
-  // Mastery status message
-  let mstMsg='';
-  if(nowMastered&&masteryBefore<100)mstMsg='<div style="color:var(--green);font-family:\'Fredoka One\',cursive;font-size:.95rem;margin-top:4px">🏆 Emne mestret! Neste låses opp!</div>';
-  else if(nowPassed&&masteryBefore<70)mstMsg='<div style="color:var(--gold);font-family:\'Fredoka One\',cursive;font-size:.9rem;margin-top:4px">⭐ Passert! Neste emne låst opp!</div>';
-  else if(!nowMastered)mstMsg=`<div style="color:var(--muted);font-size:.8rem;font-weight:700;margin-top:4px">Mestring: ${masteryAfter}% — trenger ${nowPassed?100:70}% for ${nowPassed?'å mestre':'å låse opp neste'}</div>`;
-
-  document.getElementById('chest-emoji').textContent=emoji;
-  document.getElementById('chest-title').textContent=title;
-  document.getElementById('chest-sub').innerHTML=sub+mstMsg;
+  document.getElementById('chest-emoji').textContent=h.emoji;
+  document.getElementById('chest-title').textContent=h.title;
+  document.getElementById('chest-sub').innerHTML=`${h.sub}<div class="mst-chest-stars">${mstStarsHTML(res.to,res.from,hasCrown(g,tid))}</div><div class="mst-tip">${nx.txt}</div>`;
   document.getElementById('chest-rewards').innerHTML=`
-    <div class="chest-reward"><span class="chest-reward-icon">⭐</span><div class="chest-reward-val">${'⭐'.repeat(stars)+'☆'.repeat(3-stars)}</div></div>
-    <div class="chest-reward"><span class="chest-reward-icon">✨</span><div class="chest-reward-val">+${xpEarned} XP</div></div>
-    <div class="chest-reward"><span class="chest-reward-icon">🎯</span><div class="chest-reward-val">+${masteryGained}% mestring</div></div>
+    <div class="chest-reward"><span class="chest-reward-icon">✅</span><div class="chest-reward-val">${c} av ${n}</div></div>
+    <div class="chest-reward"><span class="chest-reward-icon">✨</span><div class="chest-reward-val">+${xpEarned}</div></div>
     <div class="chest-reward"><span class="chest-reward-icon">🪙</span><div class="chest-reward-val">+${coinsEarned}</div></div>
   `;
   const oldL=curLvl();
@@ -227,7 +218,8 @@ function showChest(){
   launch(pct>=.8?120:60);
   if(perfect)unlockAchievement('perfect');
   sidekickReact(pct>=.8?'celebrate':'happy');
-  pgChest(masteryBefore,xpEarned,coinsEarned,pct); // PROGRESSION: count-ups, streak, NIVÅ OPP
+  pgChest(res,xpEarned,coinsEarned,pct); // PROGRESSION: count-ups, star stamps, streak, NIVÅ OPP
+  mstSay(`${h.title} ${newStars?(res.to>=3?'Mestret!':'Ny stjerne!'):''} ${nx.say}`);
 }
 
 function closeChest(){
@@ -239,64 +231,67 @@ function closeChest(){
 }
 
 function buildResults(){
-  const {n,pct,perfect}=roundScore();
-  let mascot,title,sub;
-  if(perfect){mascot='💎';title=`PERFEKT! ${S.score} av ${n}!`;sub='Du er en ekte mattehelt!';}
-  else if(pct>=.8){mascot='🏆';title='Kjempebra!';sub='Nesten perfekt!';}
-  else if(pct>=.6){mascot='⚔️';title='Bra kamp!';sub='Øv litt mer, du klarer det!';}
-  else if(pct>=.4){mascot='🛡️';title='Ikke gi opp!';sub='Prøv igjen — du lærer!';}
-  else{mascot='📚';title='Øv og prøv igjen!';sub='Slik lærer vi — hold ut!';}
-  if(S.enemyDefeated)sub='💥 K.O.! '+sub;
-  const stars=Math.ceil(pct*3);
-  document.getElementById('res-mascot').textContent=mascot;
-  document.getElementById('res-title').textContent=title;
-  document.getElementById('res-sub').textContent=sub;
-  document.getElementById('res-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
-  document.getElementById('res-num').textContent=S.score;
+  const {n,c,pct,perfect}=roundScore(),g=S.grade,tid=S.topicId;
+  const h=mstRoundHead(pct,perfect),nx=mstNext(g,tid),low=pct<.5;
+  if(perfect)h.title=`PERFEKT! ${c} av ${n}!`;
+  if(S.enemyDefeated)h.sub='💥 K.O.! '+h.sub;
+  document.getElementById('res-mascot').textContent=h.emoji;
+  document.getElementById('res-title').textContent=h.title;
+  document.getElementById('res-sub').textContent=h.sub;
+  document.getElementById('res-stars').innerHTML=mstStarsHTML(topicStars(g,tid),null,hasCrown(g,tid)); // temaets stjerner
+  document.getElementById('res-num').textContent=c;
   const den=document.querySelector('#res-ring .score-den');if(den)den.textContent=`av ${n}`;
-  document.getElementById('res-ring').style.background=`conic-gradient(#00ff88 ${Math.round(S.score/n*360)}deg,rgba(255,255,255,.1) 0)`;
-  // Adapt section
+  document.getElementById('res-ring').style.background=`conic-gradient(#00ff88 ${Math.round(c/n*360)}deg,rgba(255,255,255,.1) 0)`;
+  // Hva gir neste stjerne + (under 50 %) «Se hvordan» og «Prøv igjen»
+  let box=document.getElementById('mst-res');
+  if(!box){box=document.createElement('div');box.id='mst-res';const ring=document.getElementById('res-ring');if(ring&&ring.insertAdjacentElement)ring.insertAdjacentElement('afterend',box);}
+  box.className='mst-res';
+  const guide=typeof LEARN_GUIDES==='object'&&LEARN_GUIDES[tid]&&LEARN_GUIDES[tid].length;
+  box.innerHTML=`<div class="mst-tip">${nx.txt}</div>`+(low?`<div class="mst-res-btns">${guide?`<button class="mst-btn mst-learn" onclick="showLearn(${g},'${tid}')">📖 Se hvordan</button>`:''}<button class="mst-btn mst-retry" onclick="retrySession()">🔁 Prøv igjen</button></div>`:'');
+  // Det vi øver mer på
   const errs={};S.questions.forEach(q=>{if(!q.ok)errs[q.sub]=(errs[q.sub]||0)+1;});
   const subs=Object.entries(errs).sort((a,b)=>b[1]-a[1]);
   const as=document.getElementById('adapt-sec');
-  if(!subs.length){as.innerHTML='<div style="font-family:Fredoka One,cursive;font-size:.9rem;color:var(--green)">Ingen svake punkter denne runden!</div>';}
-  else{let h='<div class="adapt-title">Dette øver vi ekstra på neste gang:</div>';subs.slice(0,3).forEach(([sub,n])=>{const p=Math.round(n/S.questions.filter(q=>q.sub===sub).length*100);h+=`<div class="adapt-row"><span style="min-width:80px;font-size:.75rem">${fmtSub(sub)}</span><div class="adapt-bar-wrap"><div class="adapt-bar" style="width:${p}%;background:${p>60?'var(--red)':p>30?'var(--gold)':'var(--green)'}"></div></div><span style="min-width:34px;text-align:right;font-size:.73rem">${n} feil</span></div>`;});as.innerHTML=h;}
-  // Rows
+  if(!subs.length){as.innerHTML='<div style="font-family:Fredoka One,cursive;font-size:.9rem;color:var(--green)">🌟 Ingen feil denne runden!</div>';}
+  else{let h2='<div class="adapt-title">🎯 Dette øver vi mer på:</div>';subs.slice(0,3).forEach(([sub,k])=>{const p=Math.round(k/S.questions.filter(q=>q.sub===sub).length*100);h2+=`<div class="adapt-row"><span style="min-width:80px;font-size:.75rem">${fmtSub(sub)}</span><div class="adapt-bar-wrap"><div class="adapt-bar" style="width:${p}%;background:${p>60?'var(--red)':p>30?'var(--gold)':'var(--green)'}"></div></div></div>`;});as.innerHTML=h2;}
+  // Rows (fixed = feil først, riktig på andre forsøk)
   const rows=document.getElementById('res-rows');rows.innerHTML='';
-  S.questions.forEach(q=>{const d=document.createElement('div');d.className='rb-row '+(q.ok?'ok':'bad');d.innerHTML=`<span class="rb-q">${(q.eq||q.q).replace(/, x = \?$/,'').replace(/ = \?$/,'')}</span><span class="rb-a ${q.ok?'ok':'bad'}">${q.ok?`= ${q.correctTxt??q.correct} ✓`:`${q.givenTxt??q.given} ✗ (${q.correctTxt??q.correct})`}</span>`;rows.appendChild(d);});
+  S.questions.forEach(q=>{const fx=!q.ok&&!!q.fixed,k=q.ok?'ok':fx?'fix':'bad',ct=q.correctTxt??q.correct;const d=document.createElement('div');d.className='rb-row '+k;d.innerHTML=`<span class="rb-q">${(q.eq||q.q).replace(/, x = \?$/,'').replace(/ = \?$/,'')}</span><span class="rb-a ${k}">${q.ok?`= ${ct} ✓`:fx?`= ${ct} ✓ <small>(2. forsøk)</small>`:`${q.givenTxt??q.given} ✗ (${ct})`}</span>`;rows.appendChild(d);});
   saveHS();renderHS();
-  // World badges (worldN = both grades of WORLDS[N-1] fully mastered) + rebuild maps now that hs is saved
-  WORLDS.forEach((w,i)=>{if(w.grades.every(g=>{const ts=CUR[g]?.topics||[];return ts.length>0&&ts.every(t=>isTopicMastered(g,t.id));}))unlockAchievement('world'+(i+1));});
+  // World badges (worldN = all required topics of both grades of WORLDS[N-1] mastered) + rebuild maps now that hs is saved
+  WORLDS.forEach((w,i)=>{if(w.grades.every(gg=>{const ts=mstCore(gg);return ts.length>0&&ts.every(t=>isTopicMastered(gg,t.id));}))unlockAchievement('world'+(i+1));});
   buildGradeMap();
   buildTopicMap(S.grade);
   pgResults(); // PROGRESSION: "Neste:" goal
 }
 
-function fmtSub(s){const N={a20t:'10 + et tall',a20n:'Til 20 uten å gå over tieren',a20o:'Over tieren (f.eks. 8 + 5)',a100t:'Hele tiere +',a100e:'Tosifret + ensifret',a100c:'Tosifret + ensifret over tieren',a100n:'Tosifret + tosifret',a100x:'Tosifret + tosifret over tieren',s100t:'Hele tiere −',s100e:'Tosifret − ensifret',s100b:'Tosifret − ensifret under tieren',s100n:'Tosifret − tosifret',s100x:'Tosifret − tosifret under tieren','hop1':'Telle 1 fremover','hop-1':'Telle 1 bakover',hop2:'Telle med 2',hop5:'Telle med 5',hop10:'Telle med 10',dob:'Dobling',dob2:'Dobling av store tall',halv:'Halvering',halv2:'Halvering av store tall','mis+a':'Finn tallet: ? + 4 = 9','mis+b':'Finn tallet: 5 + ? = 9','mis-':'Finn tallet: 9 − ? = 5',mis10:'Hele tiere som mangler',mis100:'Opp til neste tier','dec+':'Desimaltall +','dec-':'Desimaltall −',rnd1:'Avrunding til heltall',rnd10:'Avrunding til tiere','fr+':'Brøk +','fr-':'Brøk −',geo_areal:'Areal',geo_omkrets:'Omkrets','neg+':'Negative tall +','neg-':'Negative tall −','alg+':'Algebra +','alg-':'Algebra −',algx:'Algebra ·',rat1:'Forholdstall',rat2:'Forholdstall',avg:'Gjennomsnitt',eq1:'Likning ax = b',eq2:'Likning ax + b = c',sq:'Kvadrattall',cub:'Kubikktall',pot:'Potenser',pctinc:'Prosentvis økning',pctdec:'Prosentvis nedgang',pyth_a:'Pytagoras: finn a',pyth_b:'Pytagoras: finn b',pyth_c:'Pytagoras: finn c',median:'Median',mode:'Typetall',range:'Variasjonsbredde',sys:'Likningssett',quad:'Kvadratrot',expand:'Parenteser',func_lin:'Lineær funksjon',func_lin2:'Lineær funksjon',func_quad:'Andregradsfunksjon',prob_dice:'Sannsynlighet: terning',prob_coin:'Sannsynlighet: mynt',prob_bag:'Sannsynlighet: kuler'};if(N[s])return N[s];let m;if(m=s.match(/^(\d+)([+-])(\d+)$/))return`${m[1]} ${m[2]} ${m[3]}`;if(m=s.match(/^x(\d+)$/))return`${m[1]}-gangen`;if(m=s.match(/^d(\d+)$/))return`Del med ${m[1]}`;if(m=s.match(/^v(\d)$/))return`Tiervenner ${m[1]} + ${10-m[1]}`;if(/^1\/\d+$/.test(s))return`Brøk ${s}`;if(m=s.match(/^p(?:ct)?(\d+)$/))return`${m[1]} % av et tall`;if(m=s.match(/^r(\d+)$/))return`Runde tall (${m[1]})`;if(m=s.match(/^trig_(\w+)$/))return`Trigonometri: ${m[1]}`;return s;}
-function saveHS(){const k=`hs_${S.grade}_${S.topicId}`;const p=JSON.parse(localStorage.getItem(k)||'[]');p.push({score:roundScore().s10,ko:S.enemyDefeated,date:new Date().toLocaleDateString('no-NO')});p.sort((a,b)=>b.score-a.score);localStorage.setItem(k,JSON.stringify(p.slice(0,5)));}
-function renderHS(){const k=`hs_${S.grade}_${S.topicId}`;const s=JSON.parse(localStorage.getItem(k)||'[]');const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];document.getElementById('hs-rows').innerHTML=s.length?s.map((s,i)=>`<div class="hs-row"><span>${medals[i]} ${s.date}</span><span class="hs-score">${s.ko?'💥 ':''}${s.score}/10</span></div>`).join(''):'Ingen rekorder ennå!';}
+function fmtSub(s){const X=typeof window!=='undefined'&&window.EXTRA_SUBS;if(X&&typeof X==='object'&&X[s])return X[s];const N={a20t:'10 + et tall',a20n:'Til 20 uten å gå over tieren',a20o:'Over tieren (f.eks. 8 + 5)',a100t:'Hele tiere +',a100e:'Tosifret + ensifret',a100c:'Tosifret + ensifret over tieren',a100n:'Tosifret + tosifret',a100x:'Tosifret + tosifret over tieren',s100t:'Hele tiere −',s100e:'Tosifret − ensifret',s100b:'Tosifret − ensifret under tieren',s100n:'Tosifret − tosifret',s100x:'Tosifret − tosifret under tieren','hop1':'Telle 1 fremover','hop-1':'Telle 1 bakover',hop2:'Telle med 2',hop5:'Telle med 5',hop10:'Telle med 10',dob:'Dobling',dob2:'Dobling av store tall',halv:'Halvering',halv2:'Halvering av store tall','mis+a':'Finn tallet: ? + 4 = 9','mis+b':'Finn tallet: 5 + ? = 9','mis-':'Finn tallet: 9 − ? = 5',mis10:'Hele tiere som mangler',mis100:'Opp til neste tier','dec+':'Desimaltall +','dec-':'Desimaltall −',rnd1:'Avrunding til heltall',rnd10:'Avrunding til tiere','fr+':'Brøk +','fr-':'Brøk −',geo_areal:'Areal',geo_omkrets:'Omkrets','neg+':'Negative tall +','neg-':'Negative tall −','alg+':'Algebra +','alg-':'Algebra −',algx:'Algebra ·',rat1:'Forholdstall',rat2:'Forholdstall',avg:'Gjennomsnitt',eq1:'Likning ax = b',eq2:'Likning ax + b = c',sq:'Kvadrattall',cub:'Kubikktall',pot:'Potenser',pctinc:'Prosentvis økning',pctdec:'Prosentvis nedgang',pyth_a:'Pytagoras: finn a',pyth_b:'Pytagoras: finn b',pyth_c:'Pytagoras: finn c',median:'Median',mode:'Typetall',range:'Variasjonsbredde',sys:'Likningssett',quad:'Kvadratrot',expand:'Parenteser',func_lin:'Lineær funksjon',func_lin2:'Lineær funksjon',func_quad:'Andregradsfunksjon',prob_dice:'Sannsynlighet: terning',prob_coin:'Sannsynlighet: mynt',prob_bag:'Sannsynlighet: kuler'};if(N[s])return N[s];let m;if(m=s.match(/^(\d+)([+-])(\d+)$/))return`${m[1]} ${m[2]} ${m[3]}`;if(m=s.match(/^x(\d+)$/))return`${m[1]}-gangen`;if(m=s.match(/^d(\d+)$/))return`Del med ${m[1]}`;if(m=s.match(/^v(\d)$/))return`Tiervenner ${m[1]} + ${10-m[1]}`;if(/^1\/\d+$/.test(s))return`Brøk ${s}`;if(m=s.match(/^p(?:ct)?(\d+)$/))return`${m[1]} % av et tall`;if(m=s.match(/^r(\d+)$/))return`Runde tall (${m[1]})`;if(m=s.match(/^trig_(\w+)$/))return`Trigonometri: ${m[1]}`;return s;}
+// Rekorder: score på 0–10-skala (som før, brukes av getBest) + c/n for visning
+function saveHS(){const k=`hs_${S.grade}_${S.topicId}`,r=roundScore();let p;try{p=JSON.parse(localStorage.getItem(k)||'[]');}catch(e){p=[];}if(!Array.isArray(p))p=[];p.push({score:r.s10,c:r.c,n:r.n,ko:S.enemyDefeated,date:new Date().toLocaleDateString('no-NO')});p.sort((a,b)=>b.score-a.score||(b.c??0)-(a.c??0));localStorage.setItem(k,JSON.stringify(p.slice(0,5)));}
+function renderHS(){const k=`hs_${S.grade}_${S.topicId}`;let s;try{s=JSON.parse(localStorage.getItem(k)||'[]');}catch(e){s=[];}if(!Array.isArray(s))s=[];const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];document.getElementById('hs-rows').innerHTML=s.length?s.map((s,i)=>`<div class="hs-row"><span>${medals[i]} ${s.date}</span><span class="hs-score">${s.ko?'💥 ':''}${s.c!=null&&s.n?`${s.c} av ${s.n}`:`${s.score}/10`}</span></div>`).join(''):'Ingen rekorder ennå!';}
 
 // ============================================================
 // PARENT REPORT
 // ============================================================
 function showParentReport(){
-  const {n,pct,perfect}=roundScore(),stars=Math.ceil(pct*3);
+  const {n,c,pct,perfect}=roundScore(),g=S.grade,tid=S.topicId,st=topicStars(g,tid),nx=mstNext(g,tid);
   document.getElementById('pr-date').textContent=new Date().toLocaleDateString('no-NO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('pr-topic-name').textContent=S.topic.name;
   document.getElementById('pr-grade-name').textContent=`${S.grade}. klasse`;
-  document.getElementById('pr-correct').textContent=S.score;
-  document.getElementById('pr-wrong').textContent=n-S.score;
-  document.getElementById('pr-pct').textContent=Math.round(S.score/n*100)+'%';
-  document.getElementById('pr-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
-  const ok=S.questions.filter(q=>q.ok),bad=S.questions.filter(q=>!q.ok);
-  document.getElementById('pr-strengths').innerHTML=(ok.length?`<div class="pr-strength">Riktig på ${ok.length} av ${n} oppgaver i "${S.topic.name}"</div>`:
-    '<div class="pr-weakness">Ingen riktige denne runden</div>')+(S.enemyDefeated?`<div class="pr-strength">💥 Vant kampen på K.O. etter ${n} av ${TQ} oppgaver</div>`:'');
+  document.getElementById('pr-correct').textContent=c;
+  document.getElementById('pr-wrong').textContent=n-c;
+  document.getElementById('pr-pct').textContent=Math.round(c/n*100)+'%';
+  document.getElementById('pr-stars').textContent=mstStarsTxt(st)+(hasCrown(g,tid)?' 👑':'');
+  const ok=S.questions.filter(q=>q.ok),bad=S.questions.filter(q=>!q.ok),fixed=bad.filter(q=>q.fixed);
+  document.getElementById('pr-strengths').innerHTML=(ok.length?`<div class="pr-strength">Riktig på første forsøk: ${ok.length} av ${n} oppgaver i "${S.topic.name}"</div>`:
+    '<div class="pr-weakness">Ingen riktige på første forsøk denne runden</div>')+(fixed.length?`<div class="pr-strength">Rettet selv på andre forsøk: ${fixed.length}</div>`:'')+(S.enemyDefeated?`<div class="pr-strength">💥 Vant kampen på K.O. etter ${n} av ${TQ} oppgaver</div>`:'');
   const subE={};bad.forEach(q=>subE[q.sub]=(subE[q.sub]||0)+1);
-  document.getElementById('pr-weaknesses').innerHTML=Object.entries(subE).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`<div class="pr-weakness">${fmtSub(s)}: ${n} feil</div>`).join('')||'<div class="pr-strength">Ingen svake punkter!</div>';
-  document.getElementById('pr-breakdown').innerHTML=S.questions.map((q,i)=>`<div class="pr-qrow"><span>${i+1}. ${(q.eq||q.q).replace(/, x = \?$/,'').replace(/ = \?$/,'')}</span><span style="color:${q.ok?'var(--green)':'var(--red)'};font-weight:800">${q.ok?`= ${q.correctTxt??q.correct} ✓`:`${q.givenTxt??q.given} ✗ (${q.correctTxt??q.correct})`}</span></div>`).join('');
+  document.getElementById('pr-weaknesses').innerHTML=Object.entries(subE).sort((a,b)=>b[1]-a[1]).map(([s,k])=>`<div class="pr-weakness">${fmtSub(s)}: ${k} feil</div>`).join('')||'<div class="pr-strength">Ingen svake punkter!</div>';
+  document.getElementById('pr-breakdown').innerHTML=S.questions.map((q,i)=>`<div class="pr-qrow"><span>${i+1}. ${(q.eq||q.q).replace(/, x = \?$/,'').replace(/ = \?$/,'')}</span><span style="color:${q.ok?'var(--green)':q.fixed?'var(--gold)':'var(--red)'};font-weight:800">${q.ok?`= ${q.correctTxt??q.correct} ✓`:q.fixed?`= ${q.correctTxt??q.correct} ✓ (2. forsøk)`:`${q.givenTxt??q.given} ✗ (${q.correctTxt??q.correct})`}</span></div>`).join('');
   const rec=document.getElementById('pr-rec');
-  if(perfect)rec.textContent='Perfekt resultat! Gå videre til neste tema eller klassetrinn.';
-  else if(pct>=.8)rec.textContent='Veldig bra! Noen runder til for å befeste kunnskapen, deretter videre.';
-  else{const tw=bad.length?fmtSub(bad[0].sub):'noen oppgaver';rec.innerHTML=`Spillet gir ekstra trening på <strong>${tw}</strong> automatisk. 10 min om dagen gir stor fremgang!`;}
+  const goal=` Stjerner i temaet: ${mstStarsTxt(st)}. Neste mål: ${nx.say}`;
+  if(perfect)rec.textContent='Perfekt resultat!'+goal;
+  else if(pct>=.8)rec.textContent='Veldig bra!'+goal;
+  else{const tw=bad.length?fmtSub(bad[0].sub):'noen oppgaver';rec.innerHTML=`Spillet gir ekstra trening på <strong>${tw}</strong> automatisk. 10 min om dagen gir stor fremgang!`+goal;}
   showScreen('parent');
 }

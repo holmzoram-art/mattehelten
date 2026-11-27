@@ -56,21 +56,21 @@ function buildGradeMap(){
   GRADE_INFO.forEach((gi,i)=>{
     const [lx,ly]=GRADE_POS[i];
     const unlocked=isGradeUnlocked(gi.num);
-    const stars=getGradeStars(gi.num);
     const node=document.createElement('div');
     node.className='map-node'+(unlocked?'':' locked');
     node.style.cssText=`left:${lx}%;top:${ly}%;--nc:${gi.color};--ng:${gi.glow}`;
-    const topics=CUR[gi.num]?.topics||[];
-    const masteredCount=topics.filter(t=>isTopicMastered(gi.num,t.id)).length;
-    const progressTxt=unlocked?(masteredCount===topics.length?'🏆 Fullført!':masteredCount>0?`${masteredCount}/${topics.length} mestret`:'Start her!'):'🔒 Låst';
+    // Stjerner i trinnet (⭐ samlet av mulige) og gullkroner – ingen prosent
+    const gc=mstGradeCount(gi.num),all=gc.max>0&&gc.s>=gc.max;
+    const progressTxt=unlocked?(gc.s>0?`<span class="mst-gcount">⭐ ${gc.s}/${gc.max}</span>${gc.cr?`<span class="mst-gcount">👑 ${gc.cr}</span>`:''}`:'Start her!'):'🔒 Låst';
     node.innerHTML=`
       <div class="map-node-icon">${gi.icon}${!unlocked?'<div class="map-node-lock">🔒</div>':''}</div>
       <div class="map-node-name">${gi.num}. kl · ${gi.mapName}</div>
-      <div class="map-node-stars" style="color:${masteredCount===topics.length&&unlocked?'var(--green)':'inherit'}">${progressTxt}</div>`;
+      <div class="map-node-stars mst-gstars" style="color:${all&&unlocked?'var(--green)':'inherit'}">${progressTxt}</div>`;
     if(unlocked)node.onclick=()=>openGradePopup(gi);
     nodes.appendChild(node);
   });
   bossDecorateGradeMap();
+  if(typeof trollDecorate==='function')trollDecorate('grades'); // «Trollet er tilbake!» (review.js)
 
   // You-marker
   const you=document.getElementById('map-you');
@@ -88,7 +88,7 @@ function buildGradeMap(){
 function buildAdventureMap(){buildGradeMap();}
 // Old 5-world helpers (hero card), built on the grade system: a world opens with its first grade; stars combine all its grades' topics
 function isWorldUnlocked(i){const w=WORLDS[i];return !!w&&isGradeUnlocked(w.grades[0]);}
-function getWorldStars(grades){let total=0,max=0;grades.forEach(g=>(CUR[g]?.topics||[]).forEach(t=>{max+=3;const b=getBest(g,t.id);if(b!==null)total+=Math.ceil(b/10*3);}));if(!total)return '○○○';const pct=total/max;if(pct>=.9)return '⭐⭐⭐';if(pct>=.5)return '⭐⭐○';return '⭐○○';}
+function getWorldStars(grades){let total=0,max=0;grades.forEach(g=>{const c=mstGradeCount(g);total+=c.s;max+=c.max;});if(!total||!max)return '○○○';const pct=total/max;if(pct>=.9)return '⭐⭐⭐';if(pct>=.5)return '⭐⭐○';return '⭐○○';}
 
 function openGradePopup(gi){
   document.getElementById('wp-icon').textContent=gi.icon;
@@ -150,32 +150,28 @@ function buildTopicMap(gradeNum){
   topics.forEach((t,i)=>{
     const [lx,ly]=pos[i]||[50,50];
     const unlocked=isTopicUnlocked(gradeNum,i);
-    const best=getBest(gradeNum,t.id);
     const hasWeak=checkWeak(gradeNum,t.id);
-    const mastery=getMastery(gradeNum,t.id);
-    const masteryPct=Math.min(100,mastery);
-    const mastered=isTopicMastered(gradeNum,t.id);
-    const passed=isTopicPassed(gradeNum,t.id);
-    const ml=masteryLabel(masteryPct);
-    const fillCol=mastered?'var(--green)':passed?'var(--gold)':'var(--orange)';
+    const stars=topicStars(gradeNum,t.id),crown=hasCrown(gradeNum,t.id);
+    const mastered=stars>=3;
     const node=document.createElement('div');
-    node.className='map-node'+(unlocked?mastered?' mastered':'':' locked');
+    node.className='map-node'+(unlocked?mastered?' mastered':'':' locked')+(crown?' mst-crowned':'');
     node.style.cssText=`left:${lx}%;top:${ly}%;--nc:${mastered?'var(--green)':gi.color};--ng:${mastered?'rgba(0,255,136,.5)':gi.glow}`;
     node.innerHTML=`
       <div class="map-node-icon" style="font-size:1.5rem;width:54px;height:54px">
         ${t.icon}${!unlocked?'<div class="map-node-lock">🔒</div>':''}
         ${hasWeak&&unlocked&&!mastered?'<div class="map-node-lock" style="background:rgba(255,217,61,.9);font-size:.7rem">🎯</div>':''}
+        ${crown&&unlocked?'<div class="mst-node-crown">👑</div>':''}
       </div>
       <div class="map-node-name">${t.name}</div>
-      ${unlocked?`<div class="topic-mst-wrap"><div class="topic-mst-track"><div class="topic-mst-fill" style="width:${masteryPct}%;background:${fillCol}"></div></div><div class="topic-mst-lbl" style="color:${ml.col}">${ml.txt}</div></div>`:'<div class="map-node-stars">🔒</div>'}`;
+      ${unlocked?`<div class="topic-mst-wrap mst-node-stars">${mstStarsHTML(stars,null,crown)}</div>`:'<div class="map-node-stars">🔒</div>'}`;
     if(unlocked){
-      node.onclick=()=>startGame(gradeNum,t.id);
+      node.onclick=()=>(typeof startTopic==='function'?startTopic:startGame)(gradeNum,t.id);
     } else {
       node.onclick=()=>{
         const toast=document.getElementById('achieve-toast');
         document.getElementById('at-icon').textContent='🔒';
         document.getElementById('at-title').textContent='Låst!';
-        document.getElementById('at-sub').textContent='Fullfør forrige tema først!';
+        document.getElementById('at-sub').textContent='Få ⭐ på forrige tema først!';
         toast.classList.add('show');
         setTimeout(()=>toast.classList.remove('show'),2500);
       };
@@ -187,11 +183,13 @@ function buildTopicMap(gradeNum){
     if(hasGuide&&list){
       const lnk=document.createElement('button');
       lnk.className='topic-btn';lnk.style.marginBottom='6px';
-      lnk.innerHTML=`<div class="tb-icon" style="background:${t.bg||'rgba(124,58,237,.3)'}">${t.icon}</div><div><div class="tb-name">${t.name}</div><div class="tb-desc">${t.desc}</div></div><button class="topic-learn-btn" onclick="event.stopPropagation();showLearn(${gradeNum},'${t.id}')">📖 Lær</button>`;
-      lnk.onclick=()=>startGame(gradeNum,t.id);
+      const st=isTopicUnlocked(gradeNum,i)?topicStars(gradeNum,t.id):-1;
+      lnk.innerHTML=`<div class="tb-icon" style="background:${t.bg||'rgba(124,58,237,.3)'}">${t.icon}</div><div><div class="tb-name">${t.name}${st>=0?` <span class="mst-list-stars">${mstStarsHTML(st,null,hasCrown(gradeNum,t.id))}</span>`:' 🔒'}</div><div class="tb-desc">${t.desc}</div></div><button class="topic-learn-btn" onclick="event.stopPropagation();showLearn(${gradeNum},'${t.id}')">📖 Lær</button>`;
+      lnk.onclick=()=>(typeof startTopic==='function'?startTopic:startGame)(gradeNum,t.id);
       list.appendChild(lnk);
     }
   });
   bossAddTopicNode(gradeNum);
+  if(typeof trollDecorate==='function')trollDecorate('topics',gradeNum); // «Trollet er tilbake!» (review.js)
   pgTopicMap(gradeNum); // PROGRESSION: unlock ceremony, growing bars, node goals
 }

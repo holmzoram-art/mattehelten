@@ -131,38 +131,36 @@ function pgLvlClose(){
   const r=pgLvlDone;pgLvlDone=null;if(r)r();
 }
 
-// ---- Chest: XP, coins and mastery count up; BESTÅTT/MESTRET stamps; streak; NIVÅ OPP ----
-let pgMst={},pgChestT=[],pgChestTok=0; // pgMst: "g:topicId" -> {from,to}, bars to grow on the topic map
-function pgChest(mBefore,xpE,coinsE,pct){
+// ---- Chest: XP and coins count up; new topic stars get a BESTÅTT/SUPER/MESTRET stamp; streak; NIVÅ OPP ----
+let pgMst={},pgChestT=[],pgChestTok=0; // pgMst: "g:topicId" -> {from,to} stars, to pop in on the topic map
+function pgChest(res,xpE,coinsE,pct){ // res = recordRound() result {from,to} (stars)
   const tok=++pgChestTok,live=()=>tok===pgChestTok&&!!document.getElementById('chest-overlay')?.classList.contains('show');
-  const g=S.grade,tid=S.topicId,from=Math.min(100,mBefore),to=Math.min(100,getMastery(g,tid)),k=g+':'+tid;
+  const g=S.grade,tid=S.topicId,k=g+':'+tid,to=res&&typeof res==='object'?res.to:topicStars(g,tid),from=res&&typeof res==='object'?res.from:to;
   pgMst[k]={from:pgMst[k]?Math.min(pgMst[k].from,from):from,to};
   const st=pgStreakTick();
   const ov=document.getElementById('chest-overlay');if(!ov)return;
   const val=ic=>[...ov.querySelectorAll('.chest-reward')].find(r=>r.querySelector('.chest-reward-icon')?.textContent.trim()===ic)?.querySelector('.chest-reward-val');
-  const xpEl=val('✨'),mEl=val('🎯'),cEl=val('🪙');
+  const xpEl=val('✨'),cEl=val('🪙');
   let x=document.getElementById('pg-cx');
   if(!x){x=document.createElement('div');x.id='pg-cx';x.className='pg-cx';const b=ov.querySelector('.chest-btn');if(b)b.insertAdjacentElement('beforebegin',x);else ov.appendChild(x);}
   const xp0=prog.xp-xpE,L0=pgLvlAt(xp0);
-  x.innerHTML=`<div class="pg-cbar"><div class="pg-cbar-top"><span id="pg-cx-lv">⭐ Nivå ${L0.l}</span><span id="pg-cx-lvr">${L0.need-L0.x} XP til nivå ${L0.l+1}</span></div><div class="pg-track"><div class="pg-fill pg-fill-xp" id="pg-cx-xp" style="width:${L0.x/L0.need*100}%"></div></div></div>
-    <div class="pg-cbar"><div class="pg-cbar-top"><span>🎯 ${pgEsc(S.topic?.name||'Mestring')}</span><span id="pg-cx-mv">${from}%</span></div><div class="pg-track pg-mtrack"><div class="pg-fill" id="pg-cx-m"></div><span class="pg-mark" style="left:70%">⭐</span><span class="pg-mark" style="left:100%">🏆</span></div></div>
+  x.innerHTML=`<div class="pg-cbar"><div class="pg-cbar-top"><span id="pg-cx-lv">✨ Nivå ${L0.l}</span><span id="pg-cx-lvr">mot nivå ${L0.l+1}</span></div><div class="pg-track"><div class="pg-fill pg-fill-xp" id="pg-cx-xp" style="width:${L0.x/L0.need*100}%"></div></div></div>
     <div class="pg-stamp" id="pg-cx-stamp"></div>${pgStreakHTML(st)}`;
-  const xpF=document.getElementById('pg-cx-xp'),lv=document.getElementById('pg-cx-lv'),lvr=document.getElementById('pg-cx-lvr'),mF=document.getElementById('pg-cx-m'),mv=document.getElementById('pg-cx-mv'),stamp=document.getElementById('pg-cx-stamp');
-  const paintM=v=>{mF.style.width=v+'%';mF.style.background=v>=100?'var(--green)':v>=70?'var(--gold)':'var(--orange)';mv.textContent=v+'%';};
+  const xpF=document.getElementById('pg-cx-xp'),lv=document.getElementById('pg-cx-lv'),lvr=document.getElementById('pg-cx-lvr'),stamp=document.getElementById('pg-cx-stamp');
   const doStamp=(txt,cls)=>{stamp.textContent=txt;stamp.className='pg-stamp';void stamp.offsetWidth;stamp.className='pg-stamp show '+cls;};
-  paintM(from);
-  if(xpEl)xpEl.textContent='+0 XP';if(mEl)mEl.textContent='+0% mestring';if(cEl)cEl.textContent='+0';
+  if(xpEl)xpEl.textContent='+0';if(cEl)cEl.textContent='+0';
   pgChestT.forEach(clearTimeout);pgChestT=[];
-  let shownL=L0.l,p70=from>=70,p100=from>=100;
+  let shownL=L0.l;
   pgChestT.push(setTimeout(()=>{
     if(tok!==pgChestTok)return;
-    pgAnim(1100,e=>{if(tok!==pgChestTok)return;const L=pgLvlAt(Math.round(xp0+xpE*e));if(xpEl)xpEl.textContent=`+${Math.round(xpE*e)} XP`;xpF.style.width=(L.x/L.need*100)+'%';lv.textContent=`⭐ Nivå ${L.l}`;lvr.textContent=`${L.need-L.x} XP til nivå ${L.l+1}`;if(L.l>shownL){shownL=L.l;lv.classList.add('pg-hot');}});
+    pgAnim(1100,e=>{if(tok!==pgChestTok)return;const L=pgLvlAt(Math.round(xp0+xpE*e));if(xpEl)xpEl.textContent=`+${Math.round(xpE*e)}`;xpF.style.width=(L.x/L.need*100)+'%';lv.textContent=`✨ Nivå ${L.l}`;lvr.textContent=`mot nivå ${L.l+1}`;if(L.l>shownL){shownL=L.l;lv.classList.add('pg-hot');}});
     pgAnim(900,e=>{if(tok===pgChestTok&&cEl)cEl.textContent=`+${Math.round(coinsE*e)}`;});
-    pgAnim(1100,e=>{if(tok!==pgChestTok)return;const v=Math.round(from+(to-from)*e);if(mEl)mEl.textContent=`+${v-from}% mestring`;paintM(v);
-      if(!p70&&v>=70){p70=true;doStamp('⭐ BESTÅTT!','pass');if(live()){pgChime();if(!pgRM())launch(100,['#ffd93d','#ffffff','#ff6b35']);}}
-      if(!p100&&v>=100){p100=true;doStamp('🏆 MESTRET!','master');if(live()){pgFanfare();if(!pgRM()){launch(170,['#00ff88','#ffd93d','#06d6ff','#ffffff']);heroVictoryFx(120);}}}
-    });
   },pgRM()?0:350));
+  if(to>from)pgChestT.push(setTimeout(()=>{ // new star(s), after they have popped in (css/mastery.css)
+    if(tok!==pgChestTok)return;
+    if(to>=3){doStamp('🏆 MESTRET!','master');if(live()){pgFanfare();if(!pgRM()){launch(170,['#00ff88','#ffd93d','#06d6ff','#ffffff']);heroVictoryFx(120);}}}
+    else{doStamp(from<1?'⭐ BESTÅTT!':'⭐⭐ SUPER!','pass');if(live()){pgChime();if(!pgRM())launch(100,['#ffd93d','#ffffff','#ff6b35']);}}
+  },pgRM()?0:1100));
   if(pct>=.5)pgChestT.push(setTimeout(()=>{if(live())heroVictoryFx(70);},250));
   if(curLvl()>pgLvlSeen)pgChestT.push(setTimeout(()=>{if(live())pgLevelUp();},pgRM()?900:1800));
 }
@@ -172,16 +170,15 @@ function pgChestClose(){
   if(pendingEvolution&&document.getElementById('pg-lvl')?.classList.contains('show')){pgEvoHeld=pendingEvolution;pendingEvolution=null;} // evolution waits for NIVÅ OPP
 }
 
-// ---- Next goals ----
-function pgRounds(m,target){return Math.max(1,Math.ceil((target-Math.min(m,target))/70));} // a typical round gives ~70%
-function pgRoundsTxt(n,mark){return `${n} ${n>1?'runder':'runde'} til ${mark}`;}
+// ---- Next goals (stars: mstNext in mastery.js tells what gives the next star) ----
 function pgNextIn(g){
   const ts=CUR[g]?.topics||[];
-  let i=ts.findIndex((t,j)=>isTopicUnlocked(g,j)&&!isTopicPassed(g,t.id));
-  if(i>=0)return{icon:ts[i].icon,txt:`${ts[i].name}: ${pgRoundsTxt(pgRounds(getMastery(g,ts[i].id),70),'⭐')}`};
+  let i=ts.findIndex((t,j)=>!t.optional&&isTopicUnlocked(g,j)&&!isTopicPassed(g,t.id));
+  if(i>=0)return{icon:ts[i].icon,txt:`${ts[i].name}: ${mstNext(g,ts[i].id).txt}`};
   if(BOSSES[g]&&isBossUnlocked(g)&&!isBossDefeated(g))return{icon:BOSSES[g].emoji,txt:`Bossen venter! ${BOSSES[g].name}`};
-  i=ts.findIndex(t=>!isTopicMastered(g,t.id));
-  if(i>=0)return{icon:ts[i].icon,txt:`${ts[i].name}: ${pgRoundsTxt(pgRounds(getMastery(g,ts[i].id),100),'🏆')}`};
+  i=ts.findIndex((t,j)=>isTopicUnlocked(g,j)&&!isTopicMastered(g,t.id)&&mstNext(g,t.id).now);
+  if(i<0)i=ts.findIndex((t,j)=>isTopicUnlocked(g,j)&&!isTopicMastered(g,t.id));
+  if(i>=0)return{icon:ts[i].icon,txt:`${ts[i].name}: ${mstNext(g,ts[i].id).txt}`};
   return null;
 }
 function pgGoalCard(){
@@ -194,19 +191,21 @@ function pgGoalGo(){const g=+(document.getElementById('pg-goal')?.dataset.g)||1;
 function pgResults(){
   const card=document.querySelector('#screen-results .victory-card');if(!card||S.boss||!CUR[S.grade])return;
   let b=document.getElementById('pg-next');
-  if(!b){b=document.createElement('button');b.id='pg-next';b.className='pg-next-btn';const ring=document.getElementById('res-ring');if(ring)ring.insertAdjacentElement('afterend',b);else card.prepend(b);}
-  const g=S.grade,ts=CUR[g].topics||[],tid=S.topicId,m=getMastery(g,tid),B=BOSSES[g];
+  if(!b){b=document.createElement('button');b.id='pg-next';b.className='pg-next-btn';const ring=document.getElementById('mst-res')||document.getElementById('res-ring');if(ring)ring.insertAdjacentElement('afterend',b);else card.prepend(b);}
+  const g=S.grade,ts=CUR[g].topics||[],tid=S.topicId,B=BOSSES[g],nx=mstNext(g,tid);
+  const Q=S.questions||[],low=Q.length>0&&Q.filter(q=>q.ok).length/Q.length<.5;
+  b.style.display=low?'none':''; // under 50 %: «📖 Se hvordan» + «🔁 Prøv igjen» from buildResults instead
   let txt,go;
-  if(!isTopicPassed(g,tid)){txt=`🎯 ${pgRoundsTxt(pgRounds(m,70),'⭐')} — prøv igjen!`;go=retrySession;}
+  if(!isTopicPassed(g,tid)){txt=`🔁 Prøv igjen! ${nx.txt}`;go=retrySession;}
   else{
-    const i=ts.findIndex((t,j)=>isTopicUnlocked(g,j)&&!isTopicPassed(g,t.id));
+    const i=ts.findIndex((t,j)=>!t.optional&&isTopicUnlocked(g,j)&&!isTopicPassed(g,t.id));
     if(i>=0){txt=`Neste: ${ts[i].icon} ${ts[i].name} ▶`;go=()=>selectGrade(g);}
     else if(B&&isBossUnlocked(g)&&!isBossDefeated(g)){txt=`Bossen venter! ${B.emoji} ▶`;go=()=>selectGrade(g);}
-    else if(!isTopicMastered(g,tid)){txt=`🎯 ${pgRoundsTxt(pgRounds(m,100),'🏆')} — prøv igjen!`;go=retrySession;}
-    else{const j=ts.findIndex(t=>!isTopicMastered(g,t.id));
-      if(j>=0){txt=`Neste: ${ts[j].icon} ${ts[j].name} 🏆 ▶`;go=()=>selectGrade(g);}
-      else if(g<10&&isGradeUnlocked(g+1)){txt=`Neste: ${g+1}. klasse ${GRADE_INFO[g].icon} ▶`;go=()=>showScreen('grades');}
-      else{txt='👑 Alt er mestret her!';go=()=>showScreen('grades');}}
+    else if(!isTopicMastered(g,tid)&&nx.now){txt=`🔁 ${nx.txt}`;go=retrySession;}
+    else{const j=ts.findIndex((t,k)=>t.id!==tid&&isTopicUnlocked(g,k)&&!isTopicMastered(g,t.id)&&mstNext(g,t.id).now);
+      if(j>=0){txt=`Neste: ${ts[j].icon} ${ts[j].name} ▶`;go=()=>selectGrade(g);}
+      else if(g<10&&CUR[g+1]&&isGradeUnlocked(g+1)){txt=`Neste: ${g+1}. klasse ${GRADE_INFO[g].icon} ▶`;go=()=>showScreen('grades');}
+      else{txt=isTopicMastered(g,tid)?'🗺️ Til kartet ▶':'🌙 Kom tilbake i morgen!';go=()=>showScreen('grades');}}
   }
   b.textContent=txt;b.onclick=go;
 }
@@ -228,7 +227,7 @@ function pgGradeMap(){
   pgGoalCard();pgShopTip();
   if(pend.length&&pgActive('grades'))setTimeout(pgRun,60);
 }
-function pgBarSet(n,v){const f=n?.querySelector('.topic-mst-fill'),lb=n?.querySelector('.topic-mst-lbl');if(!f)return;f.style.transition='none';f.style.width=v+'%';f.style.background=v>=100?'var(--green)':v>=70?'var(--gold)':'var(--orange)';if(lb){const ml=masteryLabel(v);lb.textContent=ml.txt;lb.style.color=ml.col;}}
+function pgStarSet(n,v,from){const w=n?.querySelector('.mst-node-stars');if(w)w.innerHTML=mstStarsHTML(v,from,!!w.querySelector('.mst-crown'));} // topic node stars (from = pop the new ones)
 function pgPointer(g){
   document.querySelectorAll('#topic-map-nodes .pg-next-tag').forEach(e=>e.remove());const gate=document.getElementById('boss-gate');gate?.classList.remove('pg-next');
   const box=document.getElementById('topic-map-nodes'),ts=CUR[g]?.topics||[];if(!box)return;
@@ -243,10 +242,9 @@ function pgTopicMap(g){
   const box=document.getElementById('topic-map-nodes'),svg=document.getElementById('topic-map-svg'),ts=CUR[g]?.topics||[];if(!box)return;
   ts.forEach((t,i)=>{
     const n=box.children[i];if(!n||!isTopicUnlocked(g,i))return;
-    const passed=isTopicPassed(g,t.id);
-    if(!isTopicMastered(g,t.id))n.insertAdjacentHTML('beforeend',`<div class="pg-node-goal">${pgRoundsTxt(pgRounds(getMastery(g,t.id),passed?100:70),passed?'🏆':'⭐')}</div>`);
+    if(!isTopicMastered(g,t.id))n.insertAdjacentHTML('beforeend',`<div class="pg-node-goal">${pgEsc(mstGoalShort(g,t.id))}</div>`);
     if(i>0&&!pgSeen(`t:${g}:${t.id}`)){pgPrelock(n);pgPathLock(svg?.children[i-1]);}
-    const a=pgMst[g+':'+t.id];if(a&&a.to>a.from)pgBarSet(n,a.from); // shows the old value until the bar grows
+    const a=pgMst[g+':'+t.id];if(a&&a.to>a.from)pgStarSet(n,a.from); // shows the old stars until the new ones pop in
   });
   const gate=document.getElementById('boss-gate');
   if(gate&&BOSSES[g]&&isBossUnlocked(g)&&!isBossDefeated(g)&&!pgSeen('b:'+g))gate.classList.add('locked','pg-prelock');
@@ -292,10 +290,10 @@ async function pgGradeShow(){
 async function pgTopicShow(g){
   const ts=CUR[g]?.topics||[],gi=GRADE_INFO[g-1]||{},col=gi.color||'#ffd93d',here=()=>pgActive('topics')&&currentGrade===g;
   const node=i=>document.getElementById('topic-map-nodes')?.children[i];
-  let grew=false; // 1) mastery bars grow from the old to the new value
-  ts.forEach((t,i)=>{const k=g+':'+t.id,a=pgMst[k],n=node(i);if(!a||!n)return;delete pgMst[k];if(a.to<=a.from)return;grew=true;pgBarSet(n,a.from);
-    const p=document.createElement('div');p.className='pg-plus';p.textContent=`+${a.to-a.from}%`;n.appendChild(p);setTimeout(()=>p.remove(),1600);
-    pgAnim(1000,e=>pgBarSet(n,Math.round(a.from+(a.to-a.from)*e))).then(()=>{const f=n.querySelector('.topic-mst-fill');if(f)f.style.transition='';});});
+  let grew=false; // 1) new stars pop in on the topic nodes
+  ts.forEach((t,i)=>{const k=g+':'+t.id,a=pgMst[k],n=node(i);if(!a||!n)return;delete pgMst[k];if(a.to<=a.from)return;grew=true;pgStarSet(n,a.from);
+    const p=document.createElement('div');p.className='pg-plus';p.textContent='+'+'⭐'.repeat(a.to-a.from);n.appendChild(p);setTimeout(()=>p.remove(),1600);
+    setTimeout(()=>pgStarSet(n,a.to,a.from),pgRM()?0:450);});
   if(grew)await pgSleep(pgRM()?500:1300);
   for(const[i,t]of ts.entries()){ // 2) topics mastered
     if(!isTopicMastered(g,t.id)||pgSeen(`m:${g}:${t.id}`))continue;

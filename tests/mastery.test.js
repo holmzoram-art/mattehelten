@@ -160,6 +160,8 @@ module.exports=function({R,ok,CUR,ls,els}){
   ok(/mst-star on/.test(els['res-stars'].innerHTML),'round: resultatsiden viser temaets stjerner');
   const hs=JSON.parse(ls.get(`hs_1_${A}`)||'[]');ok(hs.length===1&&hs[0].c===hs[0].n&&hs[0].score===10,'round: rekord med c/n');
   ok(/ av /.test(els['hs-rows'].innerHTML),'round: rekord vises som «x av n»');
+  thr=null;try{R('showParentReport()');}catch(x){thr=x;}
+  ok(!thr&&/⭐⭐☆/.test(els['pr-stars'].textContent)&&/Neste mål/.test(els['pr-rec'].textContent+els['pr-rec'].innerHTML),`round: foreldrerapporten viser temaets stjerner og neste mål: ${thr&&thr.message}`);
   reset();round(()=>false);R('closeChest()');
   ok(stars(1,A)===0,'round: alt feil gir ingen stjerne');
   ok(els['mst-res'].innerHTML.includes(`showLearn(1,'${A}')`)&&els['mst-res'].innerHTML.includes('retrySession()'),'round: under 50 % vises «Se hvordan» og «Prøv igjen»');

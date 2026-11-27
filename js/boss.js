@@ -230,8 +230,8 @@ function bossBegin(g,topics,b,o){
 // ---- Tally: per topic first-try results. S.questions[i].ok = right on the first try (A2); tid = topic ----
 function bossTidOf(q){return (q&&q.tid&&S.bossTopics.some(t=>t.id===q.tid)?q.tid:null)||(S.current&&S.current.bossTid)||(S.bossTopic&&S.bossTopic.id)||null;}
 // Logs the last answered question once (idempotent per index); waits while a second try is open (S.answered false)
-function bossLogLast(){
-  const i=S.questions.length-1,q=S.questions[i];if(i<0||!q||!S.answered||S.bossLog[i]!==undefined)return;
+function bossLogLast(force){ // force: a right answer always ends the question
+  const i=S.questions.length-1,q=S.questions[i];if(i<0||!q||(!S.answered&&!force)||S.bossLog[i]!==undefined)return;
   const tid=bossTidOf(q);S.bossLog[i]={tid,ok:!!q.ok};
   if(tid){const st=S.bossStats[tid]||(S.bossStats[tid]={ok:0,n:0});st.n++;if(q.ok)st.ok++;}
 }
@@ -242,7 +242,7 @@ function bossFirstOk(){return S.bossLog.filter(x=>x&&x.ok).length;}
 // Damage hook (submitAnswer): returns the boss' new HP in percent. HP follows the number of first-try hits
 // (need hits = K.O.); it stays at a sliver while a topic still has only wrong answers.
 function bossHit(){
-  bossLogLast();
+  bossLogLast(true);
   const c=bossFirstOk();
   let pts=Math.max(0,S.bossMax-10*c);
   if(pts<=0&&!bossVerdict(S.bossStats,c,S.bossNeed))pts=5;

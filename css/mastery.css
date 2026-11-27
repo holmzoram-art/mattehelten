@@ -60,6 +60,7 @@
   .troll-offer{padding:9px 11px;gap:9px;}
   .troll-offer-icon{font-size:2rem;}
   .mst-gstars{font-size:.62rem;gap:3px;}
+  .mst-node-stars .mst-crown{display:none;} /* kronen står på ikonet; spar plass på smal skjerm */
 }
 @media(prefers-reduced-motion:reduce){
   .mst-star.new{animation:none;}

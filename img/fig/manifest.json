@@ -546,6 +546,80 @@
     "x": 0.511,
     "y": 0.136
    }
+  },
+  "h-fairy-r0": {
+   "kind": "hero",
+   "key": "fairy",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.484,
+    "y": 0.365
+   },
+   "top": {
+    "x": 0.524,
+    "y": 0.093
+   }
+  },
+  "h-robot-r0": {
+   "kind": "hero",
+   "key": "robot",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.464,
+    "y": 0.406
+   },
+   "top": {
+    "x": 0.497,
+    "y": 0.146
+   }
   }
  },
  "atlas": {
@@ -934,6 +1008,46 @@
   "h-ninja-r0-poster.webp": {
    "v": "cd7fb27a",
    "bytes": 4050
+  },
+  "h-fairy-r0-idle.webp": {
+   "v": "cd738c4f",
+   "bytes": 56272
+  },
+  "h-fairy-r0-atk.webp": {
+   "v": "3c5a9cd6",
+   "bytes": 39998
+  },
+  "h-fairy-r0-block.webp": {
+   "v": "111ccaa5",
+   "bytes": 28374
+  },
+  "h-fairy-r0-win.webp": {
+   "v": "2d08b867",
+   "bytes": 55902
+  },
+  "h-fairy-r0-poster.webp": {
+   "v": "468b665f",
+   "bytes": 4652
+  },
+  "h-robot-r0-idle.webp": {
+   "v": "44de8c27",
+   "bytes": 46894
+  },
+  "h-robot-r0-atk.webp": {
+   "v": "a5a7da61",
+   "bytes": 33338
+  },
+  "h-robot-r0-block.webp": {
+   "v": "b984bb30",
+   "bytes": 22776
+  },
+  "h-robot-r0-win.webp": {
+   "v": "7d0592ba",
+   "bytes": 47410
+  },
+  "h-robot-r0-poster.webp": {
+   "v": "7e4963cc",
+   "bytes": 3690
   },
   "s-atlas.webp": {
    "v": "8e48be04",

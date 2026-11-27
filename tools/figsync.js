@@ -22,12 +22,14 @@ man.about=ABOUT;man.figs=man.figs||{};man.atlas=man.atlas||{};
 const log=[];
 const copy=(src,name)=>{if(!fs.existsSync(src)){log.push('MANGLER '+src);return false;}fs.copyFileSync(src,path.join(DIR,name));return true;};
 const rd=f=>JSON.parse(fs.readFileSync(f,'utf8'));
+// Over vekttaket: hent ikke (en eldre godkjent versjon i img/fig/ blir stående); produsenten må lage en lettere fil
+const over=(files,cap,id)=>{const big=files.filter(f=>fs.existsSync(f)&&fs.statSync(f).size>cap);if(big.length)log.push(`OVER VEKTTAK, ikke hentet: ${id} (${big.map(f=>path.basename(f)+' '+fs.statSync(f).size+' B').join(', ')} > ${cap})`);return big.length>0;};
 const pick=(o,ks)=>{const r={};ks.forEach(k=>{if(o&&o[k]!=null)r[k]=o[k];});return r;};
 
 // ---- Bosser (produsent C): boss.json {figs:{troll:{kind:'boss',size,anims:{idle:{n,ms}}}}} + <id>-<anim>.webp
 const boss=arg('--boss');
 if(boss){const b=rd(path.join(boss,'boss.json'));
-  for(const[id,f]of Object.entries(b.figs||{})){let ok=true;for(const a of Object.keys(f.anims||{}))ok=copy(path.join(boss,`${id}-${a}.webp`),`${id}-${a}.webp`)&&ok;
+  for(const[id,f]of Object.entries(b.figs||{})){if(over(Object.keys(f.anims||{}).map(a=>path.join(boss,`${id}-${a}.webp`)),CAP.boss,id))continue;let ok=true;for(const a of Object.keys(f.anims||{}))ok=copy(path.join(boss,`${id}-${a}.webp`),`${id}-${a}.webp`)&&ok;
     if(ok){man.figs[id]=Object.assign({kind:'boss'},f);log.push('boss '+id);}}}
 
 // ---- Helter (produsent A): parts/h-<key>-r<rang>.json {key,rank,size,anims:{idle:{file,n,ms,loop}},poster:{file},head,top} + out/<file>
@@ -35,6 +37,7 @@ const heroes=arg('--heroes');
 if(heroes&&fs.existsSync(path.join(heroes,'parts'))){
   for(const pf of fs.readdirSync(path.join(heroes,'parts')).filter(f=>/^h-[a-z]+-r\d\.json$/.test(f))){
     const p=rd(path.join(heroes,'parts',pf)),id=pf.replace(/\.json$/,''),anims={};let ok=true;
+    if(over(Object.values(p.anims||{}).filter(x=>x&&x.file).map(x=>path.join(heroes,'out',x.file)),CAP.hero,id))continue;
     for(const[a,x]of Object.entries(p.anims||{})){if(!x||!x.file)continue;if(copy(path.join(heroes,'out',x.file),`${id}-${a}.webp`))anims[a]=pick(x,['n','ms','loop']);else ok=false;}
     if(!anims.idle||!ok){log.push('helt venter (mangler filer) '+id);continue;}
     const f={kind:'hero',key:p.key||id.split('-')[1],rank:+(p.rank||0),size:p.size||192,anims};
@@ -49,7 +52,7 @@ if(heroes&&fs.existsSync(path.join(heroes,'parts'))){
 const flat=arg('--flat');
 if(flat&&fs.existsSync(path.join(flat,'out','manifest.json'))){
   const o=path.join(flat,'out'),m=rd(path.join(o,'manifest.json'));
-  for(const[tid,x]of Object.entries(m.monsters||{})){const id=x.id||('m-'+tid),anims={};
+  for(const[tid,x]of Object.entries(m.monsters||{})){const id=x.id||('m-'+tid),anims={};if(over([x.idle,x.au].filter(Boolean).map(f=>path.join(o,f)),CAP.still,id))continue;
     if(x.idle&&copy(path.join(o,x.idle),`${id}-idle.webp`))anims.idle={n:1};
     if(x.au&&copy(path.join(o,x.au),`${id}-au.webp`))anims.au={n:1};
     if(anims.idle){man.figs[id]={kind:'mon',tid,size:x.size||256,anims};log.push('monster '+id);}}

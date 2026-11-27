@@ -47,7 +47,7 @@ const LEARN_GUIDES={
      visual:`<div class="dot-groups">${emoRow(3,'🍎')} <span class="dot-op">+</span> ${emoRow(2,'🍎')} <span class="dot-eq">=</span> ${emoRow(5,'🍎')}</div>`+capLine(`3 + 2 = ${grn('5')}`)},
     {icon:'🐸',title:'Hopp på tallinja',text:'Start på det første tallet. Hopp fremover like mange ganger som det andre tallet.',
      visual:numLine(0,10,3,4)+capLine(`4 + 3: Start på 4, hopp 3 → ${grn('7')}`)},
-    {icon:'🎯',title:'Din tur!',text:'Start på 6 og tell 4 fremover.',ask:{q:'6 + 4 = ?',ans:10},pre:numLine(0,10,0,6),
+    {icon:'🎯',title:'Din tur!',text:'Start på 6 og tell 4 fremover.',ask:{q:'6 + 4 = ?',ans:10,ops:{a:6,b:4,op:'+'},help:{t:'Start på 6. Tell 4 hopp!',v:{kind:'line',from:5,to:11,start:6,hops:[1,1,1,1],endLab:'?'}}},pre:numLine(0,10,0,6),
      visual:workedEx([['6 + 4 = ?','',false],['Start på 6','',false],['7, 8, 9, 10','(tell 4 fremover)',true],['6 + 4 = 10 ✓','',false]])}
   ],
   sub10:[
@@ -55,7 +55,7 @@ const LEARN_GUIDES={
      visual:`<div class="dot-groups">${emoRow(5,'🍪',2)} <span class="dot-eq">=</span> ${emoRow(3,'🍪')}</div>`+capLine(`5 - 2 = ${grn('3')}`)},
     {icon:'🐸',title:'Hopp bakover',text:'Start på det store tallet. Hopp bakover på tallinja.',
      visual:numLine(0,10,-3,7)+capLine(`7 - 3 = ${grn('4')}`)},
-    {icon:'🎯',title:'Din tur!',text:'Start på 8 og tell 5 bakover.',ask:{q:'8 - 5 = ?',ans:3},pre:numLine(0,10,0,8),
+    {icon:'🎯',title:'Din tur!',text:'Start på 8 og tell 5 bakover.',ask:{q:'8 - 5 = ?',ans:3,ops:{a:8,b:5,op:'-'},help:{t:'Start på 8. Hopp 5 tilbake!',v:{kind:'line',from:2,to:9,start:8,hops:[-1,-1,-1,-1,-1],endLab:'?'}}},pre:numLine(0,10,0,8),
      visual:workedEx([['8 - 5 = ?','',false],['Start på 8','',false],['7, 6, 5, 4, 3','(tell 5 bakover)',true],['8 - 5 = 3 ✓','',false]])}
   ],
   ten1:[
@@ -67,7 +67,7 @@ const LEARN_GUIDES={
      visual:`<div style="font-size:2.4rem">🖐️🖐️</div>`+capLine(`10 - 6 = ${grn('4')}`)},
     {icon:'📋',title:'Alle tiervennene',text:'Lær dem utenat. Da blir du lynrask! ⚡',
      visual:pills(['1 + 9','2 + 8','3 + 7','4 + 6','5 + 5'],'#ffd93d')},
-    {icon:'🎯',title:'Din tur!',text:'Hvor mange mangler fra 8 til 10?',ask:{q:'8 + ? = 10',ans:2},pre:tenFrame(8),
+    {icon:'🎯',title:'Din tur!',text:'Hvor mange mangler fra 8 til 10?',ask:{q:'8 + ? = 10',ans:2,ops:{a:8,b:2,op:'+',unk:'b'},help:{t:'Tell de tomme rutene!',v:{kind:'tenframe',a:8}}},pre:tenFrame(8),
      visual:workedEx([['8 + ? = 10','',false],['9, 10','(2 hopp)',true],['8 + 2 = 10 ✓','',false]])}
   ],
   seq1:[
@@ -77,7 +77,7 @@ const LEARN_GUIDES={
      visual:seqHops([5,6,7,8],'+1')+'<div style="height:8px"></div>'+seqHops([5,10,15,20],'+5')+'<div style="height:8px"></div>'+seqHops([10,20,30,40],'+10')},
     {icon:'🚀',title:'Nedtelling!',text:'Raketten teller ned. Da blir tallene mindre.',
      visual:seqHops([9,8,7,'?'],'−1',3)+capLine(`Etter 7 kommer ${grn('6')}. 🚀`)},
-    {icon:'🎯',title:'Din tur!',text:'Finn hoppet først. Hopp så videre.',ask:{q:'10, 20, ?, 40',ans:30},
+    {icon:'🎯',title:'Din tur!',text:'Finn hoppet først. Hopp så videre.',ask:{q:'10, 20, ?, 40',ans:30,help:{t:'Hoppet er 10. Hopp fra 20!',v:{kind:'line',from:0,to:50,step:10,start:10,hops:[10,10,10],hopLab:['+10','+10','+10'],hide:[30]}}},
      visual:workedEx([['10, 20, ?, 40','',false],['Hoppet er 10','(10 → 20)',true],['20 + 10 = 30','',true],['Svaret er 30 ✓','',false]])}
   ],
   add20:[
@@ -85,7 +85,7 @@ const LEARN_GUIDES={
      visual:tenFrame(8,5)+capLine(`8 + 2 = 10, og 3 til = ${grn('13')}`)},
     {icon:'✂️',title:'Del opp tallene',text:'Del opp i tiere og enere. Legg sammen enerne først.',
      visual:workedEx([['13 + 5 = ?','',false],['13 = 10 + 3','(del opp 13)',true],['3 + 5 = 8','(enerne)',true],['10 + 8 = 18 ✓','',false]])},
-    {icon:'🎯',title:'Din tur!',text:'Bruk tiervennen til 9. Fyll opp til 10 først.',ask:{q:'9 + 6 = ?',ans:15},pre:tenFrame(9,6),
+    {icon:'🎯',title:'Din tur!',text:'Bruk tiervennen til 9. Fyll opp til 10 først.',ask:{q:'9 + 6 = ?',ans:15,ops:{a:9,b:6,op:'+'},help:{t:'9 + 1 = 10. Så 5 til.',v:{kind:'line',from:8,to:16,start:9,hops:[1,5],hopLab:['+1','+5'],endLab:'?'}}},pre:tenFrame(9,6),
      visual:workedEx([['9 + 6 = ?','',false],['9 + 1 = 10','(fyll opp tieren)',true],['Det er 5 igjen av 6','',false],['10 + 5 = 15 ✓','',false]])}
   ],
   add100:[
@@ -93,7 +93,7 @@ const LEARN_GUIDES={
      visual:workedEx([['34 + 25 = ?','',false],['30 + 20 = 50','(tierne)',true],['4 + 5 = 9','(enerne)',true],['50 + 9 = 59 ✓','',false]])},
     {icon:'🎯',title:'Over tieren',text:'Blir enerne mer enn 10? Da får du en ny tier!',
      visual:workedEx([['47 + 6 = ?','',false],['7 + 6 = 13','(enerne)',true],['40 + 13 = 53 ✓','',false]])},
-    {icon:'🎯',title:'Din tur!',text:'Ta tierne for seg og enerne for seg.',ask:{q:'23 + 14 = ?',ans:37},
+    {icon:'🎯',title:'Din tur!',text:'Ta tierne for seg og enerne for seg.',ask:{q:'23 + 14 = ?',ans:37,ops:{a:23,b:14,op:'+'},help:{t:'Tiere: 20 + 10. Enere: 3 + 4.',v:{kind:'blocks',a:23,b:14}}},
      visual:workedEx([['23 + 14 = ?','',false],['20 + 10 = 30','(tierne)',true],['3 + 4 = 7','(enerne)',true],['30 + 7 = 37 ✓','',false]])}
   ],
   sub100:[
@@ -101,7 +101,7 @@ const LEARN_GUIDES={
      visual:workedEx([['52 - 17 = ?','',false],['52 - 10 = 42','(tierne)',true],['42 - 7 = 35','(enerne)',true],['52 - 17 = 35 ✓','',false]])},
     {icon:'🔄',title:'Hopp via tieren',text:'Gå ned til nærmeste tier først. Ta så resten.',
      visual:workedEx([['42 - 7 = ?','',false],['42 - 2 = 40','(ned til tieren)',true],['40 - 5 = 35','(resten)',true],['= 35 ✓','',false]])},
-    {icon:'🎯',title:'Din tur!',text:'Ta tierne først. Ta så enerne.',ask:{q:'47 - 12 = ?',ans:35},
+    {icon:'🎯',title:'Din tur!',text:'Ta tierne først. Ta så enerne.',ask:{q:'47 - 12 = ?',ans:35,ops:{a:47,b:12,op:'-'},help:{t:'Ta bort 1 tier og 2 enere.',v:{kind:'blocks',a:47,cross:12}}},
      visual:workedEx([['47 - 12 = ?','',false],['47 - 10 = 37','(tierne)',true],['37 - 2 = 35','(enerne)',true],['47 - 12 = 35 ✓','',false]])}
   ],
   miss2:[
@@ -111,7 +111,7 @@ const LEARN_GUIDES={
      visual:numLine(0,10,3,5)+capLine(`Fra 5 til 8 er det 3 hopp. 5 + ${grn('3')} = 8`)},
     {icon:'🔄',title:'Regn baklengs',text:'Du kan også bruke minus for å finne tallet.',
      visual:workedEx([['? + 4 = 9','',false],['9 - 4 = 5','(regn baklengs)',true],['5 + 4 = 9 ✓','(sjekk)',false]])},
-    {icon:'🍦',title:'Din tur!',text:'Du har 46 kr. En is koster 50 kr. Hvor mye mangler du?',ask:{q:'46 + ? = 50',ans:4},pre:numLine(45,50,0,46),
+    {icon:'🍦',title:'Din tur!',text:'Du har 46 kr. En is koster 50 kr. Hvor mye mangler du?',ask:{q:'46 + ? = 50',ans:4,ops:{a:46,b:4,op:'+',unk:'b'},help:{t:'Tell hoppene fra 46 til 50!',v:{kind:'line',from:45,to:51,start:46,hops:[1,1,1,1],top:'?'}}},pre:numLine(45,50,0,46),
      visual:workedEx([['46 + ? = 50','',false],['47, 48, 49, 50','(4 hopp)',true],['46 + 4 = 50 ✓','',false]])}
   ],
   dbl2:[
@@ -121,7 +121,7 @@ const LEARN_GUIDES={
      visual:`<div class="dot-groups">${dotGroup(8,'#06d6ff')} <span class="dot-eq">→</span> ${dotGroup(4,'#00ff88',200)} <span class="dot-op">|</span> ${dotGroup(4,'#00ff88',360)}</div>`+capLine(`Halvparten av 8 = ${grn('4')}`)},
     {icon:'🔁',title:'De henger sammen',text:'Dobbelt av 6 er 12. Da er halvparten av 12 lik 6!',
      visual:pills(['6 → dobbelt → 12','12 → halvparten → 6'],'#f093fb')},
-    {icon:'🎯',title:'Din tur!',text:'Ta tierne og enerne hver for seg.',ask:{q:'Dobbelt av 23 = ?',ans:46},
+    {icon:'🎯',title:'Din tur!',text:'Ta tierne og enerne hver for seg.',ask:{q:'Dobbelt av 23 = ?',ans:46,ops:{a:23,op:'dbl'},help:{t:'Tiere: 20 + 20. Enere: 3 + 3.',v:{kind:'blocks',a:23,b:23}}},
      visual:workedEx([['Dobbelt av 23','',false],['20 + 20 = 40','(tierne)',true],['3 + 3 = 6','(enerne)',true],['40 + 6 = 46 ✓','',false]])}
   ],
   mul25:[
@@ -129,7 +129,7 @@ const LEARN_GUIDES={
      visual:`<div style="display:flex;flex-direction:column;align-items:center;gap:6px">${[0,1,2].map(i=>`<div style="display:flex;gap:4px">${dots(4,['#7c3aed','#a855f7','#06d6ff'][i],i*100)}</div>`).join('')}</div>`+capLine(`3 · 4 = 4 + 4 + 4 = ${grn('12')}`)},
     {icon:'⭐',title:'2-, 5- og 10-gangen',text:'5-gangen slutter alltid på 0 eller 5. 10-gangen: bare legg til en 0!',
      visual:`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">${[2,5,10].map(t=>`<div><div style="font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--gold);margin-bottom:4px">${t}-gangen</div>${[1,2,3,4].map(n=>`<div style="font-size:.8rem;font-weight:800;color:var(--white)">${n} · ${t} = ${n*t}</div>`).join('')}</div>`).join('')}</div>`},
-    {icon:'🖐️',title:'Din tur!',text:'4 hender med 5 fingre. Hvor mange fingre?',ask:{q:'4 · 5 = ?',ans:20},pre:'<div style="font-size:2rem">🖐️🖐️🖐️🖐️</div>',
+    {icon:'🖐️',title:'Din tur!',text:'4 hender med 5 fingre. Hvor mange fingre?',ask:{q:'4 · 5 = ?',ans:20,ops:{a:4,b:5,op:'·'},help:{t:'Tell 5 om gangen: 5, 10 …',v:{kind:'dots',g:[5,5,5,5]}}},pre:'<div style="font-size:2rem">🖐️🖐️🖐️🖐️</div>',
      visual:workedEx([['4 · 5 = ?','',false],['= 5 + 5 + 5 + 5','(fire 5-ere)',true],['= 10 + 10','',true],['= 20 ✓','',false]])}
   ],
   mul15:[
@@ -324,36 +324,110 @@ function startTopic(g,id){
   startGame(g,id);return 'game';
 }
 
-// ---- «Gå til kamp»: neste anbefalte tema (eller bossen) i høyeste åpne klassetrinn ----
-function fightGrade(){
-  let f=1;for(let g=1;g<=10;g++)if(CUR[g]&&typeof isGradeUnlocked==='function'&&isGradeUnlocked(g))f=g;
-  const sg=typeof getSetting==='function'?+getSetting('startGrade'):1;
-  return sg>f&&CUR[sg]?sg:f;
+// ---- «Gå til kamp»: neste anbefalte kamp ----
+// Barnets eget trinn (startGrade) først: neste tema uten ⭐, så bossen, så temaer som kan få flere stjerner i dag
+// (også påbegynte temaer i trinnene under), så trollet, så resten av eget trinn mot ⭐⭐⭐. Først når alle temaene
+// (ikke valgfrie) i eget trinn er mestret, går det videre til neste åpne trinn ({up:true}: «Du er klar for 3. klasse-matte! 🚀»).
+// nextFight(g) med trinn = bare det trinnet; noTroll = hopp over trollet. Svar: {g,topic,up} | {g,boss,up} | {g,troll} | null.
+function fightOwnGrade(){
+  const st=typeof mhSettings==='function'?mhSettings():{};let g=parseInt(st.startGrade,10)||0;
+  if(!g){g=1;for(let k=2;k<=10;k++)if(CUR[k]&&typeof isGradeUnlocked==='function'&&isGradeUnlocked(k)&&fightStarted(k))g=k;} // gammel lagring uten klassevalg: høyeste trinn barnet har spilt i
+  g=Math.max(1,Math.min(10,g));while(g>1&&!CUR[g])g--;return g;
 }
-function nextFight(g){
-  g=g||fightGrade();const ts=(CUR[g]&&CUR[g].topics)||[];
-  const open=i=>typeof isTopicUnlocked==='function'?isTopicUnlocked(g,i):i===0;
-  const passed=t=>typeof isTopicPassed==='function'&&isTopicPassed(g,t.id);
-  const mastered=t=>typeof isTopicMastered==='function'&&isTopicMastered(g,t.id);
-  const find=f=>ts.findIndex((t,i)=>open(i)&&f(t));
-  let i=find(t=>!t.optional&&!passed(t)); // første tema uten ⭐
-  if(i<0&&typeof BOSSES!=='undefined'&&BOSSES[g]&&typeof isBossUnlocked==='function'&&isBossUnlocked(g)&&!isBossDefeated(g))return{g,boss:BOSSES[g]};
-  if(i<0)i=find(t=>!passed(t)); // valgfrie temaer
-  if(i<0)i=find(t=>!mastered(t)); // mot ⭐⭐⭐
-  if(i<0&&ts.length)i=new Date().getDate()%ts.length; // alt mestret: et tema per dag
-  return i>=0&&ts[i]?{g,topic:ts[i]}:null;
+function fightStarted(g,id){const ts=(CUR[g]&&CUR[g].topics)||[];try{return typeof topicStarted==='function'&&(id?topicStarted(g,id):ts.some(t=>topicStarted(g,t.id)));}catch(e){return false;}}
+function fightOpen(g){const ts=(CUR[g]&&CUR[g].topics)||[];return ts.filter((t,i)=>typeof isTopicUnlocked==='function'?isTopicUnlocked(g,i):i===0);}
+function fightPassed(g,id){try{return typeof isTopicPassed==='function'&&!!isTopicPassed(g,id);}catch(e){return false;}}
+function fightMastered(g,id){try{return typeof isTopicMastered==='function'&&!!isTopicMastered(g,id);}catch(e){return false;}}
+function fightNow(g,id){try{return typeof mstNext!=='function'||mstNext(g,id).now!==false;}catch(e){return true;}} // kan temaet gi en ny stjerne i dag?
+function fightBoss(g){try{return typeof BOSSES!=='undefined'&&!!BOSSES[g]&&typeof isBossUnlocked==='function'&&isBossUnlocked(g)&&typeof isBossDefeated==='function'&&!isBossDefeated(g);}catch(e){return false;}}
+// Ett trinn: neste tema uten ⭐ → bossen → mot flere stjerner i dag (valgfrie temaer sist, og bare til ⭐) → (rest) mot ⭐⭐⭐ selv om stjernen må vente
+function fightIn(g,up,rest){
+  const ts=fightOpen(g),ord=ts.filter(t=>!t.optional).concat(ts.filter(t=>t.optional)),T=t=>({g,topic:t,up:!!up});
+  let t=ts.find(t=>!t.optional&&!fightPassed(g,t.id));if(t)return T(t);
+  if(fightBoss(g))return{g,boss:BOSSES[g],up:!!up};
+  t=ord.find(t=>(t.optional?!fightPassed(g,t.id):!fightMastered(g,t.id))&&fightNow(g,t.id));if(t)return T(t);
+  if(rest){t=ord.find(t=>!t.optional&&!fightMastered(g,t.id));if(t)return T(t);}
+  return null;
 }
+function nextFight(g0,noTroll){
+  if(g0&&CUR[g0]){const n=fightIn(g0,false,true),ts=fightOpen(g0);return n||(ts.length?{g:g0,topic:ts[new Date().getDate()%ts.length]}:null);}
+  const own=fightOwnGrade();
+  let n=fightIn(own,false,false);if(n)return n;
+  for(let g=own-1;g>=1;g--){const t=fightOpen(g).find(t=>fightStarted(g,t.id)&&!fightMastered(g,t.id)&&fightNow(g,t.id));if(t)return{g,topic:t};} // påbegynt i trinnene under
+  if(!noTroll&&typeof trollToday==='function'){let r=null;try{r=trollToday();}catch(e){}if(r&&CUR[r.g])return{g:r.g,troll:r};}
+  n=fightIn(own,false,true);if(n)return n; // eget trinn er ikke mestret ennå: bli her
+  let hi=own;
+  for(let g=own+1;g<=10;g++){if(!CUR[g]||typeof isGradeUnlocked!=='function'||!isGradeUnlocked(g))continue;hi=g;n=fightIn(g,true,true);if(n)return n;}
+  const ts=fightOpen(hi); // alt er mestret: et tema per dag
+  return ts.length?{g:hi,topic:ts[new Date().getDate()%ts.length]}:null;
+}
+// Trinnet barnet jobber i nå (uten trollet): «Neste mål» på kartet og «Neste: 3. klasse» på resultatsiden (progression.js)
+function fightGrade(){let n=null;try{n=nextFight(0,true);}catch(e){}return n&&n.g?n.g:fightOwnGrade();}
 function goFight(){
-  const n=nextFight();if(!n){showScreen('grades');return;}
+  let n=null;try{n=nextFight();}catch(e){}
+  if(!n){showScreen('grades');return;}
   try{currentGrade=n.g;}catch(e){}
+  if(n.troll&&typeof openTrollIntro==='function'){openTrollIntro('grades');return;}
   if(n.boss&&typeof openBossIntro==='function'){openBossIntro(n.g);return;}
-  startTopic(n.g,n.topic.id);
+  if(n.topic)startTopic(n.g,n.topic.id);else showScreen('grades');
 }
+// Ny klasse som barnet ikke har begynt på ennå: positiv tekst i stedet for temanavnet
+function goFightUp(n){return !!(n&&n.up&&!fightStarted(n.g));}
 function goFightLabel(){
   const el=document.getElementById('go-fight-sub');if(!el)return;
   let n=null;try{n=nextFight();}catch(e){}
-  el.textContent=n?(n.boss?`${n.boss.emoji} ${n.boss.name}`:`${n.topic.icon} ${n.topic.name}`):'';
+  el.textContent=!n?'':n.troll?'🧌 Trollet er tilbake!':goFightUp(n)?`Du er klar for ${n.g}. klasse-matte! 🚀`:n.boss?`${n.boss.emoji} ${n.boss.name}`:n.topic?`${n.topic.icon} ${n.topic.name}`:'';
+  const b=document.getElementById('go-fight');if(b&&b.classList)b.classList.toggle('gf-up',goFightUp(n));
 }
+// «Neste ▶» på resultatsiden: rett inn i temaet (Lær første gang) eller til bossen, ikke via kartet
+function goNextTopic(g,id){try{currentGrade=g;}catch(e){}if(id&&CUR[g]&&CUR[g].topics.some(t=>t.id===id))startTopic(g,id);else if(typeof selectGrade==='function')selectGrade(g);else showScreen('grades');}
+function goNextBoss(g){try{currentGrade=g;}catch(e){}if(typeof openBossIntro==='function'&&typeof BOSSES!=='undefined'&&BOSSES[g])openBossIntro(g);else if(typeof selectGrade==='function')selectGrade(g);}
+
+// ---- ← i kamp: «Vil du stoppe kampen?» når minst én oppgave er besvart ----
+// Spørsmålet legges foran den vanlige ←-logikken (onclick i index.html og bossens lytter i boss.js): et klikk på ←
+// fanges i capture-fasen på #screen-game. «Stopp» klikker ← på nytt og slipper det gjennom.
+let bkPass=false,bkAuto=false;
+function battleBackAsk(){
+  try{if(typeof S==='undefined'||!S||!Array.isArray(S.questions)||!S.questions.length||S.chestDone)return false;
+    if(S.boss&&S.bossOver)return false;return true;}catch(e){return false;}
+}
+function battleBackOpen(){
+  const o=document.getElementById('bk-overlay');if(!o)return false;
+  bkAuto=!!(S&&S._autoT);if(bkAuto&&typeof loopDisarm==='function')loopDisarm(); // ikke gå videre til neste oppgave bak spørsmålet
+  const he=document.getElementById('player-avatar'),en=document.getElementById('enemy-avatar');
+  document.getElementById('bk-hero').textContent=he&&he.textContent||'🦸';document.getElementById('bk-enemy').textContent=en&&en.textContent||'👾';
+  o.classList.add('show');
+  const b=document.getElementById('bk-stay');if(b&&b.focus)try{b.focus({preventScroll:true});}catch(e){}
+  if(typeof speak==='function')speak('Vil du stoppe kampen?',{grade:S&&S.grade});
+  return true;
+}
+function battleBackClose(){const o=document.getElementById('bk-overlay');if(o)o.classList.remove('show');}
+function battleBackStay(){
+  battleBackClose();
+  if(bkAuto&&S&&S.answered&&!S.chestDone&&typeof loopArmAuto==='function')loopArmAuto();
+  bkAuto=false;
+  try{if(S&&!S.answered&&typeof loopFocusOK==='function'&&loopFocusOK()&&typeof isChoiceQ==='function'&&!isChoiceQ(S.current))document.getElementById('ans-input').focus({preventScroll:true});}catch(e){}
+}
+function battleBackStop(){
+  battleBackClose();bkAuto=false;
+  if(typeof ttsStop==='function')ttsStop();
+  const b=document.querySelector('#screen-game .battle-back');
+  if(!b){showScreen('grades');return;}
+  bkPass=true;try{b.click();}finally{bkPass=false;}
+}
+(function(){
+  const sg=document.getElementById('screen-game');
+  if(sg&&sg.addEventListener)sg.addEventListener('click',e=>{
+    if(bkPass)return;
+    const t=e.target,b=t&&t.closest?t.closest('.battle-back'):null;
+    if(!b||!battleBackAsk())return;
+    e.stopPropagation();e.preventDefault();battleBackOpen();
+  },true);
+  if(typeof document.addEventListener==='function')document.addEventListener('keydown',e=>{
+    const o=document.getElementById('bk-overlay');if(!o||!o.classList||!o.classList.contains('show'))return;
+    if(e.key==='Escape'){e.preventDefault();battleBackStay();}
+  });
+})();
 
 // ---- Lær ----
 function showLearn(grade,topicId,opts){
@@ -361,7 +435,9 @@ function showLearn(grade,topicId,opts){
   if(!topic)return;
   if(!base||!base.length){startGame(grade,topicId);return;} // ingen guide: rett i kamp
   const steps=base.slice(),last=steps[steps.length-1],pr=learnPractice(grade,topicId,topic,last);
-  if(pr){if(last.ask)steps[steps.length-1]=Object.assign({},last,{practice:pr});else steps.push({icon:'🎯',title:'Din tur!',text:pr.qd.hint||'',practice:pr});}
+  // Et passivt «Nå er det din tur!» uten ask (svarer selv) byttes ut med oppgaven i stedet for å komme før den
+  if(pr){const pas=!last.ask&&/din tur/i.test(last.title||''),st={icon:pas&&last.icon||'🎯',title:'Din tur!',text:pr.qd.hint||'',practice:pr};
+    if(last.ask)steps[steps.length-1]=Object.assign({},last,{practice:pr});else if(pas)steps[steps.length-1]=st;else steps.push(st);}
   learnState={grade,topicId,steps,idx:0,auto:!!(opts&&opts.auto)};
   markLearnSeen(grade,topicId);
   try{currentGrade=grade;}catch(e){}
@@ -451,16 +527,37 @@ function learnAnswer(raw,ci){
   const r=learnCheck(raw);if(!r)return null;
   if(ci!=null&&r!=='ok'){const b=document.querySelectorAll('#learn-visual .q-choice')[ci];if(b){b.classList.add('wrong');b.disabled=true;}}
   if(r==='retry'){pr.val='';const a=document.getElementById('lp-ans');if(a){a.textContent='?';a.classList.remove('lp-shake');void a.offsetWidth;a.classList.add('lp-shake');}}
-  learnFeedback(r);
+  learnFeedback(r,false,raw);
   return r;
 }
-function learnFeedback(r,quiet){
+// Hint ved første feil i Lær: {t: kort tekst, h: bilde (HTML)}. Fra guiden: ask.why[svar] (feilen akkurat dette svaret viser)
+// og ask.help {t, v (VIS-bilde) eller h (HTML)}. Ellers samme hint som i kampen (loopHint/loopMiscTip i learning.js).
+function learnHint(st,pr,given){
+  const qd=pr.qd,a=st&&st.ask||null,hp=a&&a.help||null,R=v=>v&&typeof renderVis==='function'?renderVis(v):'';
+  let num=null;if(given!=null&&String(given).trim()!==''){const v=typeof parseAns==='function'?parseAns(String(given)):+given;if(v!==null&&isFinite(v))num=v;}
+  let misc=null;try{if(num!==null&&qd.ops&&typeof detectMisc==='function')misc=detectMisc(qd,num);}catch(e){}
+  let t=a&&a.why&&given!=null&&a.why[String(given).trim()]||'',h='',tip=null;
+  try{tip=misc&&typeof loopMiscTip==='function'?loopMiscTip(misc,qd):null;}catch(e){}
+  if(hp&&!(tip&&!t)){t=t||hp.t||'';h=hp.h||R(hp.v);} // guidens hint (feil uten egen feiltype)
+  else if(typeof loopHint==='function'){try{const lh=loopHint(qd,num!==null?num:given,misc)||{};t=t||lh.t||'';h=R(lh.v)||(hp&&(hp.h||R(hp.v)))||'';}catch(e){}} // kjent feiltype: samme hint og bilde som i kampen
+  else if(hp){t=t||hp.t||'';h=hp.h||R(hp.v);}
+  if(!t)t=a?st.text||'':qd.hint||'';
+  if(!h&&st&&st.pre)h=st.pre; // i det minste bildet fra oppgaven
+  return {t:String(t||''),h:h||''};
+}
+// Bilde når svaret vises (andre feil): guidens løsning, ellers samme bilde som i kampen
+function learnRevealVis(st,pr){
+  if(st&&st.ask)return st.visual||'';
+  try{const v=typeof loopReveal==='function'&&pr.qd.ops?loopReveal(pr.qd):null;return v&&typeof renderVis==='function'?renderVis(v):'';}catch(e){return '';}
+}
+function learnFeedback(r,quiet,given){
   const pr=learnPr(),st=learnState.steps[learnState.idx],fb=document.getElementById('lp-fb');if(!pr||!fb)return;
   const key=learnKeyTxt(pr.qd);let h,say;
   if(r==='ok'){h='<div class="lp-fb-t">🎉 Riktig!</div>';say='Riktig! Bra jobba!';}
-  else if(r==='retry'){const hint=st.ask?st.text:(pr.qd.hint||'');h=`<div class="lp-fb-t">🤔 Nesten! Prøv igjen.</div>${hint?`<div class="lp-fb-h">${hint}</div>`:''}`;say='Nesten! Prøv igjen. '+(hint||'');}
+  else if(r==='retry'){const hn=learnHint(st,pr,given);h=`<div class="lp-fb-t">🤔 Nesten! Prøv igjen.</div>${hn.t?`<div class="lp-fb-h">${hn.t}</div>`:''}${hn.h?`<div class="lp-fb-v">${hn.h}</div>`:''}`;say='Nesten! Prøv igjen. '+hn.t;}
   else{h=`<div class="lp-fb-t">Svaret er ${learnEsc(key)}.</div>`;say=`Svaret er ${key}.`;}
-  if(pr.done&&st.ask&&st.visual)h+=`<div class="lp-sol">${st.visual}</div>`;
+  if(pr.done&&r!=='ok'){const sv=learnRevealVis(st,pr);if(sv)h+=`<div class="lp-sol">${sv}</div>`;}
+  else if(pr.done&&st.ask&&st.visual)h+=`<div class="lp-sol">${st.visual}</div>`;
   fb.className='lp-fb '+(r==='ok'?'ok':r==='retry'?'try':'show');fb.innerHTML=h;
   if(pr.done){
     const lp=document.getElementById('lp');if(lp)lp.classList.add('done');
@@ -473,6 +570,14 @@ function learnFeedback(r,quiet){
   else if(typeof sndBad==='function')sndBad();
   if(typeof speak==='function')speak(say,{grade:learnState.grade});
   if(pr.done){const nb=document.getElementById('learn-next');if(nb&&nb.scrollIntoView)try{nb.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}}
+  else if(r==='retry')learnShowPad();
+}
+// Etter hintet: tastaturet/valgene skal fortsatt synes (uten at oppgaven forsvinner over kanten)
+function learnShowPad(){
+  try{const pad=document.querySelector('#learn-visual .lp-pad'),ch=document.querySelector('#learn-visual .lp-choices'),fb=document.getElementById('lp-fb'),q=document.querySelector('#learn-visual .lp-q');
+    const el=pad||fb,top=pad?q:ch||q;if(!el||!el.getBoundingClientRect)return; // tall: tastaturet nederst; valg: hintet under valgknappene
+    const r=el.getBoundingClientRect(),vh=window.innerHeight||0,tt=top?top.getBoundingClientRect().top:0;
+    if(vh&&r.bottom>vh)window.scrollBy({top:Math.min(r.bottom-vh+10,Math.max(0,tt-8)),behavior:'auto'});}catch(e){}
 }
 function learnPadClick(e){
   const t=e&&e.target,b=t&&t.closest?t.closest('button'):null;if(!b||b.disabled)return;

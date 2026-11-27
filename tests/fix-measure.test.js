@@ -41,7 +41,7 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
    const st=JSON.parse(ls.get('mh_stats'))[D0];ok(st.n===1&&st.ok===1&&st.x&&st.x[0]===2&&st.x[1]===1&&!Object.keys(st.m).length,`stats: extras go to x, not n/ok/m (${JSON.stringify(st)})`);
    ok(R('parAgg(parStats(),[mhDay(0)])').n===1,'stats: parents count only new questions');}
   // K.O. avslutter runden; ellers kommer en ventende revansj etter de 8 nye
-  reset();{let end=0;for(let r=0;r<40;r++){const qs=play(1,'add10',q=>!(!q.revenge&&!q.mini&&R('loopNewDone()')===7));
+  reset();{let end=0;for(let r=0;r<40;r++){const qs=play(1,'add20',q=>!(!q.revenge&&!q.mini&&R('loopNewDone()')===7));
       const last=qs[qs.length-1];if(last.revenge&&newQ(qs).length===8)end++;}
    ok(end>30,`round: a revenge for a miss on the last question comes after it (${end}/40)`);}
 

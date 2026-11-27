@@ -139,9 +139,21 @@ module.exports=function({R,ok,CUR,ls,els,ctx,solve}){
       ok(R(`learnCheck(${JSON.stringify(key)})`)==='ok',`${t.id}: fasit godtas i Lær (${qd.q} = ${key})`);
     }
     // Lær-oppgaver fra ask stemmer (uavhengig løser) og står som eksempel i løsningen
+    // Bilde- og valgoppgaver: egen løser for bildet (tiere/enere, mynter, klokke) og for «størst»/«partall»
+    const H=h=>((h-1)%12+12)%12+1;
+    const askSolve=a=>{const v=a.vis||{},cs=(a.choices||[]).map(Number);
+      if(v.kind==='place')return 10*v.t+v.o;
+      if(v.kind==='coins')return v.c.reduce((x,y)=>x+y,0);
+      if(v.kind==='clock')return v.m===30?`Halv ${H(v.h+1)}`:`Klokka ${H(v.h)}`;
+      if(/størst/.test(a.q)&&cs.length)return Math.max(...cs);
+      if(/partall/.test(a.q)&&cs.length){const e=cs.filter(c=>c%2===0);return e.length===1?e[0]:undefined;}
+      return solve(a.eq||a.q);};
     for(const [id,steps] of Object.entries(R('LEARN_GUIDES')))for(const s3 of steps)if(s3.ask){
-      const v=solve(s3.ask.q);ok(v!==undefined&&Math.abs(v-s3.ask.ans)<1e-9,`guide ${id}: ask ${s3.ask.q} = ${s3.ask.ans} (løser: ${v})`);
-      ok(!s3.visual||String(s3.visual).includes(String(s3.ask.ans)),`guide ${id}: løsningen viser ${s3.ask.ans}`);
+      const a=s3.ask,v=askSolve(a);
+      ok(v!==undefined&&(typeof v==='string'?v===a.ans:Math.abs(v-a.ans)<1e-9),`guide ${id}: ask ${a.q} = ${a.ans} (løser: ${v})`);
+      if(a.choices){const cs=a.choices.map(String);ok(cs.includes(String(a.ans))&&new Set(cs).size===cs.length,`guide ${id}: valgene har fasit og er ulike`);}
+      ok(!s3.visual||String(s3.visual).includes(String(a.ans)),`guide ${id}: løsningen viser ${a.ans}`);
+      if(a.vis)ok(R('renderVis')(a.vis).length>0,`guide ${id}: bildet tegnes`);
     }
   }finally{ctx.startGame=oldSG;}
   ok(R('startGame')===oldSG,'startGame gjenopprettet');

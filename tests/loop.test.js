@@ -36,9 +36,9 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   let s=S(),e=s.questions[0];
   ok(!s.answered&&s.idx===0,'first wrong: question stays open');
   ok(s.questions.length===1&&e.ok===false&&e.first==='12'&&e.given===12,'first wrong: entry with ok=false and first answer');
-  ok(e.misc==='starttall','8 + 5 = 12 is starttall');
+  ok(e.misc==='en','8 + 5 = 12 is off by one (starttall only with small numbers)');
   ok(s.playerHp===100,'first wrong: no HP loss');
-  ok(/💡/.test(el('loop-help').innerHTML)&&/lv-line/.test(el('loop-help').innerHTML),'first wrong: hint with picture (number line)');
+  ok(/💡/.test(el('loop-help').innerHTML)&&/lv-tf/.test(el('loop-help').innerHTML)&&/Fyll tieren/.test(el('loop-help').innerHTML),'first wrong: hint with picture (ten frames, as in Lær)');
   ok(!/<strong>13<\/strong>/.test(el('loop-help').innerHTML)&&!/13/.test(el('fb-box').innerHTML),'first wrong: answer not shown');
   ans(13);s=S();e=s.questions[0];
   ok(s.answered&&s.idx===1&&s.questions.length===1,'second try resolves the question');

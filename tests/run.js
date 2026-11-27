@@ -32,6 +32,8 @@ function solve(q){
   if(m=q.match(/^(\d+) \+ \? = (\d+)$/))return m[2]-m[1];
   if(m=q.match(/^\? \+ (\d+) = (\d+)$/))return m[2]-m[1];
   if(m=q.match(/^(\d+) - \? = (\d+)$/))return m[1]-m[2];
+  if(m=q.match(/^(\d+) = (\d+) \+ \?$/)||q.match(/^(\d+) = \? \+ (\d+)$/))return m[1]-m[2]; // likhet: 8 = 5 + ?, 8 = ? + 3
+  if(m=q.match(/^(\d+) ([+-]) (\d+) = (\d+) \+ \?$/))return (m[2]==='+'?+m[1]+ +m[3]:m[1]-m[3])-m[4]; // 4 + 3 = 5 + ?
   if(/^(\d+|\?)(, (\d+|\?)){3}$/.test(q)){const t=q.split(', ');const i=t.indexOf('?');const k=t.map(Number);let st=null;for(let j=0;j<3;j++)if(t[j]!=='?'&&t[j+1]!=='?'){st=k[j+1]-k[j];break;}
     const s0=i===0?k[1]-st:k[0];const full=[0,1,2,3].map(j=>s0+j*st);for(let j=0;j<4;j++)if(j!==i&&full[j]!==k[j])return NaN;return full[i];}
   if(m=q.match(/^Dobbelt av (\d+) = \?$/))return 2*m[1];

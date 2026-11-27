@@ -41,6 +41,11 @@ function fxSndThrow(){fxNoise(.2,.05,450,1600,'bandpass',.1);}
 function fxSndKO(){[392,523,659,784].forEach((f,i)=>setTimeout(()=>tone(f,.12,'triangle',.2),i*85));setTimeout(()=>{tone(1046,.5,'triangle',.2);tone(784,.5,'sine',.1);tone(523,.5,'sine',.08);},360);}
 function fxSndRoar(at){fxOsc(175,55,.9,'sawtooth',.1,at);fxOsc(186,58,.9,'sawtooth',.08,(at||0)+.03);fxNoise(.8,.12,1100,140,'lowpass',at);}
 function fxSndTick(low){fxOsc(low?380:640,low?340:600,.045,'triangle',.05);}
+// Feiringer (progression.js): stjerne som smeller på plass (tonen stiger for stjerne 1, 2, 3), sus når den flyr, krone, fyrverkerismell
+function fxSndStar(i){const f=[1046,1318,1568,2093][Math.max(0,Math.min(3,i|0))];fxNoise(.07,.13,2600,700,'bandpass');fxOsc(f*.5,f*.5,.12,'sine',.12);fxOsc(f,f,.34,'triangle',.15,.02);fxOsc(f*2,f*2,.24,'sine',.05,.04);fxOsc(f*1.5,f*1.5,.42,'sine',.04,.1);}
+function fxSndWhoosh(){fxNoise(.3,.045,600,2800,'bandpass');}
+function fxSndCrown(){[1318,1568,1976,2637].forEach((f,i)=>fxOsc(f,f,.32,'triangle',.08,i*.07));fxNoise(.45,.03,6000,9000,'highpass',.05);}
+function fxSndPop(at){fxNoise(.16,.12,2200,300,'bandpass',at);fxOsc(520,160,.14,'sine',.1,at);fxNoise(.5,.04,7000,3000,'highpass',(at||0)+.08);}
 
 // ---- Mute toggle (🔊/🔇 in the battle top bar) ----
 function fxMuteSync(){const b=fxE('fx-mute');if(!b)return;const m=fxMuted();b.textContent=m?'🔇':'🎵';b.classList.toggle('off',m);b.setAttribute('aria-pressed',m?'true':'false');b.setAttribute('aria-label',m?'Skru på lyd':'Skru av lyd');b.title=m?'Lyd av':'Lyd på';}
@@ -96,6 +101,7 @@ function fxHit(pre){
     if(lv===2||slow)[.35,.65].forEach(f=>fxSpawn('fx-spark trail','✨',a.x+(B.x-a.x)*f,a.y+(B.y-a.y)*f,500,Math.round(sd+fl*f)));
     if(lv===3)fxSpawn('fx-bolt','⚡',B.x,B.y,400,Math.max(0,T-210));}
   fxSndHit(lv,T/1000,slow);
+  fxNumPop(lv,T,B); // 3b. the child's own answer pops, and a small spark flies from it to the monster
   // 4. impact: 💥, slash, sparks, damage number, XP/coin pops near the HUD, K.O.
   fxLater(()=>{
     fxSpawn('fx-boom'+(slow?' huge':lv===3?' big':''),'💥',B.x,B.y,700,0);
@@ -111,6 +117,16 @@ function fxHit(pre){
   },T);
   // 5. NULLIUS changes form: colour flash, shock rings, roar (the morph itself is the boss code's)
   if(stage)fxStage(B);
+}
+// Riktig svar (lite): tallet/valget barnet svarte «popper» der svaret står (grønt; gull når det ble funnet på andre forsøk),
+// med et lite tegn (✓, 💡 rettet selv, 🔁 revansj, 🔥/⚡ combo), og en liten ✨ flyr til monsteret og lander samtidig med treffet.
+function fxNumPop(lv,T,B){
+  const qd=S.current;if(!qd)return;
+  const ch=isChoiceQ(qd),el=ch?document.querySelector('#q-choices .q-choice.right'):fxE('ans-input'),p=fxPt(el);if(!p||!p.w)return;
+  let txt=String(ch?(el.textContent||''):(qd.givenTxt||el.value||'')).trim();if([...txt].length>7)txt='';
+  const e=qd._e||{},second=!!qd._n,tag=e.revenge?'🔁':second?'💡':lv===3?'⚡':lv===2?'🔥':'✓';
+  fxSpawn('fx-num'+(second?' fix':''),(txt?txt+' ':'')+tag,fxClampX(p.x,50),p.y-p.h*.5,850,0); // over svarfeltet, så det ikke dekker tallet
+  if(!fxRM()&&B&&T>120)fxShoot('✨','fx-shot fx-gnist',{x:p.x,y:p.y-p.h*.6},B,30,T-30);
 }
 function fxStage(B){const P=((BOSSES[S.grade]&&BOSSES[S.grade].phases)||[])[(S.bossPhase||1)-1]||{},hot=P.emoji==='🌋';
   fxFlash(B,hot?'rgba(255,107,53,.6)':'rgba(168,85,247,.6)',650);

@@ -24,10 +24,10 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   n=NF();ok(n.g===3&&n.up&&n.topic&&n.topic.id===CUR[3].topics[0].id,`alt mestret: videre til 3. klasse (fikk ${n.g}:${n.topic&&n.topic.id})`);
   R('goFightLabel()');ok(/klar for 3\. klasse-matte/.test(els['go-fight-sub'].textContent),`tekst: ${els['go-fight-sub'].textContent}`);
   // Valgfritt tema (mul25) uten ⭐ foreslås før neste trinn, men holder ikke barnet igjen når det har ⭐
-  const opt=CUR[2].topics.find(t=>t.optional);
+  const opt=CUR[2].topics.find(t=>t.optional); // (bølge 3: flere valgfrie temaer per trinn – alle må ha ⭐)
   if(opt){fresh(2);core(2).forEach(t=>set(2,t.id,3));ls.set('mh_boss_2','1');noTroll();
     n=NF();ok(n.g===2&&n.topic&&n.topic.id===opt.id,`valgfritt tema uten ⭐ prøves først (fikk ${n.g}:${n.topic&&n.topic.id})`);
-    set(2,opt.id,1);n=NF();ok(n.g===3,`valgfritt tema med ⭐ stopper ikke (fikk ${n.g})`);}
+    optOk(2);n=NF();ok(n.g===3,`valgfritt tema med ⭐ stopper ikke (fikk ${n.g})`);}
   // Ida: 1. klasse, bossen slått, alle temaer ⭐ → 1. klasse mot ⭐⭐⭐ (2. klasse er bonus på kartet)
   fresh(1);core(1).forEach(t=>set(1,t.id,1));ls.set('mh_boss_1','1');noTroll();
   n=NF();ok(n.g===1&&n.topic,`1.-klassing etter boss: 1. klasse (fikk ${n.g})`);
@@ -35,7 +35,7 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   fresh(1);core(1).forEach(t=>set(1,t.id,1));noTroll();
   n=NF();ok(n.boss&&n.g===1,'alle temaer ⭐: bossen');
   // Trollet: etter temaer som kan gi stjerne i dag, før temaer som må vente til i morgen
-  fresh(1);core(1).forEach(t=>set(1,t.id,2,[[today,7,8],[today,7,8]]));ls.set('mh_boss_1','1');
+  fresh(1);core(1).forEach(t=>set(1,t.id,2,[[today,7,8],[today,7,8]]));optOk(1);ls.set('mh_boss_1','1');
   {const d4=R('mhDay(-4)'),d3=R('mhDay(-3)');set(1,core(1)[0].id,3,[[d4,8,8],[d4,8,8],[d3,8,8]]);} // trollet kommer bare for et modent ⭐⭐⭐-tema (F1)
   ok(R(`mstNext(1,'${core(1)[0].id}').now`)===false,'testoppsett: ⭐⭐⭐ må vente til i morgen');
   n=NF();ok(!!n.troll&&n.g===1,`trollet når ingen tema kan gi stjerne i dag (fikk ${JSON.stringify(n&&{g:n.g,t:n.topic&&n.topic.id,b:!!n.boss})})`);

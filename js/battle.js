@@ -4,11 +4,15 @@
 // ============================================================
 // GAME STATE
 // ============================================================
+// S.questions[i] = {q,given,correct,ok,sub,givenTxt,correctTxt,eq, first,fixed,misc,revenge,tid, strat,mini,last,lastTxt,k,z,w}
+//   ok = riktig på første forsøk; given/givenTxt/first = første svar; fixed = feil først, riktig på andre; last/lastTxt = andre svar.
+//   S.score = antall riktige på første forsøk. Hjelpefunksjonene for løkka ligger i learning.js (loop*).
 let S={grade:null,topicId:null,topic:null,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false};
-const TQ=10;
+const TQ=8;
 
 function startGame(g,topicId){
   const gd=CUR[g],topic=gd.topics.find(t=>t.id===topicId);
+  if(S&&S._autoT)clearTimeout(S._autoT);
   S={grade:g,topicId,topic,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false};
   const p=getPlayer();
   document.getElementById('player-avatar').textContent=p.emoji;
@@ -25,39 +29,48 @@ function startGame(g,topicId){
   loadQuestion();
   renderHUD();
   showScreen('game');
+  if(loopFocusOK()&&!isChoiceQ(S.current))document.getElementById('ans-input').focus({preventScroll:true}); // fokus først når skjermen vises
   fxStart(false); // BATTLE FX: entrance + reset
 }
 function retrySession(){startGame(S.grade,S.topicId);}
 
+// 1.–2. klasse: ingen ±, en ⚔️-tast i tastaturet, og ikke OS-tastatur (inputmode=none)
 function buildNumpad(g){
   const pad=document.getElementById('numpad');pad.innerHTML='';
-  const showDot=g>=5,showFrac=!!(CUR[g]&&CUR[g].topics.some(t=>t.frac));
-  const keys=showDot?[7,8,9,'del',4,5,6,'neg',1,2,3,0,'.',showFrac?'/':null]:[7,8,9,'del',4,5,6,'neg',1,2,3,0];
+  const showDot=g>=5,showFrac=!!(CUR[g]&&CUR[g].topics.some(t=>t.frac)),small=g<=2;
+  const keys=showDot?[7,8,9,'del',4,5,6,'neg',1,2,3,0,'.',showFrac?'/':null]:[7,8,9,'del',4,5,6,small?'ok':'neg',1,2,3,0];
+  pad.classList.toggle('np-small',small);
+  const inp=document.getElementById('ans-input');
+  if(small)inp.setAttribute('inputmode','none');
   keys.forEach(v=>{
     if(v===null){pad.appendChild(document.createElement('div'));return;}
-    const btn=document.createElement('button');
-    if(v==='del'){btn.textContent='⌫';btn.className='n-del';btn.onclick=()=>{if(!S.answered)document.getElementById('ans-input').value=document.getElementById('ans-input').value.slice(0,-1);};}
+    const btn=document.createElement('button');btn.type='button';
+    if(v==='del'){btn.textContent='⌫';btn.className='n-del';btn.setAttribute('aria-label','Slett');btn.onclick=()=>{if(!S.answered)document.getElementById('ans-input').value=document.getElementById('ans-input').value.slice(0,-1);};}
     else if(v==='neg'){btn.textContent='±';btn.className='n-neg';btn.onclick=()=>{if(!S.answered){const i=document.getElementById('ans-input');i.value=i.value.startsWith('-')?i.value.slice(1):'-'+i.value;}};}
+    else if(v==='ok'){btn.textContent='⚔️';btn.className='n-ok';btn.setAttribute('aria-label','Svar');btn.onclick=()=>{if(!S.answered)submitAnswer();};}
     else if(v==='.'){btn.textContent=',';btn.className='n-dot';btn.onclick=()=>{if(!S.answered){const i=document.getElementById('ans-input');if(!/[.,]/.test(i.value))i.value+=',';}};}
     else if(v==='/'){btn.textContent='/';btn.className='n-dot';btn.onclick=()=>{if(!S.answered){const i=document.getElementById('ans-input');if(!i.value.includes('/'))i.value+='/';}};}
-    else{btn.textContent=v;btn.onclick=()=>{if(!S.answered)document.getElementById('ans-input').value+=v;};}
+    else{btn.textContent=v;btn.onclick=()=>{if(!S.answered){const i=document.getElementById('ans-input');if(i.value.length<6)i.value+=v;}};}
     pad.appendChild(btn);
   });
 }
 
 function loadQuestion(){
-  const qd=S.topic.gen(S.grade,S.topicId);
-  S.current=qd;S.answered=false;
-  document.getElementById('q-cat').textContent=qd.type||'';
+  loopDisarm();
+  const qd=loopNext(); // learning.js: revansj, minioppgave, ingen gjentakelse, maks én 0-oppgave, tak på svake
+  S.current=qd;S.answered=false;qd._t0=Date.now();
+  const cat=document.getElementById('q-cat');
+  cat.textContent=qd.revenge?'🔁 Revansj!':(qd.type||'');
+  cat.classList.toggle('loop-rev',!!qd.revenge);
   const qt=document.getElementById('q-txt');
   qt.textContent=qd.q;qt.style.animation='none';void qt.offsetWidth;qt.style.animation='';
   qt.classList.toggle('q-long',/[a-zæøå]{4}/i.test(qd.q)&&qd.q.length>20);
   document.getElementById('q-hint').textContent=qd.hint||'';
+  loopHelpHide();
   const inp=document.getElementById('ans-input');
-  inp.value='';inp.className='ans-input';inp.disabled=false;inp.focus();
+  inp.value='';inp.className='ans-input';inp.disabled=false;if(loopFocusOK())inp.focus();
   document.getElementById('sub-btn').disabled=false;
-  document.getElementById('fb-box').className='fb-box';
-  document.getElementById('fb-box').innerHTML='';
+  const fb=document.getElementById('fb-box');fb.className='fb-box';fb.innerHTML='';
   document.getElementById('next-btn').style.display='none';
   // Svarformat: valgknapper (qd.choices) i stedet for tall-tastatur; bilde i oppgaven (qd.vis, se vis.js)
   const vis=document.getElementById('q-vis'),vh=renderVis(qd.vis);
@@ -68,6 +81,7 @@ function loadQuestion(){
   const ar=document.querySelector('#screen-game .ans-row');if(ar)ar.style.display=hasCh?'none':'';
   document.getElementById('numpad').style.display=hasCh?'none':'grid';
   updateBattleProg();
+  if(qd.revenge)setSpeech('Revansj! Nå klarer du den! 💪');
   if(typeof speakQ==='function')try{speakQ(qd);}catch(e){} // opplesing (speech.js)
 }
 // Valgoppgave: qd.choices er en liste med svaralternativ (tekst/tall); riktig er String(qd.ansTxt??qd.ans)
@@ -76,46 +90,63 @@ function choiceKey(qd){return String(qd.ansTxt!=null?qd.ansTxt:qd.ans);}
 function submitChoice(v,btn){if(S.answered)return;S.choiceBtn=btn||null;document.getElementById('ans-input').value=String(v);submitAnswer();}
 
 function updateBattleProg(){
-  document.getElementById('prog-fill').style.width=(S.idx/TQ*100)+'%';
-  document.getElementById('prog-label').textContent=`Spørsmål ${Math.min(S.idx+(S.answered?0:1),TQ)} av ${TQ}`;
+  const mx=loopMaxQ();
+  document.getElementById('prog-fill').style.width=(S.idx/mx*100)+'%';
+  document.getElementById('prog-label').textContent=`Spørsmål ${Math.min(S.idx+(S.answered?0:1),mx)} av ${mx}`;
   document.getElementById('score-label').textContent=`${S.score} ${S.score===1?'riktig':'riktige'}`;
   const cb=document.getElementById('combo-badge');
   document.getElementById('combo-num').textContent=S.combo;
   cb.classList.toggle('hot',S.combo>=3);
 }
+function loopProg(){if(S.boss&&typeof bossProg==='function')bossProg();else updateBattleProg();}
 
 document.getElementById('ans-input').addEventListener('keydown',e=>{
   if(e.key==='Enter'){if(S.answered)handleNext();else submitAnswer();}
 });
 document.getElementById('ans-input').addEventListener('input',e=>{const v=e.target.value.replace(/[^0-9,.\/ -]/g,'');if(v!==e.target.value)e.target.value=v;});
 
+// Prøv igjen: 1. feil → kort hint med bilde, nytt forsøk, ingen HP-tap. 2. feil (eller feil på Ja/Nei) → fasit + kort forklaring.
+// Bare første forsøk teller (ok, S.score, mestring, tilpasning). En bommet oppgave kommer igjen som «Revansj!».
 function submitAnswer(){
-  const raw=document.getElementById('ans-input').value.trim();
+  if(S.answered||!S.current)return;
+  const inp=document.getElementById('ans-input'),fb=document.getElementById('fb-box'),raw=inp.value.trim();
   if(raw==='')return;
-  const isCh=isChoiceQ(S.current);
-  const given=isCh?raw:parseAns(raw),correct=S.current.ans;
-  const inp=document.getElementById('ans-input'),fb=document.getElementById('fb-box');
+  const qd=S.current,isCh=isChoiceQ(qd),given=isCh?raw:parseAns(raw),correct=qd.ans;
   if(given===null){inp.classList.add('wrong');setTimeout(()=>inp.classList.remove('wrong'),500);return;}
+  const ex=qd.ansTxt!=null&&!isCh?parseAns(qd.ansTxt):correct;
+  const ok=isCh?raw===choiceKey(qd):raw.includes('/')?Math.abs(given-ex)<1e-9:Math.abs(given-correct)<0.01;qd.givenTxt=raw;
+  const second=!!qd._n;let e=qd._e;
+  if(!second){ // første forsøk: teller for mestring, tilpasning og feiltyper
+    const misc=ok?null:detectMisc(qd,given);
+    e={q:qd.q,given,correct,ok,sub:qd.sub||'?',givenTxt:raw,correctTxt:qd.ansTxt||nf(correct),eq:qd.eq,first:raw,fixed:false,misc,revenge:!!qd.revenge,tid:S.topicId,strat:qd.strat||null,mini:!!qd.mini,k:loopKey(qd),z:isZeroQ(qd),w:!!qd._w};
+    S.questions.push(e);qd._e=e;
+    recordAttempt(S.grade,S.topicId,qd.sub||'_',ok);
+    if(qd.strat&&typeof famRecord==='function')famRecord(S.grade,S.topicId,qd.strat,ok);
+  }else{e.last=given;e.lastTxt=raw;}
+  if(!ok&&!second&&loopCanRetry(qd))return loopRetry(qd,given,e.misc);
+
+  // Oppgaven er ferdig
   S.answered=true;S.idx++;
   inp.disabled=true;document.getElementById('sub-btn').disabled=true;
-  const ex=S.current.ansTxt!=null&&!isCh?parseAns(S.current.ansTxt):correct;
-  const ok=isCh?raw===choiceKey(S.current):raw.includes('/')?Math.abs(given-ex)<1e-9:Math.abs(given-correct)<0.01;S.current.givenTxt=raw;
-  if(isCh){const ch=document.getElementById('q-choices');if(ch)[...ch.children].forEach(b=>{b.disabled=true;if(b.textContent===choiceKey(S.current))b.classList.add('right');});if(!ok&&S.choiceBtn)S.choiceBtn.classList.add('wrong');}
-  S.questions.push({q:S.current.q,given,correct,ok,sub:S.current.sub||'?',givenTxt:raw,correctTxt:S.current.ansTxt||nf(correct),eq:S.current.eq});
-  recordAttempt(S.grade,S.topicId,S.current.sub||'_',ok);
+  if(isCh){const ch=document.getElementById('q-choices');if(ch)[...ch.children].forEach(b=>{b.disabled=true;if(b.textContent===choiceKey(qd))b.classList.add('right');});if(!ok&&S.choiceBtn)S.choiceBtn.classList.add('wrong');}
+  statsLog(S.grade,S.topicId,e.ok,e.misc,Date.now()-(qd._t0||Date.now()));
+  const mx=loopMaxQ(),again=!e.ok&&loopQueueRevenge(qd);
+  loopHelpHide();
 
   if(ok){
-    S.score++;S.streak++;S.combo++;
+    if(second){e.fixed=true;S.combo=1;}else{S.score++;S.streak++;S.combo++;}
     inp.className='ans-input correct';
     fb.className='fb-box correct';
-    const ph=pick(CORRECT);
+    const ph=qd.revenge?{t:'🧠 Du lærte det!',m:'Revansj vunnet! 💪'}:second?{t:'🌟 Du fant det selv!',m:pick(['Godt jobba!','Sånn ja!','Du ga ikke opp!'])}:pick(CORRECT);
     fb.innerHTML=`<div class="fb-title">${ph.t}</div>${ph.m}`;
     sndOk();
-    // Enemy takes damage
-    S.enemyHp=S.boss?bossHit():Math.max(0,S.enemyHp-(8+S.combo*2));
+    // Fienden tar skade. Vanlig kamp: K.O. kommer først på siste oppgave (riktig og minst 6 av 8 riktige), så runden alltid er 8 oppgaver.
+    if(S.boss){if(!second)S.enemyHp=bossHit();}
+    else{const last=S.idx>=mx;let hp=S.enemyHp-((second?6:8+Math.min(S.combo,8))+(qd.revenge?4:0));
+      if(last){if(hp<=0||S.score>=Math.ceil(mx*.75))hp=0;}else hp=Math.max(5,hp);
+      S.enemyHp=Math.max(0,hp);}
     document.getElementById('enemy-hp').style.width=S.enemyHp+'%';
-    document.getElementById('enemy-avatar').classList.add('hit');
-    setTimeout(()=>document.getElementById('enemy-avatar').classList.remove('hit'),500);
+    if(!S.boss||!second){document.getElementById('enemy-avatar').classList.add('hit');setTimeout(()=>document.getElementById('enemy-avatar').classList.remove('hit'),500);}
     launch(S.combo>=3?80:40);
     fxCorrect(); // BATTLE FX: attack, damage pop, K.O. (keep before the K.O. block)
     if(S.enemyHp<=0){
@@ -134,12 +165,11 @@ function submitAnswer(){
       setTimeout(()=>cf.innerHTML='',900);
     }
     // Speeches
-    const speeches=S.combo>=5?['LEGENDE! 🏆','COMBO x'+S.combo+'! 🔥','USTOPPELIG! ⚡']:['Riktig! 💥','Godt treff! ⚔️','Matematikk-mester! 🌟'];
-    setSpeech(pick(speeches));
+    if(!S.enemyDefeated){const speeches=second?['Du fant det! 🌟','Sånn ja! 💪','Godt jobba! ⚔️']:S.combo>=5?['LEGENDE! 🏆','COMBO x'+S.combo+'! 🔥','USTOPPELIG! ⚡']:['Riktig! 💥','Godt treff! ⚔️','Matematikk-mester! 🌟'];setSpeech(pick(speeches));}
     document.getElementById('player-avatar').classList.add('happy');
     setTimeout(()=>document.getElementById('player-avatar').classList.remove('happy'),600);
     // XP & coins
-    const xpG=10+(S.combo>=3?8:0)+(S.combo>=5?5:0);
+    const xpG=second?6:10+(S.combo>=3?8:0)+(S.combo>=5?5:0);
     const oldL=curLvl();
     prog.xp+=xpG;prog.coins+=1;saveProg();renderHUD();
     const newL=curLvl();
@@ -155,27 +185,48 @@ function submitAnswer(){
   }else{
     S.streak=0;S.combo=0;
     inp.className='ans-input wrong';
-    fb.className='fb-box wrong';
-    fb.innerHTML=`<div class="fb-title">Ikke helt riktig 🛡️</div>${S.topic.fb(S.current.q,given,correct)}`;
+    fb.className='fb-box wrong loop-reveal';
+    const rv=renderVis(loopReveal(qd)),body=S.topic.fb(qd.q,given,correct);
+    fb.innerHTML=`<div class="fb-title">Se her! 👀</div>${loopNb(body)}${rv?`<div class="loop-vis">${rv}</div>`:''}${again?'<div class="loop-again">🔁 Du får den igjen snart!</div>':''}`;
     sndBad();
-    // Player takes damage
+    // Player takes damage (bare når svaret vises)
     S.playerHp=Math.max(10,S.playerHp-8);
     document.getElementById('player-hp').style.width=S.playerHp+'%';
     document.getElementById('player-avatar').classList.add('sad');
     setTimeout(()=>document.getElementById('player-avatar').classList.remove('sad'),500);
     fxWrong(); // BATTLE FX: enemy attacks, hero blocks with a shield
-    setSpeech(pick(['Ikke gi opp! 💪','Prøv igjen! 🛡️','Du klarer det!']));
+    setSpeech(pick(['Ikke gi opp! 💪','Neste gang! 🛡️','Du klarer det!']));
     sidekickReact(S.playerHp<=30?'scared':'sad');
+    if(typeof speak==='function')try{speak(loopPlain(body));}catch(err){}
   }
   document.getElementById('numpad').style.display='none';
   updateBattleProg();
   const nb=document.getElementById('next-btn');
-  nb.textContent=(S.idx>=TQ||S.enemyDefeated)?'Se resultat 🏁':'Neste →';
+  nb.textContent=(S.idx>=mx||S.enemyDefeated)?'Se resultat 🏁':'Neste →';
   nb.style.display='block';
-  if(S.boss)bossAfterAnswer();
+  if(S.boss){bossAfterAnswer();if(ok&&second&&!S.enemyDefeated&&!S.bossFled)setSpeech(`${S.bossEmoji||''} Hmpf! Du fant det til slutt!`.trim());}
+  const end=S.boss?(S.enemyDefeated||S.bossFled||S.bossOver):(S.idx>=mx||S.enemyDefeated);
+  if(ok&&!end)loopArmAuto();
+}
+// Første feil: hint med bilde i oppgavekortet, samme oppgave igjen (ingen HP-tap, ingen fasit)
+function loopRetry(qd,given,misc){
+  qd._n=1;S.streak=0;S.combo=0;
+  const inp=document.getElementById('ans-input'),h=loopHint(qd,given,misc),el=loopHelpEl();
+  inp.value='';inp.className='ans-input retry';
+  if(isChoiceQ(qd)&&S.choiceBtn){S.choiceBtn.classList.add('wrong');S.choiceBtn.disabled=true;}
+  if(el){const vh=renderVis(h.v);el.innerHTML=`<div class="loop-help-t">💡 ${loopNb(h.t)}</div>${vh?`<div class="loop-vis">${vh}</div>`:''}`;el.className='loop-help show';}
+  const fb=document.getElementById('fb-box');fb.className='fb-box';fb.innerHTML='';
+  const B=S.boss&&typeof BOSSES==='object'&&BOSSES[S.grade];
+  setSpeech(B&&B.miss?`${S.bossEmoji||B.emoji} ${pick(B.miss)}`:pick(['Prøv igjen! 💪','Du klarer det! 💡','Én gang til! 💪']));
+  if(typeof fxTry==='function')fxTry();else tone(440,.12,'triangle',.08);
+  if(typeof speak==='function')try{speak(h.t);}catch(e){}
+  loopProg();
+  document.getElementById('q-hint').textContent='';
+  loopShow();
+  if(loopFocusOK())inp.focus({preventScroll:true});
 }
 
-function handleNext(){if(S.boss)return bossNext();if(S.idx>=TQ||S.enemyDefeated)showChest();else loadQuestion();}
+function handleNext(){if(!S.answered)return;loopDisarm();if(S.boss)return bossNext();if(S.idx>=loopMaxQ()||S.enemyDefeated)showChest();else loadQuestion();}
 
 // ============================================================
 // CHEST + RESULTS

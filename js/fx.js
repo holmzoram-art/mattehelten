@@ -133,6 +133,11 @@ function fxBlock(){
   fxSndClink(T/1000);
 }
 
+// ---- First wrong answer (hook in loopRetry): no attack, no HP loss – a friendly "think" puff + soft two-note sound ----
+function fxTry(){const g=fx.gen;Promise.resolve().then(()=>{if(g!==fx.gen)return;try{const pa=fxE('player-avatar'),p=fxPt(pa);fxCombo(0);
+  if(p&&p.w)fxSpawn('fx-word','Tenk! 💡',fxClampX(p.x,60),p.y-p.h*.45,1000,0);
+  fxOsc(392,440,.13,'triangle',.06);fxOsc(523,587,.16,'triangle',.05,.12);}catch(e){}});}
+
 // ---- Init: mute icon, question-card pop-in (observes #q-card, no change to loadQuestion), numpad press ----
 (function(){
   fxMuteSync();

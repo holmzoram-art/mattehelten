@@ -90,6 +90,11 @@ module.exports=function({R,ok,CUR,ls,els,ctx}){
   {let early=false;R("startGame(1,'add10')");for(let i=0;i<8;i++){ans(right(S().current));if(i<7&&S().enemyDefeated)early=true;if(i<7)R('handleNext()');}
    ok(!early&&S().enemyDefeated&&S().idx===8,'perfect round: K.O. on the last question, not before');}
 
+  // ---- S.maxQ (f.eks. repetisjonskamp med 6 oppgaver) ----
+  ls.clear();
+  {R("startGame(1,'add10');S.maxQ=6");for(let i=0;i<6;i++){ans(right(S().current));if(i<5)R('handleNext()');}
+   ok(S().idx===6&&S().enemyDefeated&&el('next-btn').textContent==='Se resultat 🏁','S.maxQ=6: round ends after 6 with K.O. and result button');}
+
   // ---- Autoneste etter riktig svar, ikke etter feil eller siste ----
   {const orig=ctx.setTimeout,cbs=[];ctx.setTimeout=(f,ms)=>{cbs.push({f,ms});return cbs.length;};
    el('screen-game').classList={add(){},remove(){},toggle(){},contains(){return true;}};

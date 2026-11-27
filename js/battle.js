@@ -90,8 +90,9 @@ function choiceKey(qd){return String(qd.ansTxt!=null?qd.ansTxt:qd.ans);}
 function submitChoice(v,btn){if(S.answered)return;S.choiceBtn=btn||null;document.getElementById('ans-input').value=String(v);submitAnswer();}
 
 function updateBattleProg(){
-  document.getElementById('prog-fill').style.width=(S.idx/TQ*100)+'%';
-  document.getElementById('prog-label').textContent=`Spørsmål ${Math.min(S.idx+(S.answered?0:1),TQ)} av ${TQ}`;
+  const mx=loopMaxQ();
+  document.getElementById('prog-fill').style.width=(S.idx/mx*100)+'%';
+  document.getElementById('prog-label').textContent=`Spørsmål ${Math.min(S.idx+(S.answered?0:1),mx)} av ${mx}`;
   document.getElementById('score-label').textContent=`${S.score} ${S.score===1?'riktig':'riktige'}`;
   const cb=document.getElementById('combo-badge');
   document.getElementById('combo-num').textContent=S.combo;
@@ -201,10 +202,10 @@ function submitAnswer(){
   document.getElementById('numpad').style.display='none';
   updateBattleProg();
   const nb=document.getElementById('next-btn');
-  nb.textContent=(S.idx>=TQ||S.enemyDefeated)?'Se resultat 🏁':'Neste →';
+  nb.textContent=(S.idx>=mx||S.enemyDefeated)?'Se resultat 🏁':'Neste →';
   nb.style.display='block';
   if(S.boss){bossAfterAnswer();if(ok&&second&&!S.enemyDefeated&&!S.bossFled)setSpeech(`${S.bossEmoji||''} Hmpf! Du fant det til slutt!`.trim());}
-  const end=S.boss?(S.enemyDefeated||S.bossFled||S.bossOver):(S.idx>=TQ||S.enemyDefeated);
+  const end=S.boss?(S.enemyDefeated||S.bossFled||S.bossOver):(S.idx>=mx||S.enemyDefeated);
   if(ok&&!end)loopArmAuto();
 }
 // Første feil: hint med bilde i oppgavekortet, samme oppgave igjen (ingen HP-tap, ingen fasit)
@@ -225,7 +226,7 @@ function loopRetry(qd,given,misc){
   if(loopFocusOK())inp.focus({preventScroll:true});
 }
 
-function handleNext(){if(!S.answered)return;loopDisarm();if(S.boss)return bossNext();if(S.idx>=TQ||S.enemyDefeated)showChest();else loadQuestion();}
+function handleNext(){if(!S.answered)return;loopDisarm();if(S.boss)return bossNext();if(S.idx>=loopMaxQ()||S.enemyDefeated)showChest();else loadQuestion();}
 
 // ============================================================
 // CHEST + RESULTS

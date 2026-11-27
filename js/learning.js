@@ -9,7 +9,8 @@ const LOOP_AUTO_MS=1200,LOOP_REV_MAX=2;
 window.MISC_NAMES={snudd:'Snudde sifre (71 for 17)',starttall:'Telte med starttallet',pluss:'La sammen i stedet for å trekke fra',minus:'Trakk fra i stedet for å legge sammen',dobbel:'Doblet i stedet for å halvere',halv:'Halverte i stedet for å doble',veksling:'Glemte å veksle (42 − 17 = 35)',ti:'Bommet med 10',en:'Bommet med 1'};
 
 // ---- Runde: maks antall oppgaver, tilstand, fakta-nøkkel ----
-function loopMaxQ(){return S&&S.boss?(typeof BOSS_MAXQ==='number'?BOSS_MAXQ:12):TQ;}
+// Antall oppgaver i runden: S.maxQ hvis satt (f.eks. repetisjonskamp med 6), boss: BOSS_MAXQ, ellers TQ
+function loopMaxQ(){return S&&typeof S.maxQ==='number'?S.maxQ:S&&S.boss?(typeof BOSS_MAXQ==='number'?BOSS_MAXQ:12):TQ;}
 function loopSt(){if(!S.lp){const mx=loopMaxQ();S.lp={rev:[],revN:0,miniAt:S.grade>=1&&S.grade<=2&&!S.boss?rand(2,Math.max(2,mx-2)):-1,miniDone:false};}return S.lp;}
 // Samme regnefakta = samme nøkkel (3 + 5 og 5 + 3; 7 − 3, 3 + ? = 7 og 7 − ? = 4)
 function loopKey(qd){const o=qd&&qd.ops,N=n=>typeof n==='number'&&isFinite(n);

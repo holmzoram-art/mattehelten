@@ -1,0 +1,341 @@
+// Mattehelten – Lær-guider og navigasjon
+// Alle js-filer deler globalt navnerom (vanlige <script>-tagger i fast rekkefølge, se index.html).
+
+// ============================================================
+// LEARN GUIDES
+// ============================================================
+function dots(n,color,delay=0){return Array.from({length:n},(_,i)=>`<div class="dot" style="background:${color};animation-delay:${delay+i*40}ms"></div>`).join('');}
+function dotGroup(n,color,delay=0){return `<div class="dot-group">${dots(n,color,delay)}</div>`;}
+function numLine(from,to,jump,start){
+  const total=to-from,w=280;
+  let html=`<div class="nline-wrap"><div class="nline" style="min-width:${w+20}px"><div class="nline-track"></div>`;
+  for(let i=from;i<=to;i++){const x=10+(i-from)/total*w;html+=`<div class="nline-tick" style="left:${x}px"></div><div class="nline-num" style="left:${x}px">${i}</div>`;}
+  html+=`<div class="nline-dot" style="left:${10+(start-from)/total*w}px"></div>`;
+  if(jump){const x1=10+(start-from)/total*w,x2=10+(start+jump-from)/total*w;html+=`<div class="nline-arrow" style="left:${Math.min(x1,x2)}px;--w:${Math.abs(x2-x1)}px"></div><div class="nline-dot" style="left:${x2}px;background:var(--green)"></div>`;}
+  return html+'</div></div>';
+}
+function fracBar(num,den,color='#7c3aed'){
+  return `<div class="frac-bar">${Array.from({length:den},(_,i)=>`<div class="frac-seg ${i<num?'filled':'empty'}" style="background:${color}"></div>`).join('')}</div><div style="text-align:center;margin-top:6px;font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--white)">${num}/${den} er farget</div>`;
+}
+function mulGridLabel(rows,cols,color='#00ff88'){
+  let h=`<div class="mul-grid" style="grid-template-columns:repeat(${cols},26px)">`;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)h+=`<div class="mul-cell" style="background:${color}22;border:1px solid ${color}44;animation-delay:${(r*cols+c)*30}ms">●</div>`;
+  return h+`</div><div style="text-align:center;margin-top:8px;font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--muted)">${rows} · ${cols} = ${rows*cols}</div>`;
+}
+function workedEx(steps){
+  return `<div class="worked">${steps.map(([txt,ann,hl],i)=>`<div class="step ${hl?'hl':''}" style="animation-delay:${i*200}ms"><span>${txt}</span>${ann?`<span class="ann">${ann}</span>`:''}</div>`).join('')}</div>`;
+}
+function eqBox(txt){return `<div class="eq-box">${txt}</div>`;}
+// Tierramme: a prikker i farge 1, b i farge 2 (flere rammer hvis over 10)
+function tenFrame(a,b=0,c1='#7c3aed',c2='#00ff88'){
+  let h='<div class="tf-wrap">';
+  for(let f=0;f<Math.max(1,Math.ceil((a+b)/10));f++){h+='<div class="tf">';for(let i=f*10;i<f*10+10;i++){const c=i<a?c1:i<a+b?c2:'';h+=`<div class="tf-cell">${c?`<div class="dot" style="background:${c};animation-delay:${i*50}ms"></div>`:''}</div>`;}h+='</div>';}
+  return h+'</div>';
+}
+// Tallrekke med hopp-merker mellom boksene; hl = indeks som utheves
+function seqHops(ts,lbl,hl=-1){return `<div class="seq-row">${ts.map((t,i)=>`${i?`<span class="seq-hop">${lbl}</span>`:''}<span class="seq-box${i===hl?' hl':''}" style="animation-delay:${i*150}ms">${t}</span>`).join('')}</div>`;}
+function pills(arr,c='#00ff88'){return `<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${arr.map((t,i)=>`<div style="background:${c}1a;border:1px solid ${c}55;border-radius:8px;padding:5px 10px;font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--white);animation:dotPop .3s ease ${i*80}ms backwards">${t}</div>`).join('')}</div>`;}
+function capLine(t){return `<div style="text-align:center;margin-top:8px;font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--white)">${t}</div>`;}
+function rectFig(w,h){const u=24,lb=t=>`<div style="font-family:'Fredoka One',cursive;color:var(--gold)">${t}</div>`;return `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px">${lb(w)}<div style="display:flex;align-items:center;gap:6px">${lb(h)}<div style="width:${w*u}px;height:${h*u}px;border:3px solid var(--cyan);border-radius:4px;box-shadow:var(--glow-c)"></div>${lb(h)}</div>${lb(w)}</div>`;}
+function grn(t){return `<span style="color:var(--green)">${t}</span>`;}
+
+const LEARN_GUIDES={
+  add10:[
+    {icon:'➕',title:'Slå sammen!',text:'Frosken har 3 epler. Uglen har 2. Hvor mange har de til sammen? 🍎',
+     visual:`<div class="dot-groups">${dotGroup(3,'#7c3aed')} <span class="dot-op">+</span> ${dotGroup(2,'#a855f7')} <span class="dot-eq">=</span> ${dotGroup(5,'#00ff88',200)}</div>`+capLine(`3 + 2 = ${grn('5')}`)},
+    {icon:'🐸',title:'Hopp på tallinja',text:'Start på det første tallet. Hopp fremover like mange ganger som det andre tallet.',
+     visual:numLine(0,10,3,4)+capLine(`4 + 3: Start på 4, hopp 3 → ${grn('7')}`)},
+    {icon:'🎯',title:'Nå er det din tur!',text:'Start på 6 og tell 4 fremover.',
+     visual:workedEx([['6 + 4 = ?','',false],['Start på 6','',false],['7, 8, 9, 10','(tell 4 fremover)',true],['6 + 4 = 10 ✓','',false]])}
+  ],
+  sub10:[
+    {icon:'➖',title:'Trollet tar!',text:'Du har 5 kaker. Trollet tar 2. Hvor mange er igjen? 🍪',
+     visual:`<div class="dot-groups">${dotGroup(5,'#7c3aed')} <span class="dot-op">-</span> <span style="font-size:1.2rem;font-weight:800;color:var(--red)">2</span> <span class="dot-eq">=</span> ${dotGroup(3,'#7c3aed',200)}</div>`+capLine(`5 - 2 = ${grn('3')}`)},
+    {icon:'🐸',title:'Hopp bakover',text:'Start på det store tallet. Hopp bakover på tallinja.',
+     visual:numLine(0,10,-3,7)+capLine(`7 - 3 = ${grn('4')}`)},
+    {icon:'🎯',title:'Nå er det din tur!',text:'Start på 8 og tell 5 bakover.',
+     visual:workedEx([['8 - 5 = ?','',false],['Start på 8','',false],['7, 6, 5, 4, 3','(tell 5 bakover)',true],['8 - 5 = 3 ✓','',false]])}
+  ],
+  ten1:[
+    {icon:'🤝',title:'Tallene som holder hender',text:'Tallet 7 vil bli 10. Det trenger en venn: 3! To tall som blir 10 sammen, er tiervenner.',
+     visual:tenFrame(7,3)+capLine(`7 + 3 = ${grn('10')}`)},
+    {icon:'🔍',title:'Tell de tomme rutene',text:'Det er plass til 10. De tomme rutene viser hvor mange som mangler.',
+     visual:tenFrame(6)+capLine(`6 + ? = 10 → 4 tomme ruter → ${grn('4')}`)},
+    {icon:'🖐️',title:'Bruk fingrene',text:'Vis 10 fingre. Bøy ned 6. Hvor mange står igjen? Det er tiervennen!',
+     visual:`<div style="font-size:2.4rem">🖐️🖐️</div>`+capLine(`10 - 6 = ${grn('4')}`)},
+    {icon:'📋',title:'Alle tiervennene',text:'Lær dem utenat. Da blir du lynrask! ⚡',
+     visual:pills(['1 + 9','2 + 8','3 + 7','4 + 6','5 + 5'],'#ffd93d')},
+    {icon:'🎯',title:'Nå er det din tur!',text:'Hvor mange mangler fra 8 til 10?',
+     visual:workedEx([['8 + ? = 10','',false],['9, 10','(2 hopp)',true],['8 + 2 = 10 ✓','',false]])}
+  ],
+  seq1:[
+    {icon:'🐸',title:'Frosken hopper',text:'Frosken hopper like langt hver gang. Hvor lander den nå?',
+     visual:seqHops([2,4,6,8,'?'],'+2',4)+capLine(`Hoppet er 2. Etter 8 kommer ${grn('10')}`)},
+    {icon:'🦘',title:'Små og store hopp',text:'Noen hopper 1. Noen hopper 5. Noen hopper hele 10!',
+     visual:seqHops([5,6,7,8],'+1')+'<div style="height:8px"></div>'+seqHops([5,10,15,20],'+5')+'<div style="height:8px"></div>'+seqHops([10,20,30,40],'+10')},
+    {icon:'🚀',title:'Nedtelling!',text:'Raketten teller ned. Da blir tallene mindre.',
+     visual:seqHops([9,8,7,'?'],'−1',3)+capLine(`Etter 7 kommer ${grn('6')}. 🚀`)},
+    {icon:'🎯',title:'Nå er det din tur!',text:'Finn hoppet først. Hopp så videre.',
+     visual:workedEx([['10, 20, ?, 40','',false],['Hoppet er 10','(10 → 20)',true],['20 + 10 = 30','',true],['Svaret er 30 ✓','',false]])}
+  ],
+  add20:[
+    {icon:'🔟',title:'Fyll opp tieren',text:'Blir det mer enn 10? Fyll opp til 10 først. Legg så til resten.',
+     visual:tenFrame(8,5)+capLine(`8 + 2 = 10, og 3 til = ${grn('13')}`)},
+    {icon:'✂️',title:'Del opp tallene',text:'Del opp i tiere og enere. Legg sammen enerne først.',
+     visual:workedEx([['13 + 5 = ?','',false],['13 = 10 + 3','(del opp 13)',true],['3 + 5 = 8','(enerne)',true],['10 + 8 = 18 ✓','',false]])},
+    {icon:'🎯',title:'Nå er det din tur!',text:'Bruk tiervennen til 9.',
+     visual:workedEx([['9 + 6 = ?','',false],['9 + 1 = 10','(fyll opp tieren)',true],['Det er 5 igjen av 6','',false],['10 + 5 = 15 ✓','',false]])}
+  ],
+  add100:[
+    {icon:'✂️',title:'Tiere og enere',text:'Del opp begge tallene. Tiere for seg, enere for seg.',
+     visual:workedEx([['34 + 25 = ?','',false],['30 + 20 = 50','(tierne)',true],['4 + 5 = 9','(enerne)',true],['50 + 9 = 59 ✓','',false]])},
+    {icon:'🎯',title:'Over tieren',text:'Blir enerne mer enn 10? Da får du en ny tier!',
+     visual:workedEx([['47 + 6 = ?','',false],['7 + 6 = 13','(enerne)',true],['40 + 13 = 53 ✓','',false]])}
+  ],
+  sub100:[
+    {icon:'🐸',title:'Ta tierne først',text:'Hopp ned tierne først. Hopp så ned enerne.',
+     visual:workedEx([['52 - 17 = ?','',false],['52 - 10 = 42','(tierne)',true],['42 - 7 = 35','(enerne)',true],['52 - 17 = 35 ✓','',false]])},
+    {icon:'🔄',title:'Hopp via tieren',text:'Gå ned til nærmeste tier først. Ta så resten.',
+     visual:workedEx([['42 - 7 = ?','',false],['42 - 2 = 40','(ned til tieren)',true],['40 - 5 = 35','(resten)',true],['= 35 ✓','',false]])}
+  ],
+  miss2:[
+    {icon:'🕵️',title:'Bli tall-detektiv!',text:'Spørsmålstegnet gjemmer et tall. Kan du finne det?',
+     visual:`<div class="dot-groups">${dotGroup(5,'#7c3aed')} <span class="dot-op">+</span> <span style="font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--gold)">?</span> <span class="dot-eq">=</span> ${dotGroup(8,'#00ff88',200)}</div>`+capLine('5 + ? = 8')},
+    {icon:'🐸',title:'Tell opp',text:'Start på tallet du har. Hopp opp til svaret og tell hoppene.',
+     visual:numLine(0,10,3,5)+capLine(`Fra 5 til 8 er det 3 hopp. 5 + ${grn('3')} = 8`)},
+    {icon:'🔄',title:'Regn baklengs',text:'Du kan også bruke minus for å finne tallet.',
+     visual:workedEx([['? + 4 = 9','',false],['9 - 4 = 5','(regn baklengs)',true],['5 + 4 = 9 ✓','(sjekk)',false]])},
+    {icon:'🍦',title:'Nå er det din tur!',text:'Du har 46 kr. En is koster 50 kr. Hvor mye mangler du?',
+     visual:workedEx([['46 + ? = 50','',false],['47, 48, 49, 50','(4 hopp)',true],['46 + 4 = 50 ✓','',false]])}
+  ],
+  dbl2:[
+    {icon:'👯',title:'Tvillingtall',text:'Dobbelt betyr to like mange. Dobbelt av 4 er 4 + 4.',
+     visual:`<div class="dot-groups">${dotGroup(4,'#f093fb')} <span class="dot-op">+</span> ${dotGroup(4,'#f093fb',160)} <span class="dot-eq">=</span> ${dotGroup(8,'#00ff88',320)}</div>`+capLine(`Dobbelt av 4 = ${grn('8')}`)},
+    {icon:'🍪',title:'Del likt med en venn',text:'Halvparten betyr å dele i to like store deler.',
+     visual:`<div class="dot-groups">${dotGroup(8,'#06d6ff')} <span class="dot-eq">→</span> ${dotGroup(4,'#00ff88',200)} <span class="dot-op">|</span> ${dotGroup(4,'#00ff88',360)}</div>`+capLine(`Halvparten av 8 = ${grn('4')}`)},
+    {icon:'🔁',title:'De henger sammen',text:'Dobbelt av 6 er 12. Da er halvparten av 12 lik 6!',
+     visual:pills(['6 → dobbelt → 12','12 → halvparten → 6'],'#f093fb')},
+    {icon:'🎯',title:'Nå er det din tur!',text:'Ta tierne og enerne hver for seg.',
+     visual:workedEx([['Dobbelt av 23','',false],['20 + 20 = 40','(tierne)',true],['3 + 3 = 6','(enerne)',true],['40 + 6 = 46 ✓','',false]])}
+  ],
+  mul25:[
+    {icon:'✖️',title:'Like grupper',text:'Ganging er like grupper. 3 · 4 betyr 3 grupper med 4.',
+     visual:`<div style="display:flex;flex-direction:column;align-items:center;gap:6px">${[0,1,2].map(i=>`<div style="display:flex;gap:4px">${dots(4,['#7c3aed','#a855f7','#06d6ff'][i],i*100)}</div>`).join('')}</div>`+capLine(`3 · 4 = 4 + 4 + 4 = ${grn('12')}`)},
+    {icon:'⭐',title:'2-, 5- og 10-gangen',text:'5-gangen slutter alltid på 0 eller 5. 10-gangen: bare legg til en 0!',
+     visual:`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">${[2,5,10].map(t=>`<div><div style="font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--gold);margin-bottom:4px">${t}-gangen</div>${[1,2,3,4].map(n=>`<div style="font-size:.8rem;font-weight:800;color:var(--white)">${n} · ${t} = ${n*t}</div>`).join('')}</div>`).join('')}</div>`},
+    {icon:'🖐️',title:'Nå er det din tur!',text:'4 hender med 5 fingre. Hvor mange fingre?',
+     visual:workedEx([['4 · 5 = ?','',false],['= 5 + 5 + 5 + 5','(fire 5-ere)',true],['= 10 + 10','',true],['= 20 ✓','',false]])}
+  ],
+  mul15:[
+    {icon:'📋',title:'Gangetabellen 1–5',text:'Gangetabellen er et fast mønster. La oss lære den!',
+     visual:mulGridLabel(3,4,'#00ff88')},
+    {icon:'🔢',title:'3-gangen',text:'Tell opp i tresteg: 3, 6, 9, 12, 15 …',
+     visual:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${[1,2,3,4,5].map(n=>`<div style="background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);border-radius:8px;padding:5px 10px;font-family:'Fredoka One',cursive;font-size:.9rem">${n} · 3 = ${n*3}</div>`).join('')}</div>`},
+    {icon:'🎯',title:'Prøv 4 · 4',text:'',
+     visual:workedEx([['4 · 4 = ?','',false],['4 + 4 + 4 + 4','(fire 4-ere)',true],['= 16 ✓','',false]])}
+  ],
+  div25:[
+    {icon:'➗',title:'Deling er omvendt ganging',text:'12 : 3 = ? Tenk: ? · 3 = 12',
+     visual:workedEx([['20 : 5 = ?','',false],['Tenk: ? · 5 = 20','(snu om!)',true],['4 · 5 = 20 ✓','',false],['20 : 5 = 4 ✓','',false]])}
+  ],
+  add100r:[
+    {icon:'🔟',title:'Tell tiere',text:'Tenk på hver tier som en pakke. 30 + 40 er 3 tiere + 4 tiere.',
+     visual:workedEx([['30 + 40 = ?','',false],['3 + 4 = 7','(tell tierne)',true],['7 tiere = 70 ✓','',false]])},
+    {icon:'💯',title:'Hundrere',text:'Det samme gjelder hundrere. 200 + 500 er 2 + 5 = 7 hundrere.',
+     visual:pills(['200 + 500 = 700','300 + 300 = 600','100 + 800 = 900'],'#06d6ff')},
+    {icon:'🎯',title:'Prøv: 150 + 250',text:'Del opp i hundrere og tiere.',
+     visual:workedEx([['150 + 250 = ?','',false],['100 + 200 = 300','(hundrere)',true],['50 + 50 = 100','(tiere)',true],['300 + 100 = 400 ✓','',false]])}
+  ],
+  mul110:[
+    {icon:'📋',title:'Gangetabellen 1–10',text:'De vanskeligste: 6 · 7, 6 · 8, 7 · 8, 6 · 9, 7 · 9, 8 · 9',
+     visual:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${[[6,7],[6,8],[7,8],[6,9],[7,9],[8,9]].map(([a,b])=>`<div style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:8px;padding:6px 12px;font-family:'Fredoka One',cursive;font-size:.9rem">${a} · ${b} = ${a*b}</div>`).join('')}</div>`},
+    {icon:'🧠',title:'Triks: del opp',text:'8 · 7 = 8 · 5 + 8 · 2 = 40 + 16 = 56',
+     visual:workedEx([['8 · 7 = ?','',false],['= 8 · 5 + 8 · 2','(del opp 7)',true],['= 40 + 16','',false],['= 56 ✓','',false]])}
+  ],
+  div110:[
+    {icon:'➗',title:'Deling med gangetabellen',text:'Kan du gangetabellen? Da kan du dele også!',
+     visual:workedEx([['56 : 7 = ?','',false],['Tenk: ? · 7 = 56','',true],['8 · 7 = 56','',true],['= 8 ✓','',false]])}
+  ],
+  frac4:[
+    {icon:'🍕',title:'Hva er en brøk?',text:'En brøk viser deler av en hel. 1/4 er én av fire like deler.',
+     visual:`<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">${[[1,2,'#7c3aed'],[1,4,'#a855f7'],[1,3,'#06d6ff']].map(([n,d,c])=>`<div style="text-align:center"><div style="margin-bottom:6px">${fracBar(n,d,c)}</div></div>`).join('')}</div>`},
+    {icon:'📐',title:'Finn brøkdelen av et tall',text:'1/2 = del på 2. 1/4 = del på 4. 1/3 = del på 3.',
+     visual:workedEx([['1/4 av 20 = ?','',false],['Del 20 på 4','(nevneren er 4)',true],['20 : 4 = 5','',false],['= 5 ✓','',false]])}
+  ],
+  dec5:[
+    {icon:'📏',title:'Desimaltall',text:'Kommaet skiller hele fra deler. Sett komma rett under komma!',
+     visual:`<div style="font-family:'Fredoka One',cursive;font-size:1.1rem;text-align:right;background:rgba(255,255,255,.05);border-radius:10px;padding:12px 20px;border:1px solid rgba(255,255,255,.1)"><div>3<span style="color:var(--red)">,</span>4</div><div>+ 2<span style="color:var(--red)">,</span>1</div><div style="border-top:1px solid rgba(255,255,255,.2);margin-top:4px">5<span style="color:var(--red)">,</span>5 ✓</div></div>`},
+    {icon:'🎯',title:'Prøv 4,6 + 2,3',text:'',
+     visual:workedEx([['4,6 + 2,3 = ?','',false],['Enere: 4 + 2 = 6','',false],['Tideler: 6 + 3 = 9','',false],['= 6,9 ✓','',false]])}
+  ],
+  pct5:[
+    {icon:'💯',title:'Hva er prosent?',text:'Prosent betyr hundredeler. 50 % er halvparten. 10 % er en tidel.',
+     visual:`<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${[[50,'Halvparten','#7c3aed'],[25,'En firedel','#a855f7'],[10,'En tidel','#06d6ff']].map(([p,n,c])=>`<div style="text-align:center"><div class="frac-bar" style="max-width:80px">${Array.from({length:10},(_,i)=>`<div class="frac-seg ${i<p/10?'filled':'empty'}" style="background:${c}"></div>`).join('')}</div><div style="font-family:'Fredoka One',cursive;font-size:.82rem;margin-top:4px">${p} % = ${n}</div></div>`).join('')}</div>`},
+    {icon:'🎯',title:'Prøv 10 % av 350',text:'',
+     visual:workedEx([['10 % av 350','',false],['10 % = del på 10','',true],['350 : 10 = 35 ✓','',false]])}
+  ],
+  round5:[
+    {icon:'🎯',title:'Avrunding',text:'Se på neste siffer: 5 eller mer = rund opp. Under 5 = rund ned.',
+     visual:workedEx([['Rund av 3,7','',false],['Tidelen er 7','',false],['7 ≥ 5 → rund OPP','',true],['= 4 ✓','',false]])}
+  ],
+  frac6:[
+    {icon:'🥧',title:'Lik nevner',text:'Har brøkene lik nevner? Da regner du bare med tellerne.',
+     visual:`<div style="display:flex;flex-direction:column;gap:6px">${fracBar(1,4,'#a855f7')}${fracBar(2,4,'#06d6ff')}</div>`+capLine(`1/4 + 2/4 = ${grn('3/4')}`)},
+    {icon:'🔁',title:'Ulik nevner',text:'Gjør nevnerne like først. 1/2 er det samme som 2/4.',
+     visual:`<div style="display:flex;flex-direction:column;gap:6px">${fracBar(1,2,'#7c3aed')}${fracBar(2,4,'#7c3aed')}</div>`},
+    {icon:'🎯',title:'Prøv 1/2 + 1/4',text:'Fellesnevneren er 4.',
+     visual:workedEx([['1/2 + 1/4 = ?','',false],['1/2 = 2/4','(fellesnevner 4)',true],['2/4 + 1/4 = 3/4 ✓','',false]])},
+    {icon:'⌨️',title:'Slik svarer du',text:'Trykk / for å skrive en brøk, for eksempel 3/4. Du kan også svare 0,75. Lik brøk, som 6/8, er også riktig.',
+     visual:eqBox('3/4 = 6/8 = 0,75')}
+  ],
+  geo6:[
+    {icon:'🟦',title:'Omkrets',text:'Omkrets er veien rundt figuren. Legg sammen alle sidene.',
+     visual:rectFig(5,3)+capLine(`5 + 3 + 5 + 3 = ${grn('16')}`)},
+    {icon:'🧱',title:'Areal',text:'Areal er hvor mange ruter som får plass inni. Gang lengde med bredde.',
+     visual:mulGridLabel(3,5,'#06d6ff')},
+    {icon:'🎯',title:'Prøv: kvadrat med side 6',text:'Et kvadrat har fire like lange sider.',
+     visual:workedEx([['Omkrets: 6 + 6 + 6 + 6','',false],['= 4 · 6 = 24','',true],['Areal: 6 · 6 = 36','',true]])}
+  ],
+  neg6:[
+    {icon:'🌡️',title:'Tall under null',text:'Negative tall er mindre enn 0. Tenk på et termometer om vinteren: −5 grader.',
+     visual:numLine(-5,5,0,-3)+capLine('−3 ligger 3 steg til venstre for 0')},
+    {icon:'➡️',title:'Pluss: gå til høyre',text:'Når du legger til, går du til høyre på tallinja.',
+     visual:numLine(-5,5,4,-3)+capLine(`−3 + 4 = ${grn('1')}`)},
+    {icon:'⬅️',title:'Minus: gå til venstre',text:'Når du trekker fra, går du til venstre.',
+     visual:numLine(-5,5,-6,2)+capLine(`2 − 6 = ${grn('−4')}`)},
+    {icon:'⌨️',title:'Slik skriver du minus',text:'Trykk ± for å sette minus foran tallet.',
+     visual:eqBox('−4')}
+  ],
+  alg7:[
+    {icon:'🔍',title:'Algebra: finn x',text:'x er et ukjent tall. Vi løser gåten om hva x er.',
+     visual:eqBox('x + 5 = 12 → x = ?')},
+    {icon:'⚖️',title:'Vektprinsippet',text:'Gjør det samme på begge sider av likhetstegnet!',
+     visual:workedEx([['x + 5 = 12','',false],['Trekk fra 5 på begge sider','',true],['x = 12 - 5 = 7 ✓','',false]])}
+  ],
+  ratio7:[
+    {icon:'🧃',title:'Hva er forhold?',text:'Saft blandes ofte 1 : 4. Det betyr 1 del saft og 4 deler vann.',
+     visual:`<div class="dot-groups">${dotGroup(1,'#ff6b35')} <span class="dot-op">:</span> ${dotGroup(4,'#06d6ff',100)}</div>`+capLine('1 del saft : 4 deler vann')},
+    {icon:'✖️',title:'Gang begge med det samme',text:'Forholdet er det samme når du ganger begge tallene med samme tall.',
+     visual:workedEx([['1 : 4 = 2 : 8','(· 2)',true],['1 : 4 = 3 : 12','(· 3)',true]])},
+    {icon:'🎯',title:'Prøv 3 : 5 = 9 : ?',text:'',
+     visual:workedEx([['3 · 3 = 9','(finn gangetallet)',true],['5 · 3 = 15','(gang med det samme)',true],['3 : 5 = 9 : 15 ✓','',false]])}
+  ],
+  stat7:[
+    {icon:'📊',title:'Hva er gjennomsnitt?',text:'Gjennomsnitt er hvor mye hver får hvis vi deler likt.',
+     visual:`<div class="dot-groups">${dotGroup(2,'#ffd93d')}${dotGroup(6,'#ffd93d',80)}${dotGroup(4,'#ffd93d',160)}</div><div style="font-size:1.3rem;margin:6px 0">⬇️</div><div class="dot-groups">${dotGroup(4,'#00ff88',300)}${dotGroup(4,'#00ff88',380)}${dotGroup(4,'#00ff88',460)}</div>`+capLine('2, 6 og 4 → 4, 4 og 4')},
+    {icon:'🧮',title:'Slik regner du',text:'Legg sammen alle tallene. Del på hvor mange tall det er.',
+     visual:workedEx([['2 + 6 + 4 = 12','(summen)',true],['Det er 3 tall','',false],['12 : 3 = 4 ✓','',false]])}
+  ],
+  eq8:[
+    {icon:'⚖️',title:'Lineære likninger',text:'Flytt tallet uten x til høyre side. Del så på tallet foran x.',
+     visual:workedEx([['2x + 3 = 11','',false],['2x = 11 - 3 = 8','(trekk fra 3)',true],['x = 8 : 2 = 4 ✓','(del på 2)',true]])}
+  ],
+  pow8:[
+    {icon:'🚀',title:'Potenser',text:'3² = 3 · 3 = 9. Eksponenten sier hvor mange ganger vi ganger tallet med seg selv.',
+     visual:`<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${[[2,2],[2,3],[3,2],[4,2]].map(([b,e])=>`<div style="background:rgba(255,217,61,.1);border:1px solid rgba(255,217,61,.3);border-radius:8px;padding:6px 12px;font-family:'Fredoka One',cursive">${b}${sup(e)} = ${Math.pow(b,e)}</div>`).join('')}</div>`}
+  ],
+  pct8:[
+    {icon:'🏷️',title:'Prosent av et tall',text:'10 % er en tidel. Finn 10 % først, og bygg videre.',
+     visual:workedEx([['20 % av 300','',false],['10 % = 300 : 10 = 30','',true],['20 % = 2 · 30 = 60 ✓','',false]])},
+    {icon:'📈',title:'Øke med prosent',text:'Øker et tall med 20 %, får du 120 % av tallet. Gang med 1,2.',
+     visual:workedEx([['500 økes med 20 %','',false],['500 · 1,2 = 600 ✓','',true]])},
+    {icon:'📉',title:'Minke med prosent',text:'Reduseres et tall med 25 %, er 75 % igjen. Gang med 0,75.',
+     visual:workedEx([['400 reduseres med 25 %','',false],['400 · 0,75 = 300 ✓','',true]])}
+  ],
+  pyth9:[
+    {icon:'📐',title:'Pytagoras',text:'I en rettvinklet trekant er a² + b² = c². c er den lengste siden.',
+     visual:`<div style="text-align:center"><div style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--cyan)">a² + b² = c²</div><div style="font-size:3rem;margin:10px 0">📐</div></div>`},
+    {icon:'🎯',title:'a = 3, b = 4 → c = ?',text:'',
+     visual:workedEx([['c² = 3² + 4²','',false],['= 9 + 16 = 25','',true],['c = √25 = 5 ✓','',false]])}
+  ],
+  stat9:[
+    {icon:'📏',title:'Median',text:'Sorter tallene. Medianen er tallet i midten. Er det to i midten, tar du gjennomsnittet av dem.',
+     visual:workedEx([['7, 2, 9, 4, 5','',false],['2, 4, 5, 7, 9','(sortert)',true],['Median = 5 ✓','',false]])},
+    {icon:'🔁',title:'Typetall',text:'Typetallet er tallet som kommer flest ganger.',
+     visual:workedEx([['3, 5, 3, 8, 3, 5','',false],['3 kommer 3 ganger','',true],['Typetall = 3 ✓','',false]])},
+    {icon:'↔️',title:'Variasjonsbredde',text:'Ta det største tallet minus det minste.',
+     visual:workedEx([['4, 12, 7, 2','',false],['12 − 2 = 10','(størst − minst)',true],['Variasjonsbredde = 10 ✓','',false]])}
+  ],
+  alg9:[
+    {icon:'🧩',title:'To likninger',text:'Legg likningene sammen. Da forsvinner y!',
+     visual:workedEx([['x + y = 10','',false],['x − y = 4','',false],['2x = 14','(legg sammen)',true],['x = 7 ✓','',false]])},
+    {icon:'🔲',title:'Kvadratrot',text:'x² = 49 betyr: hvilket tall ganger seg selv blir 49? Her bruker vi det positive svaret.',
+     visual:workedEx([['x² = 49','',false],['7 · 7 = 49','',true],['x = 7 ✓','',false]])},
+    {icon:'📦',title:'Parenteser',text:'Del på tallet foran parentesen først.',
+     visual:workedEx([['3(x + 2) = 21','',false],['x + 2 = 7','(del på 3)',true],['x = 5 ✓','',false]])}
+  ],
+  func10:[
+    {icon:'⚙️',title:'Funksjoner',text:'f(x) er en maskin: putt inn x, og få ut et tall.',
+     visual:`<div style="font-family:'Fredoka One',cursive;text-align:center"><div style="font-size:1.1rem;margin-bottom:10px">f(x) = 2x + 3</div><div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">${[1,2,3,4].map(x=>`<div style="background:rgba(255,217,61,.1);border:1px solid rgba(255,217,61,.3);border-radius:8px;padding:5px 10px;font-size:.88rem">f(${x}) = ${2*x+3}</div>`).join('')}</div></div>`},
+    {icon:'🎯',title:'Prøv f(x) = 3x − 2, f(4) = ?',text:'',
+     visual:workedEx([['f(4) = 3 · 4 − 2','',false],['= 12 − 2','',false],['= 10 ✓','',false]])}
+  ],
+  trig10:[
+    {icon:'🔺',title:'Sinus, cosinus og tangens',text:'I en rettvinklet trekant med vinkel v:',
+     visual:eqBox('sin v = motstående / hypotenus')+eqBox('cos v = hosliggende / hypotenus')+eqBox('tan v = motstående / hosliggende')},
+    {icon:'📋',title:'Verdier å huske',text:'Disse vinklene kommer ofte. Lær tabellen!',
+     visual:`<div style="display:grid;grid-template-columns:repeat(4,auto);gap:4px 14px;justify-content:center;font-family:'Fredoka One',cursive;font-size:.95rem">${['','sin','cos','tan','0°','0','1','0','30°','0,5','0,87','0,58','45°','0,71','0,71','1','60°','0,87','0,5','1,73','90°','1','0','–'].map((t,i)=>`<div style="color:${i<4||i%4===0?'var(--gold)':'var(--white)'}">${t}</div>`).join('')}</div>`},
+    {icon:'⌨️',title:'Slik svarer du',text:'Svar med to desimaler, for eksempel 0,87. Du kan også skrive 1/2.',
+     visual:eqBox('sin(60°) ≈ 0,87')}
+  ],
+  prob10:[
+    {icon:'🎲',title:'Hva er sannsynlighet?',text:'Sannsynlighet er gunstige utfall delt på mulige utfall.',
+     visual:eqBox('P = gunstige / mulige')},
+    {icon:'🎯',title:'Terning: P(tall ≤ 2)',text:'1 og 2 er gunstige. Det er 6 mulige.',
+     visual:`<div class="seq-row">${[1,2,3,4,5,6].map(n=>`<span class="seq-box${n<=2?' hl':''}">${n}</span>`).join('')}</div>`+capLine(`P = 2/6 = ${grn('1/3')}`)},
+    {icon:'🔴',title:'Kuler i en pose',text:'Det er 10 kuler. 3 av dem er røde.',
+     visual:`<div class="dot-groups">${dotGroup(3,'#ff4466')}${dotGroup(7,'#8878cc',120)}</div>`+capLine(`P(rød) = ${grn('3/10')} = 0,3`)},
+    {icon:'⌨️',title:'Slik svarer du',text:'Trykk / for å skrive en brøk, for eksempel 1/3. Desimaltall går også.',
+     visual:eqBox('2/6 = 1/3 ≈ 0,33')}
+  ],
+};
+
+// ============================================================
+// LEARN NAVIGATION
+// ============================================================
+let learnState={grade:null,topicId:null,steps:[],idx:0};
+
+function showLearn(grade,topicId){
+  const gd=CUR[grade],topic=gd.topics.find(t=>t.id===topicId);
+  const steps=LEARN_GUIDES[topicId];
+  if(!steps||!steps.length){alert('Guide for dette temaet kommer snart!');return;}
+  learnState={grade,topicId,steps,idx:0};
+  document.getElementById('learn-topic-name').textContent=topic.name;
+  buildLearnDots();
+  renderLearnStep();
+  showScreen('learn');
+}
+
+function buildLearnDots(){
+  document.getElementById('learn-dots').innerHTML=learnState.steps.map((_,i)=>`<div class="learn-dot" id="ldot${i}"></div>`).join('');
+}
+
+function renderLearnStep(){
+  const {steps,idx}=learnState;
+  const step=steps[idx];
+  const body=document.getElementById('learn-body');
+  body.style.opacity='0';
+  setTimeout(()=>{
+    document.getElementById('learn-step-lbl').textContent=`Steg ${idx+1} av ${steps.length}`;
+    document.getElementById('learn-icon').textContent=step.icon;
+    document.getElementById('learn-title').textContent=step.title;
+    document.getElementById('learn-text').innerHTML=step.text;
+    document.getElementById('learn-visual').innerHTML=step.visual||'';
+    steps.forEach((_,i)=>{
+      const d=document.getElementById(`ldot${i}`);
+      d.className='learn-dot'+(i<idx?' done':i===idx?' active':'');
+    });
+    const nb=document.getElementById('learn-next');
+    nb.textContent=idx>=steps.length-1?'🚀 Prøv nå!':'Neste →';
+    nb.className='learn-next'+(idx>=steps.length-1?' finish':'');
+    document.getElementById('learn-prev').style.display=idx>0?'block':'none';
+    body.style.transition='opacity .25s';
+    body.style.opacity='1';
+  },100);
+}
+
+function learnNext(){
+  if(learnState.idx>=learnState.steps.length-1)startGame(learnState.grade,learnState.topicId);
+  else{learnState.idx++;renderLearnStep();}
+}
+function learnPrev(){if(learnState.idx>0){learnState.idx--;renderLearnStep();}}

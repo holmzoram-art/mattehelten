@@ -118,6 +118,7 @@
 .t12-hop .lv-line .lv-hop{stroke-width:3;}
 /* Valgknapper med emoji (mønster, merker på tallinja): større tegn */
 #q-card:has(.t12-pat,.t12-nl-mk)~.q-choices .q-choice,.lp:has(.t12-pat,.t12-nl-mk) .q-choice{font-size:2.1rem;line-height:1.1;padding:6px 16px;}
+@media(max-width:440px){#q-card:has(.t12-pat,.t12-nl-mk)~.q-choices .q-choice,.lp:has(.t12-pat,.t12-nl-mk) .q-choice{font-size:1.65rem;padding:6px 10px;}}
 
 /* Hundrebrett (utsnitt) */
 .t12-bd{display:grid;grid-template-columns:repeat(var(--cols,5),46px);gap:4px;justify-content:center;margin:2px auto;}

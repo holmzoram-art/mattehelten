@@ -53,16 +53,21 @@ window.VIS.line=v=>{
   const st=Math.max(1,Math.abs(+v.step||1)),hops=(v.hops||[]).slice(0,12).map(Number),start=+v.start||0,pts=[start];
   hops.forEach(h=>pts.push(pts[pts.length-1]+h));
   const from=Math.min(+v.from||0,...pts),to=Math.max(+v.to||0,...pts,from+st),N=Math.round((to-from)/st),open=N>12;
-  const W=open?300:Math.max(150,N*28+28),P=16,X=n=>P+(n-from)/(to-from)*(W-2*P),Y=46,H=72,end=pts[pts.length-1];
   const hide=new Set((v.hide||[]).map(Number)),hl=new Set((v.hl||[]).map(Number));
+  const W=open?300:Math.max(200,N*32+32),P=16,Y=42,H=66,end=pts[pts.length-1];
+  let X=n=>P+(n-from)/(to-from)*(W-2*P);
+  if(open){ // tom tallinje: bare de viktige tallene, med minst 40 px mellom (små hopp blir lesbare)
+    const M=[...new Set([...pts,...hide,...hl])].sort((a,b)=>a-b),gw=M.slice(1).map((m,i)=>m-M[i]),tot=gw.reduce((a,b)=>a+b,0)||1,min=Math.min(40,(W-2*P-20)/Math.max(1,gw.length));
+    let ws=gw.map(g=>Math.max(min,g/tot*(W-2*P-20)));const k=(W-2*P-20)/(ws.reduce((a,b)=>a+b,0)||1);ws=ws.map(w=>Math.max(min,w*k));
+    const pos={};let x=P+10;M.forEach((m,i)=>{pos[m]=x;x+=ws[i]||0;});X=n=>pos[n]!=null?pos[n]:P;}
   let s=`<svg class="lv lv-line" viewBox="0 0 ${W} ${H}" style="max-width:${W}px" aria-hidden="true"><line class="lv-ax" x1="${P-8}" y1="${Y}" x2="${W-P+8}" y2="${Y}"/>`;
   const num=n=>{const q=hide.has(n)||(hops.length&&n===end&&v.endLab==='?'),c=q?' lv-q':hl.has(n)||(hops.length&&n===end&&!q&&v.endLab!=null&&v.endLab!=='?')?' lv-hl':'';
-    return `<text class="lv-n${c}" x="${X(n).toFixed(1)}" y="${Y+21}">${q?'?':n}</text>`;};
+    return `<text class="lv-n${c}" x="${X(n).toFixed(1)}" y="${Y+22}">${q?'?':n}</text>`;};
   const marks=new Set(pts);hide.forEach(n=>marks.add(n));hl.forEach(n=>marks.add(n));
   if(open){[...marks].forEach(n=>{s+=`<line class="lv-tk" x1="${X(n).toFixed(1)}" y1="${Y-6}" x2="${X(n).toFixed(1)}" y2="${Y+6}"/>`+num(n);});}
   else{const every=N>8?2:1;for(let i=0;i<=N;i++){const n=from+i*st,xn=X(n).toFixed(1);s+=`<line class="lv-tk" x1="${xn}" y1="${Y-5}" x2="${xn}" y2="${Y+5}"/>`;if(i%every===0||i===N||marks.has(n))s+=num(n);}}
-  hops.forEach((h,i)=>{const x0=X(pts[i]),x1=X(pts[i+1]),k=Math.min(24,7+Math.abs(x1-x0)*.3);
-    s+=`<path class="lv-hop" style="--d:${i}" d="M${x0.toFixed(1)} ${Y-4} Q${((x0+x1)/2).toFixed(1)} ${(Y-4-2*k).toFixed(1)} ${x1.toFixed(1)} ${Y-4}"/><circle class="lv-tip" style="--d:${i}" cx="${x1.toFixed(1)}" cy="${Y-4}" r="2.6"/>`;
+  hops.forEach((h,i)=>{const x0=X(pts[i]),x1=X(pts[i+1]),k=Math.min(20,7+Math.abs(x1-x0)*.25);
+    s+=`<path class="lv-hop" pathLength="100" style="--d:${i}" d="M${x0.toFixed(1)} ${Y-4} Q${((x0+x1)/2).toFixed(1)} ${(Y-4-2*k).toFixed(1)} ${x1.toFixed(1)} ${Y-4}"/><circle class="lv-tip" style="--d:${i}" cx="${x1.toFixed(1)}" cy="${Y-4}" r="2.6"/>`;
     const L=v.hopLab&&v.hopLab[i];if(L!=null&&L!=='')s+=`<text class="lv-hl" x="${((x0+x1)/2).toFixed(1)}" y="${(Y-9-k).toFixed(1)}">${visEsc(L)}</text>`;});
   if(v.top!=null&&v.top!==''&&hops.length)s+=`<text class="lv-top" x="${((X(start)+X(end))/2).toFixed(1)}" y="11">${visEsc(v.top)}</text>`;
   s+=`<circle class="lv-st" cx="${X(start).toFixed(1)}" cy="${Y}" r="5"/>`;

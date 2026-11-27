@@ -29,6 +29,7 @@ function startGame(g,topicId){
   loadQuestion();
   renderHUD();
   showScreen('game');
+  if(loopFocusOK()&&!isChoiceQ(S.current))document.getElementById('ans-input').focus({preventScroll:true}); // fokus først når skjermen vises
   fxStart(false); // BATTLE FX: entrance + reset
 }
 function retrySession(){startGame(S.grade,S.topicId);}
@@ -185,7 +186,7 @@ function submitAnswer(){
     inp.className='ans-input wrong';
     fb.className='fb-box wrong loop-reveal';
     const rv=renderVis(loopReveal(qd)),body=S.topic.fb(qd.q,given,correct);
-    fb.innerHTML=`<div class="fb-title">Se her! 👀</div>${body}${rv?`<div class="loop-vis">${rv}</div>`:''}${again?'<div class="loop-again">🔁 Du får den igjen snart!</div>':''}`;
+    fb.innerHTML=`<div class="fb-title">Se her! 👀</div>${loopNb(body)}${rv?`<div class="loop-vis">${rv}</div>`:''}${again?'<div class="loop-again">🔁 Du får den igjen snart!</div>':''}`;
     sndBad();
     // Player takes damage (bare når svaret vises)
     S.playerHp=Math.max(10,S.playerHp-8);
@@ -212,14 +213,16 @@ function loopRetry(qd,given,misc){
   const inp=document.getElementById('ans-input'),h=loopHint(qd,given,misc),el=loopHelpEl();
   inp.value='';inp.className='ans-input retry';
   if(isChoiceQ(qd)&&S.choiceBtn){S.choiceBtn.classList.add('wrong');S.choiceBtn.disabled=true;}
-  if(el){const vh=renderVis(h.v);el.innerHTML=`<div class="loop-help-t">💡 ${h.t}</div>${vh?`<div class="loop-vis">${vh}</div>`:''}`;el.className='loop-help show';}
+  if(el){const vh=renderVis(h.v);el.innerHTML=`<div class="loop-help-t">💡 ${loopNb(h.t)}</div>${vh?`<div class="loop-vis">${vh}</div>`:''}`;el.className='loop-help show';}
   const fb=document.getElementById('fb-box');fb.className='fb-box';fb.innerHTML='';
   const B=S.boss&&typeof BOSSES==='object'&&BOSSES[S.grade];
   setSpeech(B&&B.miss?`${S.bossEmoji||B.emoji} ${pick(B.miss)}`:pick(['Prøv igjen! 💪','Du klarer det! 💡','Én gang til! 💪']));
   if(typeof fxTry==='function')fxTry();else tone(440,.12,'triangle',.08);
   if(typeof speak==='function')try{speak(h.t);}catch(e){}
   loopProg();
-  if(loopFocusOK())inp.focus();
+  document.getElementById('q-hint').textContent='';
+  loopShow();
+  if(loopFocusOK())inp.focus({preventScroll:true});
 }
 
 function handleNext(){if(!S.answered)return;loopDisarm();if(S.boss)return bossNext();if(S.idx>=TQ||S.enemyDefeated)showChest();else loadQuestion();}

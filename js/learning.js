@@ -163,12 +163,15 @@ function loopHint(qd,given,misc){
   let v=p.v||null;
   if(misc==='pluss'&&o.op==='-'&&!o.unk)v=o.a<=20?{kind:'tenframe',a:o.a,cross:o.b}:{kind:'blocks',a:o.a,cross:o.b};
   if(misc==='veksling')v={kind:'blocks',a:o.a,cross:o.b};
+  if(misc==='ti'&&!o.unk&&o.a>=10&&(o.op==='+'||o.op==='-'))v=o.op==='+'?{kind:'blocks',a:Math.max(o.a,o.b),b:Math.min(o.a,o.b)}:{kind:'blocks',a:o.a,cross:o.b};
   if(misc==='starttall'&&o.op==='+'&&!o.unk){const big=Math.max(o.a,o.b),sm=Math.min(o.a,o.b);v={kind:'line',from:Math.max(0,big-1),to:big+sm+1,start:big,hops:loopUnit(sm),endLab:'?'};}
   if(misc==='starttall'&&o.op==='-'&&!o.unk)v={kind:'line',from:Math.max(0,o.a-o.b-1),to:o.a+1,start:o.a,hops:loopUnit(-o.b),endLab:'?'};
   return{t,v};
 }
 // Bilde når svaret vises (andre feil)
 function loopReveal(qd){const p=loopPlan(qd);return p?(p.r||p.v||null):null;}
+// Regnestykker brytes ikke midt i («5 + 1» holdes på samme linje)
+function loopNb(s){return String(s).replace(/ ([+\-=·]) (?=\S)/g,'\u00a0$1\u00a0');}
 function loopPlain(h){return String(h).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();}
 
 // ---- Statistikk: mh_stats = {'YYYY-MM-DD':{ms,n,ok,t:{'<g>:<id>':[n,ok]},m:{'<feiltype>':antall}}}, siste 60 dager ----
@@ -195,6 +198,8 @@ function loopDisarm(){if(S&&S._autoT){clearTimeout(S._autoT);S._autoT=0;}const n
 function loopFocusOK(){try{return !(S&&S.grade<=2&&window.matchMedia&&window.matchMedia('(pointer: coarse)').matches);}catch(e){return true;}}
 // Hint-boksen i oppgavekortet (lages fra JS første gang)
 function loopHelpEl(){let h=document.getElementById('loop-help');if(!h){const qv=document.getElementById('q-vis'),qc=document.getElementById('q-card');if(!qc)return null;h=document.createElement('div');h.id='loop-help';h.className='loop-help';h.setAttribute('aria-live','polite');if(qv)qv.insertAdjacentElement('afterend',h);else qc.appendChild(h);}return h;}
+// Sørg for at svarfeltet/tastaturet synes etter at hintet dyttet det ned (og at oppgaven synes etter ny oppgave)
+function loopShow(){try{const ch=isChoiceQ(S.current),el=document.getElementById(ch?'q-choices':'numpad'),qc=document.getElementById('q-card');if(!el||!el.getBoundingClientRect)return;const r=el.getBoundingClientRect(),vh=window.innerHeight||0,qt=qc.getBoundingClientRect().top;if(vh&&r.bottom>vh)window.scrollBy({top:Math.min(r.bottom-vh+8,Math.max(0,qt-8)),behavior:'auto'});}catch(e){}}
 function loopHelpHide(){const h=document.getElementById('loop-help');if(h){h.className='loop-help';h.innerHTML='';}}
 // Trykk hvor som helst i kampen (ikke på knapper) hopper over ventetiden
 (function(){const sg=document.getElementById('screen-game');if(sg&&sg.addEventListener)sg.addEventListener('click',e=>{

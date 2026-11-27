@@ -65,7 +65,7 @@ function figPump(){
     im.onload=()=>end(true);im.onerror=()=>end(false);im.decoding='async';im.src=j.src;
   }
 }
-function figStart(){if(FIG_GO)return;FIG_GO=true;figPump();}
+function figStart(){if(FIG_GO)return;FIG_GO=true;FIG_LATER.splice(0).forEach(n=>{const f=FIG_SCR[n];if(f)figOnScreen(n,f);});figPump();}
 if(typeof window!=='undefined'&&window.addEventListener&&typeof document!=='undefined'){ // ikke i den kritiske stien
   const go=()=>{try{if(typeof window.requestIdleCallback==='function')window.requestIdleCallback(figStart,{timeout:1000});else setTimeout(figStart,300);}catch(e){figStart();}};
   if(document.readyState==='complete')go();else window.addEventListener('load',go);
@@ -194,7 +194,17 @@ function figHeroCard(el,i){
   const A=FIG_ATLAS.h;if(A&&A.items&&A.items[k])return figUse(el,{m:'l',atlas:'h',item:k});
   return figHeroPoster(el,{key:k,rank:0});
 }
-function figCharGrid(){try{document.querySelectorAll('#char-grid .char-card .char-emoji').forEach((e,i)=>figHeroCard(e,i));}catch(e){}}
+// Kjør fn når skjermen vises (med en gang hvis den alt vises), så skjulte skjermer ikke laster bilder
+const FIG_SCR={},FIG_LATER=[];
+function figOnScreen(n,fn){
+  const el=typeof document!=='undefined'&&document.getElementById('screen-'+n);if(!el||!el.classList)return;
+  if(!FIG_GO){FIG_SCR[n]=fn;FIG_LATER.push(n);return;} // før start: sjekk igjen når figurene starter (oppstarten bytter skjerm)
+  if(el.classList.contains('active')){FIG_SCR[n]=null;fn();return;}
+  FIG_SCR[n]=fn;if(el._figScr||typeof MutationObserver!=='function')return;
+  el._figScr=new MutationObserver(()=>{const f=FIG_SCR[n];if(f&&el.classList.contains('active')){FIG_SCR[n]=null;f();}});
+  el._figScr.observe(el,{attributes:true,attributeFilter:['class']});
+}
+function figCharGrid(){figOnScreen('chars',()=>{try{document.querySelectorAll('#char-grid .char-card .char-emoji').forEach((e,i)=>figHeroCard(e,i));}catch(e){}});}
 // Trykk på en helt i heltevalget: win én gang (hentes nå), så plakaten igjen
 function figPick(el,i){
   const k=FIG_HEROES[i],id=k&&figHeroId(0,k);if(!el||!id||!FIG[id].anims.win)return false;

@@ -630,6 +630,7 @@ function t12Opts(ans,cands,n){
 }
 // Samme bilde til alle why-hint (whyV)
 function t12WhyV(why,v){const o={};Object.keys(why).forEach(k=>o[k]=v);return o;}
+function t12Nb(s){return String(s).replace(/ /g,' ');} // tallrekka brytes ikke midt i (etter «Frosken hopper:»)
 function t12Near(lab,n){return lab.reduce((a,b)=>Math.abs(b-n)<Math.abs(a-n)?b:a);}
 function t12Rev(n){const t=Math.floor(n/10),o=n%10;return n>=10&&n<100&&o&&t!==o?10*o+t:null;} // snudde sifre (34 → 43)
 // Tell fra et merket tall til n: «Fra 40: 41, 42, 43.»
@@ -646,12 +647,15 @@ window.VIS.grow=v=>{
 // Tallinje til å lese av: {from, to, step, lab:[tall som står], mid (lang strek hver mid), arrow:tall, marks:[{n,tag}], empty:true = tom tallinje}
 function t12NlX(from,to,n){return t12Num(24+(n-from)/(to-from)*292);}
 window.VIS.nline=v=>{
-  const from=+v.from||0,to=+v.to||10,st=+v.step||1,Y=v.marks?78:64,H=Y+42,X=n=>t12NlX(from,to,n),lab=(v.lab||[from,to]).map(Number);
+  const from=+v.from||0,to=+v.to||10,st=+v.step||1,X=n=>t12NlX(from,to,n),lab=(v.lab||[from,to]).map(Number);
+  // merker som står tett, settes annenhver høyere (to etasjer)
+  const ms=(v.marks||[]).map(m=>({n:+m.n,tag:m.tag})).sort((a,b)=>a.n-b.n);let px=-1e9,lv=0;ms.forEach(m=>{const x=X(m.n);lv=x-px<34?1-lv:0;px=x;m.lv=lv;});
+  const Y=ms.some(m=>m.lv)?102:v.marks?78:64,H=Y+42;
   let s=`<svg class="t12-nl" viewBox="0 0 340 ${H}" role="img" aria-label="Tallinje fra ${from} til ${to}"><line class="t12-nl-ax" x1="8" y1="${Y}" x2="328" y2="${Y}"/><path class="t12-nl-end" d="M327 ${Y-7} L338 ${Y} L327 ${Y+7} Z"/>`;
   const tk=v.empty?lab.slice():Array.from({length:Math.round((to-from)/st)+1},(_,i)=>from+i*st);
   tk.forEach(n=>{const big=lab.includes(n)||(v.mid&&(n-from)%v.mid===0),h=big?13:8;s+=`<line class="t12-nl-tk${big?' big':''}" x1="${X(n)}" y1="${Y-h}" x2="${X(n)}" y2="${Y+h}"/>`;});
   lab.forEach(n=>{s+=`<text class="t12-nl-n" x="${X(n)}" y="${Y+30}">${n}</text>`;});
-  (v.marks||[]).forEach(m=>{s+=`<g class="t12-nl-mk" transform="translate(${X(m.n)} 0)"><line x1="0" y1="${Y-30}" x2="0" y2="${Y-3}"/><text class="t12-nl-tag" x="0" y="${Y-46}">${m.tag}</text></g>`;});
+  ms.forEach(m=>{const up=m.lv*26;s+=`<g class="t12-nl-mk" transform="translate(${X(m.n)} 0)"><line x1="0" y1="${Y-30-up}" x2="0" y2="${Y-3}"/><text class="t12-nl-tag" x="0" y="${Y-46-up}">${m.tag}</text></g>`;});
   if(v.arrow!=null)s+=`<g class="t12-nl-ar" transform="translate(${X(+v.arrow)} 0)"><path d="M-6 ${Y-52} h12 v24 h9 L0 ${Y-8} L-15 ${Y-28} h9 Z"/></g>`;
   return `<div class="t12-nl-wrap">${s}</svg></div>`;
 };
@@ -679,7 +683,7 @@ function t12PatWords(items){return items.map(x=>x[1]).join(', ');}
 function t12PatGrow(L,base){
   const [s0,d]=t12P([[[1,1],[2,1]],[[1,1],[3,1],[2,2]],[[2,2],[3,2],[3,3],[4,3]]][L]),ns=[0,1,2].map(i=>s0+i*d),seq=`${ns.join(', ')}, ?`,[E,c]=t12P([['🟦','b'],['🟧','o'],['🟩','g']]);
   const o={...base,q:seq,ans:s0+3*d,hint:'Hvor mange flere hver gang?',ops:{op:'seq',a:s0,b:d,i:3},vis:{kind:'grow',n:ns,w:d,c,q:true},x:{last:ns[2],d}};
-  return t12Story(o,`${E} Tårnene vokser: ${seq}`,`Tårnene vokser: ${ns.join(', ')}. Hvor mange klosser blir det i neste tårn?`);
+  return t12Story(o,`${E} Tårnene vokser: ${t12Nb(seq)}`,`Tårnene vokser: ${ns.join(', ')}. Hvor mange klosser blir det i neste tårn?`);
 }
 function t12GenPat1(g,id){
   const L=t12Lvl(g,id),t=t12Pick(g,id,{m1a:[4,2,1],m1b:[1,3,3],m1m:[1,2,2],m1t:[0,1,2],m1k:[0,0,2],m1v:[3,2,2]},L),base={type:'Mønster',sub:t,strat:t==='m1v'?'voksende':'gjenta'};
@@ -807,7 +811,7 @@ function t12GenCount2(g,id){
   const tip=t==='t2f'?(mi?`${ans-1} + 1 = ${ans}: en ny tier!`:`${ans} + 1 = ${ans+1}: en ny tier!`):t==='t2b'?`${ans+1} - 1 = ${ans}: tieren blir én mindre.`:`${nb} ${sg} ${sb} = ${ans}.${sb===10?' Bare tieren endres.':''}`;
   const hint=sb===1?`Tell én og én ${b>0?'fremover':'bakover'}`:`Hopp ${sb} ${b>0?'fremover':'bakover'}`;
   const o={...base,strat,q:seq,ans,hint,ops:{op:'seq',a:s0,b,i:mi},say,x:{tip}};
-  if(Math.random()<.35){const [E,lb]=b===-1?['🚀','Nedtelling']:b===1?['🦉','Ugla teller']:['🐸',b>0?'Frosken hopper':'Frosken hopper bakover'];return t12Story(o,`${E} ${lb}: ${seq}`,`${lb}: ${say}`);}
+  if(Math.random()<.35){const [E,lb]=b===-1?['🚀','Nedtelling']:b===1?['🦉','Ugla teller']:['🐸',b>0?'Frosken hopper':'Frosken hopper bakover'];return t12Story(o,`${E} ${lb}: ${t12Nb(seq)}`,`${lb}: ${say}`);}
   return o;
 }
 function t12FbCount2(q,g,c,qd){

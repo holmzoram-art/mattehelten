@@ -59,7 +59,7 @@ module.exports=function({R,ok,CUR,ls,els,submit,submitCh,solve}){
   function solveNew(id,qd,h){
     const q=qd.q,ch=(qd.choices||[]).map(String);let m;
     if(id==='pat1'){
-      if(m=q.match(/^(?:\S+ Tårnene vokser: )?(\d+), (\d+), (\d+), \?$/)){const ns=[+m[1],+m[2],+m[3]],tw=towers(h),d=ns[1]-ns[0];
+      if(m=q.match(/^(?:\S+ Tårnene vokser: )?(\d+),\s(\d+),\s(\d+),\s\?$/)){const ns=[+m[1],+m[2],+m[3]],tw=towers(h),d=ns[1]-ns[0];
         ok(tw.length===4&&tw[3]===null&&tw.slice(0,3).every((rows,i)=>rows.reduce((a,b)=>a+b,0)===ns[i]),`c2: tårnene stemmer ikke med tallene ${q}`);
         tw.slice(0,3).forEach(rows=>ok(rows.every((k,i)=>i===rows.length-1||k===rows[0])&&rows[rows.length-1]<=rows[0],`c2: tårnrader ${J(rows)}`));
         ok(d>0&&ns[2]-ns[1]===d,`c2: tårnene vokser ikke likt ${q}`);return ns[2]+d;}
@@ -96,8 +96,8 @@ module.exports=function({R,ok,CUR,ls,els,submit,submitCh,solve}){
     if(id==='count2'){
       if(m=q.match(/^Hva kommer (etter|før) (\d+)\?$/)){const n=+m[2],after=m[1]==='etter';ok(after?n%10===9:n%10===0,`c2: før/etter skal gå over en tier ${q}`);return String(after?n+1:n-1);}
       if(q==='Hvilket tall skjuler seg?')return String(board(h));
-      const pm=q.match(/^(?:(🦉 Ugla teller|🚀 Nedtelling|🐸 Frosken hopper bakover|🐸 Frosken hopper): )?((?:\d+|\?)(?:, (?:\d+|\?)){3})$/);
-      if(!pm)return;const s=seq4(pm[2]);if(!s)return;
+      const pm=q.match(/^(?:(🦉 Ugla teller|🚀 Nedtelling|🐸 Frosken hopper bakover|🐸 Frosken hopper): )?((?:\d+|\?)(?:,[  ](?:\d+|\?)){3})$/);
+      if(!pm)return;const s=seq4(pm[2].replace(/ /g,' '));if(pm[1])ok(!/ \d|\d,? \d/.test(pm[2])&&/ /.test(pm[2]),`c2: tallrekka i historien kan brytes ${q}`);if(!s)return;
       ok([1,-1,2,-2,5,-5,10,-10].includes(s.st)&&s.f.every(x=>x>=0&&x<=100),`c2: tallrekke ${q}`);
       if(Math.abs(s.st)!==10)ok(Math.floor(Math.min(...s.f)/10)!==Math.floor(Math.max(...s.f)/10),`c2: tallrekka går ikke over en tier ${q}`);
       else ok(s.f[0]%10!==0,`c2: tierhopp skal starte utenfor en hel tier ${q}`);

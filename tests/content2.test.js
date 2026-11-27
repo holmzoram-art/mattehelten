@@ -130,6 +130,10 @@ module.exports=function({R,ok,CUR,ls,els,submit,submitCh,solve}){
         ok(!(key in why),`c2: ${id} why for the answer`);
         for(const w of cs.filter(c=>c!==key)){
           ok(typeof why[w]==='string'&&why[w].length>5,`c2: ${id} why missing for ${w} (${qd.q})`);
+          const wv=qd.whyV&&qd.whyV[w],wm=qd.whyM&&qd.whyM[w];ok(!!wv||qd.sub==='m1k',`c2: ${id} why-bilde mangler for ${w} (${qd.sub})`);
+          if(wv){const vh=renderVis(wv);ok(vh.length>40&&(/>\?</.test(vh)||wv.arrow!=null||!!wv.marks)&&!(/^\d+$/.test(key)&&new RegExp(`>${key}<`).test(vh)),`c2: ${id} why-bildet mangler ? eller viser svaret (${qd.sub} ${w})`);
+            const pm=qd.q.match(/^Hvor er (\d+)\?$/);if(pm)ok(!wv.lab.includes(+pm[1]),`c2: why-bildet skriver tallet barnet leter etter ${qd.q}`);}
+          if(wm)ok(R(`!!window.MISC_NAMES['${wm}']`)&&R('detectMisc')(qd,w)===wm,`c2: ${id} whyM ${wm}`);
           if(why[w]){ok(words(why[w])<=9&&!why[w].includes(key)&&!(/^\d+$/.test(key)&&hasNum(why[w],key)),`c2: ${id} why long or gives answer: ${why[w]} (${key})`);textOk(why[w],'why');}
           R('S').current=Object.assign({},qd,{givenTxt:w});let f='';try{f=t.fb(qd.q,w,qd.ans);}catch(e){f='THROW '+e.message;}
           ok(f.includes(`<strong>${key}</strong>`)&&!/THROW|Du svarte|undefined|NaN/.test(f),`c2: ${id} fb ${f}`);ok(words(f)<=12,`c2: ${id} fb too long (${words(f)}): ${plain(f)}`);textOk(f.replace(/<[^>]*>/g,''),'fb');}

@@ -20,8 +20,14 @@ const PAR_MISC={
   halv:['Barnet halverer i stedet for å doble: dobbelt av 6 blir 3.','«Dobbelt» betyr like mange én gang til. Vis med to hender: 6 fingre og 6 fingre til.'],
   ti:['Svaret bommer med nøyaktig 10. Tierne blir feil, ofte når svaret går over en ny tier.','Gjør et overslag før svaret: «38 + 5 – blir det over 40?» Spør: «Hvor mange tiere blir det?» før barnet skriver.'],
   en:['Svaret bommer med nøyaktig 1. Ofte glipper tellingen, eller det skjer ved tierovergang.','Bruk tierramme eller fingrene: 8 + 5 = 8 + 2 + 3. Fyll opp tieren først, så resten. La barnet sjekke ved å telle én gang til.'],
+  // Fra valgoppgavene (qd.whyM) og «4 + 3 = 5 + ?»
+  likhet:['Barnet leser = som «svaret kommer»: i 4 + 3 = 5 + ? svarer det 7, eller legger sammen alle tallene.','Les = som «er like mye som». Legg 4 + 3 knapper på én tallerken og 5 på den andre. Hvor mange må til, så det blir likt?'],
+  plass:['Barnet blander tiere og enere: teller en tierstav som 1, skriver 6 for 60, eller tror 9 er større enn 13.','Bunt 10 sugerør med strikk. En bunt er 10. Legg tallet med bunter og løse sugerør, og tell buntene først.'],
+  halvtime:['Barnet sier halv 3 når klokka er 3.30. På norsk er 3.30 «halv fire»: halvveis til fire.','Se på den korte viseren sammen. Er den forbi 3, på vei mot 4? Da er det halv 4. Si: «halv fire er en halv time før fire».'],
+  visere:['Barnet blander den korte og den lange viseren, eller hel og halv time.','Den korte viseren viser timen, den lange minuttene. Rett opp er hel time, rett ned er halv. Snakk om klokka i hverdagen.'],
+  mynt:['Barnet teller hvor mange mynter det er, ikke hvor mye de er verdt.','Lek butikk med ekte mynter. Les tallet på hver mynt høyt, og tell videre fra den største: 20, 30, 35.'],
 };
-const PAR_MISC_ORDER=['pluss','minus','starttall','veksling','snudd','dobbel','halv','ti','en']; // ved likt antall: de mest konkrete først
+const PAR_MISC_ORDER=['pluss','minus','starttall','veksling','snudd','likhet','plass','halvtime','visere','mynt','dobbel','halv','ti','en']; // ved likt antall: de mest konkrete først
 
 // ---- Regnemåter (qd.strat, mh_fam): navn og tips hjemme ----
 const PAR_FAM={
@@ -31,7 +37,7 @@ const PAR_FAM={
   'naer-dobbel':['Nesten dobler (7 + 8)','Bruk en dobbel som ligger nær: 7 + 8 = 7 + 7 + 1.'],
   'tiervenn':['Tiervenner (3 + 7 = 10)','Vis noen fingre og spør hvor mange som er nede: 3 oppe, 7 nede. I bilen: «Jeg sier 6, du sier tiervennen.»'],
   'null':['Pluss og minus 0','Legg 5 ting på bordet og legg til ingen. Hvor mange nå? Tallet blir det samme.'],
-  'tenk-pluss':['Minus som pluss (9 − 6)','Tenk pluss: 9 − 6 blir «6 pluss hva er 9?». Tell opp fra 6 på fingrene.'],
+  'tenk-pluss':['Minus som pluss (9 − 6)','Tenk pluss: 9 − 6 blir «6 pluss hva blir 9?». Tell opp fra 6 på fingrene.'],
   'minus1':['Minus 1 og 2','−1 er tallet før. Tell baklengs sammen, som nedtelling til en rakett.'],
   'tell-opp':['Telle opp (9 − 7)','Når tallene ligger nær hverandre, tell opp fra det minste: 7 … 8, 9. Det er 2.'],
   'over-tier':['Over tieren (8 + 5)','Fyll tieren først: 8 + 5 = 8 + 2 + 3. Bruk en eggekartong med 10 plasser eller fingrene.'],
@@ -130,7 +136,8 @@ function parWhen(k){const n=parAgo(k);if(n===null)return '–';if(n===0)return '
 // De vanligste feiltypene (navn fra window.MISC_NAMES), min = minste antall for å telle med
 function parTopMisc(agg,lim,min){
   const N=(typeof window!=='undefined'&&window.MISC_NAMES)||{},m=(agg&&agg.m)||{},ix=k=>{const i=PAR_MISC_ORDER.indexOf(k);return i<0?99:i;};
-  return Object.keys(m).filter(k=>N[k]&&m[k]>=(min||1)).sort((a,b)=>m[b]-m[a]||ix(a)-ix(b)).slice(0,lim||3).map(k=>({k,c:m[k],name:N[k],what:PAR_MISC[k]?PAR_MISC[k][0]:'',tip:PAR_MISC[k]?PAR_MISC[k][1]:''}));
+  const err=agg&&agg.n>agg.ok?agg.n-agg.ok:0; // «en» (bom med 1) er ofte bare en tellefeil: vis først ved ≥ 4 og ≥ 30 % av feilene
+  return Object.keys(m).filter(k=>N[k]&&m[k]>=(min||1)&&(k!=='en'||m[k]>=4&&(!err||m[k]>=.3*err))).sort((a,b)=>m[b]-m[a]||ix(a)-ix(b)).slice(0,lim||3).map(k=>({k,c:m[k],name:N[k],what:PAR_MISC[k]?PAR_MISC[k][0]:'',tip:PAR_MISC[k]?PAR_MISC[k][1]:''}));
 }
 // Regnemåter som ikke sitter ennå (mh_fam: siste 8 forsøk per regnemåte): minst 4 forsøk og minst 40 % feil
 function parFams(){

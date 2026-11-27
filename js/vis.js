@@ -13,6 +13,8 @@ function renderVis(v){
 }
 function visEsc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function visN(n,max){n=Math.round(+n||0);return Math.max(0,Math.min(max||100,n));}
+// Redusert bevegelse (prefers-reduced-motion): ingen blinking i bildene
+function visCalm(){try{return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}catch(e){return false;}}
 
 // Tierramme: {a, b, cross, split}. a prikker i farge 1, så b i farge 2; de siste «cross» prikkene er strøket over.
 // split: a i første ramme, b i andre (dobling). Antall rammer = så mange som trengs (maks 2).
@@ -32,15 +34,15 @@ window.VIS.tenframe=v=>{
   return h+'</div>';
 };
 
-// Prikker i grupper: {g:[n1,n2,…], cross, emoji, op}. Hver gruppe står i rader på fem.
-// cross = så mange av de siste i siste gruppe er strøket over. op = tegn mellom gruppene (f.eks. '+').
+// Prikker i grupper: {g:[n1,n2,…], cross, emoji, op, mono}. Hver gruppe står i rader på fem.
+// cross = så mange av de siste i siste gruppe er strøket over. op = tegn mellom gruppene (f.eks. '+'). mono = samme farge i alle grupper (par til halvering).
 window.VIS.dots=v=>{
   const G=(Array.isArray(v.g)?v.g:[v.n]).slice(0,12).map(n=>visN(n,50)),x=visN(v.cross,50),E=v.emoji?visEsc(v.emoji):'';
   let h=`<div class="lv lv-dots${G.length>4?' lv-many':''}">`,d=0;
   G.forEach((n,gi)=>{
     if(gi&&v.op)h+=`<span class="lv-op">${visEsc(v.op)}</span>`;
     h+=`<span class="lv-grp${E?' lv-emo':''}">`;
-    for(let i=0;i<n;i++)h+=`<i class="lv-d lv-${gi%2+1}${gi===G.length-1&&i>=n-x?' lv-x':''}" style="--d:${d++}">${E}</i>`;
+    for(let i=0;i<n;i++)h+=`<i class="lv-d lv-${v.mono?1:gi%2+1}${gi===G.length-1&&i>=n-x?' lv-x':''}" style="--d:${d++}">${E}</i>`;
     h+='</span>';
   });
   return h+'</div>';
@@ -86,4 +88,11 @@ window.VIS.blocks=v=>{
   let h='<div class="lv lv-blocks">'+grp(a,1,xt,xo,ex);
   if(b)h+='<span class="lv-op">+</span>'+grp(b,2,0,0,false);
   return h+'</div>';
+};
+
+// Størst/minst (større/mindre) som bilde, så barnet ser forskjellen uten å lese: {w:'størst'|'minst'|'større'|'mindre'}
+// Stor elefant og gult ord for størst/større, liten mus og blått ord for minst/mindre.
+window.VIS.cue=v=>{
+  const w=String(v.w||''),big=/^st/i.test(w);
+  return `<div class="lv lv-cue" style="display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px" role="img" aria-label="${visEsc(w)}"><span style="font-size:${big?'3.1rem':'1.45rem'};line-height:1" aria-hidden="true">${big?'🐘':'🐭'}</span><b style="font-size:1.45rem;font-weight:900;letter-spacing:.06em;color:${big?'#ffd93d':'#5ee7ff'}">${visEsc(w.toUpperCase())}</b></div>`;
 };

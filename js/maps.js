@@ -193,6 +193,7 @@ function buildTopicMap(gradeNum){
       };
     }
     nodes.appendChild(node);
+    if(typeof funNodeMonster==='function')funNodeMonster(node,gradeNum,t.id,unlocked); // eget monster per tema (fun.js)
 
     // Also keep "📖 Lær"-link below map if guide exists
     const hasGuide=!!(LEARN_GUIDES[t.id]&&LEARN_GUIDES[t.id].length);

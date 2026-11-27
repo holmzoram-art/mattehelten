@@ -8,7 +8,7 @@
 // a short "NIVÅ OPP!" moment, small next goals, a coin shop and a daily streak.
 // Hooks (one line each): renderHUD, buildGradeMap, buildTopicMap, showChest,
 // closeChest, buildResults, openHeroCard, showBossResult.
-// localStorage: mh_shop_owned, mh_shop_equipped, mh_pg_seen (unlocks already celebrated).
+// localStorage: mh_shop_owned, mh_shop_equipped, mh_pg_seen (unlocks already celebrated). Spilledager 🌙: prog.days (fun.js).
 // For the battle screen: getHeroDecor(), applyHeroDecor(el), heroVictoryFx(n).
 const PG_SLOTS=[
   {id:'hat',name:'Hatter og kroner',icon:'🎩',desc:'En kul hatt til helten din!'},
@@ -16,7 +16,8 @@ const PG_SLOTS=[
   {id:'pet',name:'Kjæledyr',icon:'🐾',desc:'En liten venn som følger deg!'},
   {id:'fx',name:'Seierseffekter',icon:'🎉',desc:'Vises når du vinner!'},
 ];
-// Prices vs. earning: ~10–16 coins per normal round, +25 for a first boss win, +5–15 daily bonus
+// Prices vs. earning (fun.js): 2 🪙 per first-try right in a topic not yet mastered (1 when mastered), +5 per new ⭐ and per «Ny rekord!»
+// → ~12–20 per round while learning; +25 for a first boss win, +5–15 per new play day
 const PG_ITEMS=[
   {id:'cap',slot:'hat',emoji:'🧢',name:'Caps',price:10},
   {id:'sunhat',slot:'hat',emoji:'👒',name:'Solhatt',price:25},
@@ -67,6 +68,7 @@ function applyHeroDecor(el,opts){
   if(!el)return;const d=(opts&&opts.decor)||getHeroDecor(),pet=!(opts&&opts.pet===false);
   const set=(k,v)=>{if(v)el.setAttribute(k,v);else el.removeAttribute(k);};
   set('data-pg-hat',d.hat&&d.hat.emoji);set('data-pg-aura',d.aura&&d.aura.id);set('data-pg-pet',pet&&d.pet&&d.pet.emoji);
+  if(typeof funDecor==='function')funDecor(el,opts&&opts.tier); // rang: glød/vinger/krone/stjernestøv (fun.js)
 }
 // The equipped victory effect (confetti colours and/or emoji rain). Returns false if none is equipped.
 function heroVictoryFx(n){return pgPlayFx(getHeroDecor().fx,n||80);}
@@ -79,18 +81,18 @@ function pgSeenList(){const s=pgLoad('mh_pg_seen',null);return Array.isArray(s)?
 function pgSeen(id){const s=pgSeenList();return !s||s.includes(id);}
 function pgMark(id){const s=pgSeenList()||[];if(!s.includes(id)){s.push(id);localStorage.setItem('mh_pg_seen',JSON.stringify(s));}}
 
-// ---- Daily streak (prog.streak / prog.lastDay): one finished round on a new day ----
+// ---- Spilledager 🌙 (prog.days, aldri nullstilt; prog.lastDay): første ferdige runde på en ny dag gir bonus ----
 function pgDay(off){const d=new Date();d.setDate(d.getDate()+(off||0));return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function pgStreakTick(){
   const t=pgDay(0);if(prog.lastDay===t)return null;
-  prog.streak=prog.lastDay===pgDay(-1)?(prog.streak||0)+1:1;prog.lastDay=t;
-  const bonus=prog.streak>=7?15:prog.streak>=3?10:5;
+  prog.streak=prog.lastDay===pgDay(-1)?(prog.streak||0)+1:1; // gammel «dager på rad» (vises ikke lenger)
+  prog.days=(+prog.days||0)+1;prog.lastDay=t;
+  const bonus=prog.days>=7?15:prog.days>=3?10:5; // som før, men på spilledager: en pause koster ingenting
   prog.coins+=bonus;saveProg();renderHUD();
-  if(prog.coins>=50)unlockAchievement('coins50');if(prog.coins>=100)unlockAchievement('coins100');
   const h=document.querySelector('.hud-streak');if(h&&!pgRM()){h.classList.remove('pg-bump');void h.offsetWidth;h.classList.add('pg-bump');}
-  return{n:prog.streak,bonus};
+  return{n:prog.days,bonus};
 }
-function pgStreakHTML(st){return st?`<div class="pg-pill pg-streak">🔥 ${st.n>1?`${st.n} dager på rad!`:'Dag 1! Kom tilbake i morgen!'} <b>+${st.bonus} 🪙</b></div>`:'';}
+function pgStreakHTML(st){return st?`<div class="pg-pill pg-streak">🌙 ${st.n>1?`Spilledag ${st.n}!`:'Dag 1! Kom tilbake i morgen!'} <b>+${st.bonus} 🪙</b></div>`:'';}
 
 // ---- Levels: HUD goal, smooth fill, "NIVÅ OPP!" ----
 let pgLvlSeen=curLvl(),pgHudXp=null,pgHudT=null,pgEvoHeld=null,pgLvlT=null,pgLvlDone=null;
@@ -100,7 +102,7 @@ function pgHud(){
   if(l<pgLvlSeen)pgLvlSeen=l; // progress rolled back (boss test mode)
   let gl=document.getElementById('pg-hud-goal');
   if(!gl){const b=document.querySelector('#hud .hud-bar');if(b){gl=document.createElement('div');gl.id='pg-hud-goal';gl.className='pg-hud-goal';b.insertAdjacentElement('afterend',gl);}}
-  if(gl)gl.textContent=`${need-x} XP til nivå ${l+1}`;
+  if(gl)gl.textContent=`Mot nivå ${l+1} ✨`;
   const d=getHeroDecor();
   applyHeroDecor(document.getElementById('hud-char'),{decor:d,pet:false});
   const sk=document.getElementById('hud-sidekick');if(sk){if(d.pet)sk.setAttribute('data-pg-pet',d.pet.emoji);else sk.removeAttribute('data-pg-pet');}
@@ -119,7 +121,7 @@ function pgLevelUp(){
   if(pgLvlDone){const r=pgLvlDone;pgLvlDone=null;r();}
   document.getElementById('pg-lvl-num').textContent=`Nivå ${l}`;
   const h=document.getElementById('pg-lvl-hero');h.textContent=getCharEmoji(getCharIdx(),l);applyHeroDecor(h);
-  document.getElementById('pg-lvl-sub').textContent=`Neste: ${lvlFor(l)-xpInLvl()} XP til nivå ${l+1}`;
+  document.getElementById('pg-lvl-sub').textContent=`Neste: nivå ${l+1} ✨`;
   o.classList.remove('show');void o.offsetWidth;o.classList.add('show');
   sndLvl();if(!pgRM())launch(90,['#ffd93d','#ff6b35','#ffffff','#06d6ff']);
   clearTimeout(pgLvlT);pgLvlT=setTimeout(pgLvlClose,2600);
@@ -254,7 +256,7 @@ function pgTopicMap(g){
 
 // ---- Ceremonies: run when the grade or topic map becomes visible, once nothing covers it ----
 let pgBusy=false,pgAgain=false;
-function pgBlocked(){return !!document.querySelector('.evo-overlay.show,.chest-overlay.show,.boss-overlay.show,.world-popup.show,.herocard-overlay.show,.badge-overlay.show,#pg-shop.show,#pg-lvl.show,#story-overlay:not(.hidden),#ending-overlay:not(.hidden)');}
+function pgBlocked(){return !!document.querySelector('.evo-overlay.show,.chest-overlay.show,.boss-overlay.show,.world-popup.show,.herocard-overlay.show,.badge-overlay.show,#pg-shop.show,#pg-lvl.show,#fun-day.show,#story-overlay:not(.hidden),#ending-overlay:not(.hidden)');}
 async function pgFree(scr){while(pgBlocked()){if(!pgActive(scr))return false;await pgSleep(300);}return pgActive(scr);}
 function pgBanner(icon,title,sub,ms){
   const b=document.getElementById('pg-banner');if(!b)return;
@@ -351,6 +353,7 @@ function pgBossResult(win,g,first){
   x.innerHTML=(up?`<div class="pg-pill pg-pill-lvl">⬆️ Nivå ${curLvl()}!</div>`:'')+pgStreakHTML(st)+(its.length?`<div class="pg-pill pg-pill-shop">🛒 Nytt i butikken: ${its.map(i=>i.emoji).join(' ')}</div>`:'');
   if(win)setTimeout(()=>{if(o.classList.contains('show'))heroVictoryFx(120);},600);
   if(up)setTimeout(()=>{if(o.classList.contains('show'))pgLevelUp();},2400); // if they leave first, the map shows it
+  if(typeof funFight==='function')funFight(win,g,x); // fun.js: dagens økt, vekstmerker, ny rang
 }
 function pgHeroCard(){applyHeroDecor(document.getElementById('hc-char'));}
 
@@ -375,7 +378,7 @@ function pgShopDraw(){
   if(!sel){info.innerHTML='<b>Prøv noe! 👆</b><span>Trykk på en ting for å se den på helten din.</span>';act.style.display='none';}
   else{
     const has=own.includes(sel.id),on=has&&eq[sel.slot]===sel.id,B=sel.boss&&BOSSES[sel.boss];
-    info.innerHTML=`<b>${sel.emoji} ${pgEsc(sel.name)}</b><span>${!pgItemOpen(sel)&&B?`🔒 Beseir ${B.emoji} ${pgEsc(B.name)} først!`:PG_SLOTS.find(s=>s.id===sel.slot).desc}</span>`;
+    info.innerHTML=`<b>${sel.emoji} ${pgEsc(sel.name)}</b><span>${!pgItemOpen(sel)&&B?`🔒 Slå ${B.emoji} ${pgEsc(B.name)} først!`:PG_SLOTS.find(s=>s.id===sel.slot).desc}</span>`;
     if(!pgItemOpen(sel))act.style.display='none';
     else if(on){act.textContent='Ta av';act.classList.add('pg-soft');}
     else if(has)act.textContent='Ta på ✨';

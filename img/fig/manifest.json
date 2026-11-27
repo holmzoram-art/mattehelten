@@ -113,11 +113,11 @@
    },
    "poster": true,
    "head": {
-    "x": 0.621,
+    "x": 0.638,
     "y": 0.359
    },
    "top": {
-    "x": 0.68,
+    "x": 0.695,
     "y": 0.18
    }
   },
@@ -428,12 +428,12 @@
    },
    "poster": true,
    "head": {
-    "x": 0.478,
-    "y": 0.371
+    "x": 0.496,
+    "y": 0.499
    },
    "top": {
-    "x": 0.514,
-    "y": 0.124
+    "x": 0.525,
+    "y": 0.306
    }
   },
   "h-wizard-r0": {
@@ -465,12 +465,12 @@
    },
    "poster": true,
    "head": {
-    "x": 0.477,
-    "y": 0.42
+    "x": 0.495,
+    "y": 0.564
    },
    "top": {
-    "x": 0.517,
-    "y": 0.144
+    "x": 0.525,
+    "y": 0.36
    }
   },
   "h-fox-r0": {
@@ -502,12 +502,12 @@
    },
    "poster": true,
    "head": {
-    "x": 0.472,
-    "y": 0.462
+    "x": 0.5,
+    "y": 0.519
    },
    "top": {
-    "x": 0.502,
-    "y": 0.273
+    "x": 0.526,
+    "y": 0.356
    }
   },
   "h-ninja-r0": {
@@ -539,12 +539,12 @@
    },
    "poster": true,
    "head": {
-    "x": 0.474,
-    "y": 0.386
+    "x": 0.502,
+    "y": 0.49
    },
    "top": {
-    "x": 0.511,
-    "y": 0.136
+    "x": 0.532,
+    "y": 0.287
    }
   },
   "h-fairy-r0": {
@@ -576,12 +576,12 @@
    },
    "poster": true,
    "head": {
-    "x": 0.484,
-    "y": 0.365
+    "x": 0.485,
+    "y": 0.523
    },
    "top": {
-    "x": 0.524,
-    "y": 0.093
+    "x": 0.514,
+    "y": 0.33
    }
   },
   "h-robot-r0": {
@@ -613,12 +613,12 @@
    },
    "poster": true,
    "head": {
-    "x": 0.464,
-    "y": 0.406
+    "x": 0.484,
+    "y": 0.527
    },
    "top": {
-    "x": 0.497,
-    "y": 0.146
+    "x": 0.51,
+    "y": 0.321
    }
   },
   "h-dragon-r1": {
@@ -730,6 +730,1079 @@
    "top": {
     "x": 0.514,
     "y": 0.302
+   }
+  },
+  "h-astro-r0": {
+   "kind": "hero",
+   "key": "astro",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.482,
+    "y": 0.498
+   },
+   "top": {
+    "x": 0.509,
+    "y": 0.32
+   }
+  },
+  "h-astro-r1": {
+   "kind": "hero",
+   "key": "astro",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.482,
+    "y": 0.498
+   },
+   "top": {
+    "x": 0.509,
+    "y": 0.32
+   }
+  },
+  "h-astro-r2": {
+   "kind": "hero",
+   "key": "astro",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.482,
+    "y": 0.498
+   },
+   "top": {
+    "x": 0.509,
+    "y": 0.32
+   }
+  },
+  "h-astro-r3": {
+   "kind": "hero",
+   "key": "astro",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.482,
+    "y": 0.498
+   },
+   "top": {
+    "x": 0.509,
+    "y": 0.32
+   }
+  },
+  "h-dino-r0": {
+   "kind": "hero",
+   "key": "dino",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.486,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.338
+   }
+  },
+  "h-dino-r1": {
+   "kind": "hero",
+   "key": "dino",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.486,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.338
+   }
+  },
+  "h-dino-r2": {
+   "kind": "hero",
+   "key": "dino",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.486,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.338
+   }
+  },
+  "h-dino-r3": {
+   "kind": "hero",
+   "key": "dino",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.486,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.338
+   }
+  },
+  "h-fairy-r1": {
+   "kind": "hero",
+   "key": "fairy",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.485,
+    "y": 0.523
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.33
+   }
+  },
+  "h-fairy-r2": {
+   "kind": "hero",
+   "key": "fairy",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.485,
+    "y": 0.523
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.33
+   }
+  },
+  "h-fairy-r3": {
+   "kind": "hero",
+   "key": "fairy",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.485,
+    "y": 0.523
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.33
+   }
+  },
+  "h-fox-r1": {
+   "kind": "hero",
+   "key": "fox",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.5,
+    "y": 0.519
+   },
+   "top": {
+    "x": 0.526,
+    "y": 0.356
+   }
+  },
+  "h-fox-r2": {
+   "kind": "hero",
+   "key": "fox",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.5,
+    "y": 0.519
+   },
+   "top": {
+    "x": 0.526,
+    "y": 0.356
+   }
+  },
+  "h-fox-r3": {
+   "kind": "hero",
+   "key": "fox",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.5,
+    "y": 0.519
+   },
+   "top": {
+    "x": 0.526,
+    "y": 0.356
+   }
+  },
+  "h-ninja-r1": {
+   "kind": "hero",
+   "key": "ninja",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.502,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.532,
+    "y": 0.287
+   }
+  },
+  "h-ninja-r2": {
+   "kind": "hero",
+   "key": "ninja",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.502,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.532,
+    "y": 0.287
+   }
+  },
+  "h-ninja-r3": {
+   "kind": "hero",
+   "key": "ninja",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.502,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.532,
+    "y": 0.287
+   }
+  },
+  "h-robot-r1": {
+   "kind": "hero",
+   "key": "robot",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.484,
+    "y": 0.527
+   },
+   "top": {
+    "x": 0.51,
+    "y": 0.321
+   }
+  },
+  "h-robot-r2": {
+   "kind": "hero",
+   "key": "robot",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.484,
+    "y": 0.527
+   },
+   "top": {
+    "x": 0.51,
+    "y": 0.321
+   }
+  },
+  "h-robot-r3": {
+   "kind": "hero",
+   "key": "robot",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.484,
+    "y": 0.527
+   },
+   "top": {
+    "x": 0.51,
+    "y": 0.321
+   }
+  },
+  "h-super-r1": {
+   "kind": "hero",
+   "key": "super",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.496,
+    "y": 0.499
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.306
+   }
+  },
+  "h-super-r2": {
+   "kind": "hero",
+   "key": "super",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.496,
+    "y": 0.499
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.306
+   }
+  },
+  "h-super-r3": {
+   "kind": "hero",
+   "key": "super",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.496,
+    "y": 0.499
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.306
+   }
+  },
+  "h-unicorn-r1": {
+   "kind": "hero",
+   "key": "unicorn",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.638,
+    "y": 0.359
+   },
+   "top": {
+    "x": 0.695,
+    "y": 0.18
+   }
+  },
+  "h-unicorn-r2": {
+   "kind": "hero",
+   "key": "unicorn",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.638,
+    "y": 0.359
+   },
+   "top": {
+    "x": 0.695,
+    "y": 0.18
+   }
+  },
+  "h-unicorn-r3": {
+   "kind": "hero",
+   "key": "unicorn",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.638,
+    "y": 0.359
+   },
+   "top": {
+    "x": 0.695,
+    "y": 0.18
+   }
+  },
+  "h-wizard-r1": {
+   "kind": "hero",
+   "key": "wizard",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.495,
+    "y": 0.564
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.36
+   }
+  },
+  "h-wizard-r2": {
+   "kind": "hero",
+   "key": "wizard",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.495,
+    "y": 0.564
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.36
+   }
+  },
+  "h-wizard-r3": {
+   "kind": "hero",
+   "key": "wizard",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.495,
+    "y": 0.564
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.36
    }
   }
  },
@@ -853,24 +1926,24 @@
    "bytes": 3324
   },
   "h-unicorn-r0-idle.webp": {
-   "v": "233be9b7",
-   "bytes": 35912
+   "v": "54bc5d4c",
+   "bytes": 35892
   },
   "h-unicorn-r0-atk.webp": {
-   "v": "be4c45d4",
-   "bytes": 23636
+   "v": "8aae2860",
+   "bytes": 23722
   },
   "h-unicorn-r0-block.webp": {
-   "v": "9d7732c1",
-   "bytes": 18388
+   "v": "11082d96",
+   "bytes": 18148
   },
   "h-unicorn-r0-win.webp": {
-   "v": "71592e60",
-   "bytes": 34868
+   "v": "cfefca00",
+   "bytes": 34596
   },
   "h-unicorn-r0-poster.webp": {
-   "v": "4f27aa96",
-   "bytes": 3086
+   "v": "61825fb1",
+   "bytes": 2952
   },
   "m-add10-idle.webp": {
    "v": "5d3c8532",
@@ -1041,124 +2114,124 @@
    "bytes": 9608
   },
   "h-super-r0-idle.webp": {
-   "v": "520ecc83",
-   "bytes": 48558
+   "v": "e45bccd3",
+   "bytes": 36032
   },
   "h-super-r0-atk.webp": {
-   "v": "7f12c8ca",
-   "bytes": 34400
+   "v": "97f79b5b",
+   "bytes": 25618
   },
   "h-super-r0-block.webp": {
-   "v": "f2b40768",
-   "bytes": 23796
+   "v": "b90fea5e",
+   "bytes": 17988
   },
   "h-super-r0-win.webp": {
-   "v": "34fc50a9",
-   "bytes": 50270
+   "v": "3499f80a",
+   "bytes": 37026
   },
   "h-super-r0-poster.webp": {
-   "v": "8254aab0",
-   "bytes": 3590
+   "v": "69ce4a70",
+   "bytes": 3002
   },
   "h-wizard-r0-idle.webp": {
-   "v": "49307a80",
-   "bytes": 55926
+   "v": "7891fb2a",
+   "bytes": 40514
   },
   "h-wizard-r0-atk.webp": {
-   "v": "f11a90de",
-   "bytes": 38770
+   "v": "f2f1115d",
+   "bytes": 27602
   },
   "h-wizard-r0-block.webp": {
-   "v": "6d18dfef",
-   "bytes": 26602
+   "v": "a578ece8",
+   "bytes": 19070
   },
   "h-wizard-r0-win.webp": {
-   "v": "e77bf1c3",
-   "bytes": 58872
+   "v": "d99e4770",
+   "bytes": 41402
   },
   "h-wizard-r0-poster.webp": {
-   "v": "6ce6598e",
-   "bytes": 4202
+   "v": "010fb16a",
+   "bytes": 3186
   },
   "h-fox-r0-idle.webp": {
-   "v": "0ba04956",
-   "bytes": 56122
+   "v": "70bfab5c",
+   "bytes": 47348
   },
   "h-fox-r0-atk.webp": {
-   "v": "e20f476b",
-   "bytes": 37564
+   "v": "f37c0eee",
+   "bytes": 32190
   },
   "h-fox-r0-block.webp": {
-   "v": "3c1a57bf",
-   "bytes": 27568
+   "v": "1047e00e",
+   "bytes": 23610
   },
   "h-fox-r0-win.webp": {
-   "v": "50d18131",
-   "bytes": 56492
+   "v": "6ec7a16a",
+   "bytes": 48012
   },
   "h-fox-r0-poster.webp": {
-   "v": "5bd81fa2",
-   "bytes": 4148
+   "v": "2667f347",
+   "bytes": 3634
   },
   "h-ninja-r0-idle.webp": {
-   "v": "5466d433",
-   "bytes": 54702
+   "v": "b4b03caf",
+   "bytes": 42308
   },
   "h-ninja-r0-atk.webp": {
-   "v": "8bd07f6d",
-   "bytes": 39824
+   "v": "d3fac5ea",
+   "bytes": 30116
   },
   "h-ninja-r0-block.webp": {
-   "v": "924bdefd",
-   "bytes": 26970
+   "v": "1b8221ec",
+   "bytes": 21618
   },
   "h-ninja-r0-win.webp": {
-   "v": "03f7a3fd",
-   "bytes": 55732
+   "v": "04935dbb",
+   "bytes": 43746
   },
   "h-ninja-r0-poster.webp": {
-   "v": "cd7fb27a",
-   "bytes": 4050
+   "v": "324141f6",
+   "bytes": 3318
   },
   "h-fairy-r0-idle.webp": {
-   "v": "cd738c4f",
-   "bytes": 56272
+   "v": "79d63b30",
+   "bytes": 35184
   },
   "h-fairy-r0-atk.webp": {
-   "v": "3c5a9cd6",
-   "bytes": 39998
+   "v": "209138b9",
+   "bytes": 25176
   },
   "h-fairy-r0-block.webp": {
-   "v": "111ccaa5",
-   "bytes": 28374
+   "v": "9dcbc3ce",
+   "bytes": 17876
   },
   "h-fairy-r0-win.webp": {
-   "v": "2d08b867",
-   "bytes": 55902
+   "v": "2d8a7f9f",
+   "bytes": 37258
   },
   "h-fairy-r0-poster.webp": {
-   "v": "468b665f",
-   "bytes": 4652
+   "v": "9863625a",
+   "bytes": 3394
   },
   "h-robot-r0-idle.webp": {
-   "v": "44de8c27",
-   "bytes": 46894
+   "v": "91e942eb",
+   "bytes": 35888
   },
   "h-robot-r0-atk.webp": {
-   "v": "a5a7da61",
-   "bytes": 33338
+   "v": "93f9055f",
+   "bytes": 23954
   },
   "h-robot-r0-block.webp": {
-   "v": "b984bb30",
-   "bytes": 22776
+   "v": "c2ddaac6",
+   "bytes": 17634
   },
   "h-robot-r0-win.webp": {
-   "v": "7d0592ba",
-   "bytes": 47410
+   "v": "a4c4a0eb",
+   "bytes": 36304
   },
   "h-robot-r0-poster.webp": {
-   "v": "7e4963cc",
-   "bytes": 3690
+   "v": "e858ef88",
+   "bytes": 3072
   },
   "h-dragon-r1-idle.webp": {
    "v": "de432c16",
@@ -1219,6 +2292,586 @@
   "h-dragon-r3-poster.webp": {
    "v": "c5f6e88e",
    "bytes": 4226
+  },
+  "h-astro-r0-idle.webp": {
+   "v": "f3c4994d",
+   "bytes": 35594
+  },
+  "h-astro-r0-atk.webp": {
+   "v": "d33e4408",
+   "bytes": 26456
+  },
+  "h-astro-r0-block.webp": {
+   "v": "d9a9607c",
+   "bytes": 19038
+  },
+  "h-astro-r0-win.webp": {
+   "v": "0657f808",
+   "bytes": 36184
+  },
+  "h-astro-r0-poster.webp": {
+   "v": "799ba518",
+   "bytes": 2966
+  },
+  "h-astro-r1-idle.webp": {
+   "v": "c32bc997",
+   "bytes": 48956
+  },
+  "h-astro-r1-atk.webp": {
+   "v": "e1f6603f",
+   "bytes": 33248
+  },
+  "h-astro-r1-block.webp": {
+   "v": "00bb66f3",
+   "bytes": 23898
+  },
+  "h-astro-r1-win.webp": {
+   "v": "648d1d1f",
+   "bytes": 47924
+  },
+  "h-astro-r1-poster.webp": {
+   "v": "88992276",
+   "bytes": 3512
+  },
+  "h-astro-r2-idle.webp": {
+   "v": "b2542ad8",
+   "bytes": 48464
+  },
+  "h-astro-r2-atk.webp": {
+   "v": "e7255252",
+   "bytes": 30132
+  },
+  "h-astro-r2-block.webp": {
+   "v": "fba7897e",
+   "bytes": 22128
+  },
+  "h-astro-r2-win.webp": {
+   "v": "575ceb9e",
+   "bytes": 46482
+  },
+  "h-astro-r2-poster.webp": {
+   "v": "842f19fe",
+   "bytes": 3866
+  },
+  "h-astro-r3-idle.webp": {
+   "v": "89298f45",
+   "bytes": 54670
+  },
+  "h-astro-r3-atk.webp": {
+   "v": "75035333",
+   "bytes": 33940
+  },
+  "h-astro-r3-block.webp": {
+   "v": "fab74ada",
+   "bytes": 23858
+  },
+  "h-astro-r3-win.webp": {
+   "v": "783d5055",
+   "bytes": 51822
+  },
+  "h-astro-r3-poster.webp": {
+   "v": "9fc2f69f",
+   "bytes": 4296
+  },
+  "h-dino-r0-idle.webp": {
+   "v": "6782f137",
+   "bytes": 33178
+  },
+  "h-dino-r0-atk.webp": {
+   "v": "a9121982",
+   "bytes": 25522
+  },
+  "h-dino-r0-block.webp": {
+   "v": "ccc02bc3",
+   "bytes": 16994
+  },
+  "h-dino-r0-win.webp": {
+   "v": "3ebaf585",
+   "bytes": 39002
+  },
+  "h-dino-r0-poster.webp": {
+   "v": "2989998c",
+   "bytes": 2880
+  },
+  "h-dino-r1-idle.webp": {
+   "v": "3a4fd5d6",
+   "bytes": 44922
+  },
+  "h-dino-r1-atk.webp": {
+   "v": "20a1a15a",
+   "bytes": 31338
+  },
+  "h-dino-r1-block.webp": {
+   "v": "553b1c27",
+   "bytes": 21054
+  },
+  "h-dino-r1-win.webp": {
+   "v": "51f14bfa",
+   "bytes": 48260
+  },
+  "h-dino-r1-poster.webp": {
+   "v": "7dccdd56",
+   "bytes": 3406
+  },
+  "h-dino-r2-idle.webp": {
+   "v": "a6a7fa67",
+   "bytes": 45256
+  },
+  "h-dino-r2-atk.webp": {
+   "v": "ff380e69",
+   "bytes": 27986
+  },
+  "h-dino-r2-block.webp": {
+   "v": "4b4766ce",
+   "bytes": 19410
+  },
+  "h-dino-r2-win.webp": {
+   "v": "e5a569be",
+   "bytes": 49320
+  },
+  "h-dino-r2-poster.webp": {
+   "v": "e98b117b",
+   "bytes": 3810
+  },
+  "h-dino-r3-idle.webp": {
+   "v": "eb36215e",
+   "bytes": 50866
+  },
+  "h-dino-r3-atk.webp": {
+   "v": "4126746e",
+   "bytes": 33176
+  },
+  "h-dino-r3-block.webp": {
+   "v": "16ff5b6a",
+   "bytes": 22142
+  },
+  "h-dino-r3-win.webp": {
+   "v": "55bb119a",
+   "bytes": 53572
+  },
+  "h-dino-r3-poster.webp": {
+   "v": "d833c73c",
+   "bytes": 4188
+  },
+  "h-fairy-r1-idle.webp": {
+   "v": "4557e21c",
+   "bytes": 39316
+  },
+  "h-fairy-r1-atk.webp": {
+   "v": "f3f5b38d",
+   "bytes": 27428
+  },
+  "h-fairy-r1-block.webp": {
+   "v": "73504bc4",
+   "bytes": 20308
+  },
+  "h-fairy-r1-win.webp": {
+   "v": "ec77e29a",
+   "bytes": 38890
+  },
+  "h-fairy-r1-poster.webp": {
+   "v": "85ce0fb3",
+   "bytes": 3740
+  },
+  "h-fairy-r2-idle.webp": {
+   "v": "9ebe0852",
+   "bytes": 45904
+  },
+  "h-fairy-r2-atk.webp": {
+   "v": "41ecab69",
+   "bytes": 31322
+  },
+  "h-fairy-r2-block.webp": {
+   "v": "37cb49f3",
+   "bytes": 22000
+  },
+  "h-fairy-r2-win.webp": {
+   "v": "0d97d806",
+   "bytes": 48372
+  },
+  "h-fairy-r2-poster.webp": {
+   "v": "d92ab066",
+   "bytes": 3966
+  },
+  "h-fairy-r3-idle.webp": {
+   "v": "14a46024",
+   "bytes": 50868
+  },
+  "h-fairy-r3-atk.webp": {
+   "v": "9030f736",
+   "bytes": 34804
+  },
+  "h-fairy-r3-block.webp": {
+   "v": "281fc022",
+   "bytes": 24584
+  },
+  "h-fairy-r3-win.webp": {
+   "v": "1c8eaad2",
+   "bytes": 52988
+  },
+  "h-fairy-r3-poster.webp": {
+   "v": "7bfea43a",
+   "bytes": 4272
+  },
+  "h-fox-r1-idle.webp": {
+   "v": "fbbbb4e9",
+   "bytes": 50966
+  },
+  "h-fox-r1-atk.webp": {
+   "v": "70629ac6",
+   "bytes": 33548
+  },
+  "h-fox-r1-block.webp": {
+   "v": "07930d7d",
+   "bytes": 24518
+  },
+  "h-fox-r1-win.webp": {
+   "v": "a2a4e3c2",
+   "bytes": 50602
+  },
+  "h-fox-r1-poster.webp": {
+   "v": "df7b143d",
+   "bytes": 3730
+  },
+  "h-fox-r2-idle.webp": {
+   "v": "5bad2fb2",
+   "bytes": 52520
+  },
+  "h-fox-r2-atk.webp": {
+   "v": "c164fa8f",
+   "bytes": 33854
+  },
+  "h-fox-r2-block.webp": {
+   "v": "d8158d5b",
+   "bytes": 21998
+  },
+  "h-fox-r2-win.webp": {
+   "v": "498e641b",
+   "bytes": 51242
+  },
+  "h-fox-r2-poster.webp": {
+   "v": "07f2db3f",
+   "bytes": 4222
+  },
+  "h-fox-r3-idle.webp": {
+   "v": "9cbe625b",
+   "bytes": 54936
+  },
+  "h-fox-r3-atk.webp": {
+   "v": "32272cb3",
+   "bytes": 36192
+  },
+  "h-fox-r3-block.webp": {
+   "v": "a1d0d324",
+   "bytes": 23556
+  },
+  "h-fox-r3-win.webp": {
+   "v": "6b358fed",
+   "bytes": 53772
+  },
+  "h-fox-r3-poster.webp": {
+   "v": "ff9ddade",
+   "bytes": 4338
+  },
+  "h-ninja-r1-idle.webp": {
+   "v": "34ff90ba",
+   "bytes": 56110
+  },
+  "h-ninja-r1-atk.webp": {
+   "v": "440d518a",
+   "bytes": 36292
+  },
+  "h-ninja-r1-block.webp": {
+   "v": "bc7ef8ef",
+   "bytes": 26452
+  },
+  "h-ninja-r1-win.webp": {
+   "v": "d7c03583",
+   "bytes": 56740
+  },
+  "h-ninja-r1-poster.webp": {
+   "v": "28384e4f",
+   "bytes": 4078
+  },
+  "h-ninja-r2-idle.webp": {
+   "v": "4dd06155",
+   "bytes": 53066
+  },
+  "h-ninja-r2-atk.webp": {
+   "v": "b7f0f61d",
+   "bytes": 35960
+  },
+  "h-ninja-r2-block.webp": {
+   "v": "3c4affcd",
+   "bytes": 23544
+  },
+  "h-ninja-r2-win.webp": {
+   "v": "b16cd33e",
+   "bytes": 52498
+  },
+  "h-ninja-r2-poster.webp": {
+   "v": "e6f3386e",
+   "bytes": 4508
+  },
+  "h-ninja-r3-idle.webp": {
+   "v": "53a4cd13",
+   "bytes": 53424
+  },
+  "h-ninja-r3-atk.webp": {
+   "v": "47379470",
+   "bytes": 39532
+  },
+  "h-ninja-r3-block.webp": {
+   "v": "0c014578",
+   "bytes": 26144
+  },
+  "h-ninja-r3-win.webp": {
+   "v": "d297c9f5",
+   "bytes": 57594
+  },
+  "h-ninja-r3-poster.webp": {
+   "v": "68b29e3a",
+   "bytes": 4828
+  },
+  "h-robot-r1-idle.webp": {
+   "v": "afda8bb7",
+   "bytes": 46932
+  },
+  "h-robot-r1-atk.webp": {
+   "v": "541c8cf6",
+   "bytes": 29750
+  },
+  "h-robot-r1-block.webp": {
+   "v": "05db87e1",
+   "bytes": 21676
+  },
+  "h-robot-r1-win.webp": {
+   "v": "eee593b6",
+   "bytes": 47480
+  },
+  "h-robot-r1-poster.webp": {
+   "v": "9ec483cd",
+   "bytes": 3568
+  },
+  "h-robot-r2-idle.webp": {
+   "v": "e0207840",
+   "bytes": 54410
+  },
+  "h-robot-r2-atk.webp": {
+   "v": "886111dd",
+   "bytes": 34262
+  },
+  "h-robot-r2-block.webp": {
+   "v": "d47214e5",
+   "bytes": 23324
+  },
+  "h-robot-r2-win.webp": {
+   "v": "6fb00dc4",
+   "bytes": 54022
+  },
+  "h-robot-r2-poster.webp": {
+   "v": "22b152bf",
+   "bytes": 4044
+  },
+  "h-robot-r3-idle.webp": {
+   "v": "a4a35fdc",
+   "bytes": 53310
+  },
+  "h-robot-r3-atk.webp": {
+   "v": "62dd2ab4",
+   "bytes": 33536
+  },
+  "h-robot-r3-block.webp": {
+   "v": "73edc884",
+   "bytes": 23282
+  },
+  "h-robot-r3-win.webp": {
+   "v": "9d6aa73b",
+   "bytes": 53222
+  },
+  "h-robot-r3-poster.webp": {
+   "v": "3e161a86",
+   "bytes": 4346
+  },
+  "h-super-r1-idle.webp": {
+   "v": "4ce6385c",
+   "bytes": 47924
+  },
+  "h-super-r1-atk.webp": {
+   "v": "8356918b",
+   "bytes": 32876
+  },
+  "h-super-r1-block.webp": {
+   "v": "929f6fc8",
+   "bytes": 22578
+  },
+  "h-super-r1-win.webp": {
+   "v": "6a79b9d1",
+   "bytes": 51006
+  },
+  "h-super-r1-poster.webp": {
+   "v": "67a58bc6",
+   "bytes": 3740
+  },
+  "h-super-r2-idle.webp": {
+   "v": "ffbb1bce",
+   "bytes": 53642
+  },
+  "h-super-r2-atk.webp": {
+   "v": "400d0f65",
+   "bytes": 36210
+  },
+  "h-super-r2-block.webp": {
+   "v": "6a996eec",
+   "bytes": 24202
+  },
+  "h-super-r2-win.webp": {
+   "v": "b40421fc",
+   "bytes": 56342
+  },
+  "h-super-r2-poster.webp": {
+   "v": "51ae4578",
+   "bytes": 4150
+  },
+  "h-super-r3-idle.webp": {
+   "v": "375e517f",
+   "bytes": 51138
+  },
+  "h-super-r3-atk.webp": {
+   "v": "99277817",
+   "bytes": 34904
+  },
+  "h-super-r3-block.webp": {
+   "v": "76d91138",
+   "bytes": 23522
+  },
+  "h-super-r3-win.webp": {
+   "v": "0a153e98",
+   "bytes": 54440
+  },
+  "h-super-r3-poster.webp": {
+   "v": "33627ae5",
+   "bytes": 4504
+  },
+  "h-unicorn-r1-idle.webp": {
+   "v": "da718778",
+   "bytes": 42988
+  },
+  "h-unicorn-r1-atk.webp": {
+   "v": "fc04e877",
+   "bytes": 28208
+  },
+  "h-unicorn-r1-block.webp": {
+   "v": "36e9b041",
+   "bytes": 21472
+  },
+  "h-unicorn-r1-win.webp": {
+   "v": "05d318c1",
+   "bytes": 41008
+  },
+  "h-unicorn-r1-poster.webp": {
+   "v": "c6a3f427",
+   "bytes": 3320
+  },
+  "h-unicorn-r2-idle.webp": {
+   "v": "4990369e",
+   "bytes": 43706
+  },
+  "h-unicorn-r2-atk.webp": {
+   "v": "e79e9497",
+   "bytes": 28350
+  },
+  "h-unicorn-r2-block.webp": {
+   "v": "23ba1d24",
+   "bytes": 22130
+  },
+  "h-unicorn-r2-win.webp": {
+   "v": "f08539ed",
+   "bytes": 42278
+  },
+  "h-unicorn-r2-poster.webp": {
+   "v": "98013106",
+   "bytes": 3420
+  },
+  "h-unicorn-r3-idle.webp": {
+   "v": "f5c77218",
+   "bytes": 45112
+  },
+  "h-unicorn-r3-atk.webp": {
+   "v": "22ca7e51",
+   "bytes": 29468
+  },
+  "h-unicorn-r3-block.webp": {
+   "v": "923661f4",
+   "bytes": 22856
+  },
+  "h-unicorn-r3-win.webp": {
+   "v": "037ef9f4",
+   "bytes": 43446
+  },
+  "h-unicorn-r3-poster.webp": {
+   "v": "3ec31cc8",
+   "bytes": 3520
+  },
+  "h-wizard-r1-idle.webp": {
+   "v": "cac78467",
+   "bytes": 54400
+  },
+  "h-wizard-r1-atk.webp": {
+   "v": "615e0516",
+   "bytes": 34650
+  },
+  "h-wizard-r1-block.webp": {
+   "v": "e24dde03",
+   "bytes": 24832
+  },
+  "h-wizard-r1-win.webp": {
+   "v": "7f3349e8",
+   "bytes": 55524
+  },
+  "h-wizard-r1-poster.webp": {
+   "v": "3789c5dd",
+   "bytes": 3920
+  },
+  "h-wizard-r2-idle.webp": {
+   "v": "d7c3081d",
+   "bytes": 57712
+  },
+  "h-wizard-r2-atk.webp": {
+   "v": "3f505094",
+   "bytes": 37652
+  },
+  "h-wizard-r2-block.webp": {
+   "v": "1a1b5fd6",
+   "bytes": 26436
+  },
+  "h-wizard-r2-win.webp": {
+   "v": "eaf6eb9d",
+   "bytes": 56626
+  },
+  "h-wizard-r2-poster.webp": {
+   "v": "97d22b0d",
+   "bytes": 4380
+  },
+  "h-wizard-r3-idle.webp": {
+   "v": "9cbbbe63",
+   "bytes": 53332
+  },
+  "h-wizard-r3-atk.webp": {
+   "v": "c47e8b4a",
+   "bytes": 35274
+  },
+  "h-wizard-r3-block.webp": {
+   "v": "df2036a6",
+   "bytes": 25480
+  },
+  "h-wizard-r3-win.webp": {
+   "v": "a9480589",
+   "bytes": 52724
+  },
+  "h-wizard-r3-poster.webp": {
+   "v": "d83a26fd",
+   "bytes": 4538
   },
   "s-atlas.webp": {
    "v": "8e48be04",

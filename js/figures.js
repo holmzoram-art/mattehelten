@@ -120,12 +120,13 @@ function figPaint(el){
   if(!layer){el.classList.add('fig');el.dataset.figAnim=a;}
   if(layer&&f.rank!=null)el.setAttribute('data-fig-r',String(f.rank));
   if(layer&&f.top){el.style.setProperty('--fig-hx',f.top.x);el.style.setProperty('--fig-hy',f.top.y);} // hatt og krone på hodet (figures.css)
-  if(el._figSrc!==key||cls.includes('fig-once')){
+  const once=cls.includes('fig-once');
+  if(el._figSrc!==key||(once&&s.fresh)){ // ny stripe, eller en «én gang»-animasjon som er bedt om på nytt
     figStyle(t,src,x.n,x.ms,cls);t.classList.toggle('fig-alt',!t.classList.contains('fig-alt')); // nytt keyframes-navn: animasjonen starter på nytt
-    el._figSrc=key;
+    el._figSrc=key;clearTimeout(el._figT);
+    if(once&&!o.hold){const want=s;el._figT=setTimeout(()=>{if(el._fig===want){el._fig=Object.assign({},want,{anim:o.then||'idle',opts:{}});figPaint(el);}},(x.ms||600)+40);}
   }
-  clearTimeout(el._figT);
-  if(cls.includes('fig-once')&&!o.hold){const want=s;el._figT=setTimeout(()=>{if(el._fig===want){el._fig=Object.assign({},want,{anim:o.then||'idle',opts:{}});figPaint(el);}},(x.ms||600)+40);}
+  s.fresh=false;
   return true;
 }
 // Felles: sett spesifikasjonen, legg det som trengs først i køen, og tegn
@@ -133,7 +134,7 @@ function figUse(el,spec,warm){
   if(!el||!el.classList)return false;
   if(!figOn()){figClear(el);return false;}
   if(el._fig&&el._fig.m!==spec.m)figClear(el);
-  el._fig=spec;if(el.dataset)el.dataset.figWant=spec.id||spec.atlas;
+  spec.fresh=true;el._fig=spec;if(el.dataset)el.dataset.figWant=spec.id||spec.atlas;
   const now=spec.atlas?[FIG_ATLAS[spec.atlas]&&figSrc(FIG_ATLAS[spec.atlas].file)]:[figSrcOf(spec.id,spec.anim),figSrcOf(spec.id,spec.anim==='poster'?'poster':'idle')];
   figWarm(now,0);if(warm)figWarm(warm,2);
   return figPaint(el);

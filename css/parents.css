@@ -1,1 +1,179 @@
-/* Mattehelten – Foreldresiden */
+/* Mattehelten – Foreldresiden (js/parents.js). Voksen og rolig, men i spillets mørke stil. */
+
+/* ---- Inngang på klassekartet: «👪 Hold inne for voksne» med fremdriftsring ---- */
+#screen-grades{position:relative;}
+.par-entry{position:absolute;top:-7px;right:0;z-index:4;display:flex;align-items:center;gap:3px;min-height:44px;padding:2px 0;background:none;border:none;border-radius:12px;color:var(--muted);font-family:'Nunito',sans-serif;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;-webkit-tap-highlight-color:transparent;}
+.par-entry:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+.par-ring{position:relative;width:38px;height:38px;flex:0 0 38px;}
+.par-ring svg{display:block;width:100%;height:100%;transform:rotate(-90deg);}
+.par-ring-bg{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.2);stroke-width:2.5;}
+.par-ring-fg{fill:none;stroke:var(--gold);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:97.4;stroke-dashoffset:97.4;}
+.par-ring-ic{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.par-entry-txt{font-size:.6rem;font-weight:800;line-height:1.15;text-align:left;white-space:nowrap;}
+.par-entry.holding{color:var(--gold);}
+.par-entry.holding .par-ring-bg{fill:rgba(255,217,61,.12);}
+.par-entry-tip{position:absolute;top:calc(100% + 4px);right:0;padding:6px 10px;border-radius:10px;background:var(--dark3);border:1px solid rgba(255,217,61,.5);color:var(--white);font-size:.78rem;font-weight:800;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:opacity .15s;pointer-events:none;}
+.par-entry-tip.show{opacity:1;visibility:visible;}
+@media(max-width:374px){.par-entry-txt{display:none;}}
+
+/* ---- Lenke fra rundens rapport ---- */
+.par-link{display:block;width:calc(100% - 40px);margin:0 20px 10px;min-height:46px;padding:11px;border:1px solid rgba(6,214,255,.45);border-radius:var(--rs);background:rgba(6,214,255,.1);color:var(--white);font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer;}
+.par-link:hover{background:rgba(6,214,255,.18);}
+@media print{.par-link{display:none!important;}}
+
+/* ---- Selve siden ---- */
+.par-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:14px 16px 18px;color:rgba(255,255,255,.9);font-size:.9rem;line-height:1.5;}
+.par-card h1,.par-card h2,.par-card h3{font-family:'Fredoka One',cursive;font-weight:400;color:var(--white);line-height:1.2;}
+.par-card h2{font-size:1.12rem;margin:0 0 10px;}
+.par-card h2 small{font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;color:var(--muted);margin-left:6px;}
+.par-card h3{font-size:.98rem;margin:16px 0 8px;}
+.par-card p{margin:0 0 8px;}
+.par-card b{color:var(--white);}
+.par-top{display:flex;margin-bottom:10px;}
+.par-back{min-height:44px;padding:9px 16px;border:1px solid rgba(255,255,255,.18);border-radius:99px;background:rgba(255,255,255,.08);color:var(--white);font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer;}
+.par-back:hover{background:rgba(255,255,255,.15);}
+.par-hero{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.par-hero-ic{flex:0 0 52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;background:linear-gradient(135deg,var(--purple),var(--dark3));border:1px solid rgba(255,255,255,.12);}
+.par-hero h1{font-size:1.5rem;}
+.par-hero p{margin:2px 0 0;color:var(--muted);font-weight:700;font-size:.82rem;}
+.par-nav{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 6px;}
+.par-nav button{min-height:36px;padding:6px 11px;border-radius:99px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:rgba(255,255,255,.85);font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;cursor:pointer;}
+.par-nav button:hover{background:rgba(255,255,255,.12);}
+.par-sec{padding:16px 0 4px;border-top:1px solid rgba(255,255,255,.08);margin-top:12px;scroll-margin-top:10px;}
+.par-note{font-size:.76rem;color:var(--muted);font-weight:700;}
+.par-empty{color:rgba(255,255,255,.75);font-weight:700;}
+.par-lead{color:rgba(255,255,255,.8);}
+
+/* Denne uka */
+.par-sum{border-top:none;margin-top:4px;}
+.par-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px;}
+.par-tile{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:10px 6px;text-align:center;}
+.par-tile-v{font-family:'Fredoka One',cursive;font-size:1.25rem;color:var(--cyan);white-space:nowrap;}
+.par-tile-l{font-size:.68rem;font-weight:800;color:var(--muted);line-height:1.2;margin-top:2px;}
+@media(max-width:480px){.par-tiles{grid-template-columns:repeat(2,1fr);}}
+
+/* Øv på nå */
+.par-rec{background:linear-gradient(135deg,rgba(124,58,237,.16),rgba(6,214,255,.06));border:1px solid rgba(168,85,247,.35);border-radius:var(--r);padding:14px;margin-top:14px;}
+.par-rec-main{display:flex;gap:12px;align-items:flex-start;}
+.par-rec-ic{flex:0 0 48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:rgba(0,0,0,.25);}
+.par-rec-body{flex:1;min-width:0;}
+.par-rec-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--white);line-height:1.25;}
+.par-rec-g{font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;color:var(--muted);white-space:nowrap;}
+.par-rec-stars{font-size:1rem;margin:2px 0 4px;}
+.par-rec-why{color:rgba(255,255,255,.88);}
+.par-rec-next{color:var(--gold);font-weight:800;}
+.par-rec-boss{margin:10px 0 0!important;font-weight:700;color:rgba(255,255,255,.85);}
+.par-tip{background:rgba(0,0,0,.22);border-left:3px solid var(--green);border-radius:10px;padding:9px 12px;margin:8px 0 10px;}
+.par-tip b{color:var(--green);}
+.par-go{width:100%;min-height:48px;padding:11px 14px;border:none;border-radius:var(--rs);background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;font-family:'Fredoka One',cursive;font-size:1.02rem;cursor:pointer;box-shadow:var(--glow-p);}
+.par-go:active{transform:scale(.98);}
+.par-more{margin-top:12px;font-size:.84rem;}
+.par-more-t{font-weight:800;color:var(--muted);font-size:.75rem;margin-bottom:4px;}
+.par-more ul{list-style:none;}
+.par-more li{padding:3px 0;}
+.par-tic{display:inline-block;width:1.5em;text-align:center;margin-right:4px;}
+
+/* Typiske feil */
+.par-err{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:10px 12px;margin-bottom:8px;}
+.par-err-hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px;}
+.par-err-hd b{font-size:.95rem;}
+.par-cnt{flex:0 0 auto;font-size:.74rem;font-weight:900;color:var(--orange);background:rgba(255,107,53,.12);border-radius:99px;padding:1px 8px;white-space:nowrap;}
+.par-fam .par-cnt{color:var(--gold);background:rgba(255,217,61,.12);}
+.par-err p{font-size:.84rem;color:rgba(255,255,255,.82);}
+.par-err p:last-child{margin-bottom:0;}
+.par-err-tip b{color:var(--green);}
+.par-fam-t{color:var(--muted)!important;font-weight:700;font-size:.78rem!important;}
+
+/* Oversikt per tema */
+.par-grade{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:var(--r);padding:12px;margin:10px 0;}
+.par-gdim{opacity:.6;}
+.par-ghd{display:flex;gap:10px;align-items:center;}
+.par-gic{font-size:1.6rem;}
+.par-gtt b{font-family:'Fredoka One',cursive;font-weight:400;font-size:1.05rem;}
+.par-gname{color:var(--muted);font-weight:800;font-size:.8rem;}
+.par-gsub{font-size:.8rem;font-weight:800;color:var(--gold);}
+.par-boss{font-size:.8rem;font-weight:700;color:rgba(255,255,255,.8);margin:8px 0 2px;padding:6px 10px;background:rgba(0,0,0,.2);border-radius:10px;}
+.par-thead,.par-trow{display:grid;grid-template-columns:minmax(0,2fr) 78px 66px 66px 52px 98px;gap:6px;align-items:center;}
+.par-thead{font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:10px 4px 4px;border-bottom:1px solid rgba(255,255,255,.08);}
+.par-tlist{list-style:none;}
+.par-trow{padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.06);}
+.par-trow:last-child{border-bottom:none;}
+.par-tname{font-weight:800;color:var(--white);min-width:0;}
+.par-tstars{font-size:.82rem;white-space:nowrap;}
+.par-meta{display:contents;}
+.par-cell{display:flex;flex-direction:column;line-height:1.15;min-width:0;}
+.par-k{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;} /* synlig bare for skjermleser på bred skjerm */
+.par-pct{font-weight:900;}
+.par-hi{color:var(--green);}
+.par-mid{color:var(--gold);}
+.par-lo{color:#ff8a65;}
+.par-few,.par-none{color:rgba(255,255,255,.6);}
+.par-of{font-size:.66rem;color:var(--muted);font-weight:700;}
+.par-v{font-weight:800;color:rgba(255,255,255,.85);font-size:.84rem;}
+.par-opt,.par-new{font-size:.64rem;font-weight:800;padding:0 6px;border-radius:99px;vertical-align:1px;white-space:nowrap;}
+.par-opt{color:var(--muted);border:1px solid rgba(136,120,204,.5);}
+.par-new{color:var(--cyan);border:1px solid rgba(6,214,255,.45);}
+.par-dim{opacity:.45;}
+.par-dim .par-meta{display:block;grid-column:3/-1;}
+.par-locked{font-size:.78rem;font-weight:700;color:var(--muted);}
+.par-glist{font-size:.8rem;color:rgba(255,255,255,.7);margin:8px 0 0!important;line-height:1.7;}
+.par-glist span{white-space:nowrap;}
+@media(max-width:560px){
+  .par-thead{display:none;}
+  .par-trow{grid-template-columns:minmax(0,1fr) auto;row-gap:4px;}
+  .par-meta,.par-dim .par-meta{display:flex;flex-wrap:wrap;gap:4px 14px;grid-column:1/-1;padding-left:calc(1.5em + 4px);}
+  .par-cell{flex-direction:row;align-items:baseline;gap:4px;}
+  .par-k{position:static;width:auto;height:auto;clip:auto;overflow:visible;font-size:.7rem;font-weight:800;color:var(--muted);}
+  .par-k::after{content:':';}
+}
+.par-legend{background:rgba(255,217,61,.06);border:1px solid rgba(255,217,61,.25);border-radius:var(--rs);padding:10px 12px;margin-top:12px;font-size:.84rem;}
+.par-legend-t{font-weight:900;color:var(--gold);margin-bottom:6px;}
+.par-legend ul{list-style:none;margin-bottom:6px;}
+.par-legend li{display:flex;gap:8px;padding:2px 0;}
+.par-legend li span{flex:0 0 50px;white-space:nowrap;}
+.par-legend p{margin:0;color:rgba(255,255,255,.8);}
+
+/* Tid og mengde: søyler i HTML/CSS */
+.par-seg{display:inline-flex;flex-wrap:wrap;gap:0;border:1px solid rgba(255,255,255,.16);border-radius:12px;overflow:hidden;background:rgba(0,0,0,.2);}
+.par-seg button{min-height:44px;min-width:64px;padding:8px 14px;border:none;border-right:1px solid rgba(255,255,255,.1);background:none;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-size:.86rem;font-weight:800;cursor:pointer;}
+.par-seg button:last-child{border-right:none;}
+.par-seg button[aria-pressed="true"]{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;}
+.par-metric{margin-bottom:10px;}
+.par-chart{position:relative;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:3px;align-items:end;padding:6px 2px 0;border-bottom:1px solid rgba(255,255,255,.15);}
+.par-col{display:flex;flex-direction:column;align-items:center;min-width:0;}
+.par-col.par-mon{border-left:1px dashed rgba(255,255,255,.14);}
+.par-plot{height:122px;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;}
+.par-val{font-size:.64rem;font-weight:900;color:rgba(255,255,255,.85);margin-bottom:2px;min-height:.9em;white-space:nowrap;}
+.par-bar{display:block;width:72%;max-width:26px;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,var(--cyan),var(--purple));}
+.par-x{font-size:.62rem;font-weight:800;color:var(--muted);text-align:center;line-height:1.15;padding:4px 0 3px;}
+.par-today .par-x{color:var(--gold);}
+.par-today .par-bar{background:linear-gradient(180deg,var(--gold),var(--orange));}
+.par-chart-empty{position:absolute;inset:0 0 34px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;color:var(--muted);}
+.par-week{margin-top:10px!important;font-size:.86rem;}
+
+/* Innstillinger */
+.par-set{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.par-set:last-child{border-bottom:none;}
+.par-set-lbl{flex:1 1 220px;min-width:0;}
+.par-set-lbl b{display:block;font-size:.95rem;}
+.par-set-lbl small{display:block;font-size:.76rem;color:var(--muted);font-weight:700;line-height:1.35;}
+.par-set .par-note{flex:1 1 100%;margin:0;}
+.par-step{display:inline-flex;align-items:center;gap:8px;}
+.par-step button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:var(--white);font-size:1.3rem;font-weight:900;cursor:pointer;line-height:1;}
+.par-step button:disabled{opacity:.35;cursor:default;}
+.par-step output{min-width:84px;text-align:center;font-weight:800;line-height:1.1;}
+.par-step output b{font-family:'Fredoka One',cursive;font-weight:400;font-size:1.3rem;color:var(--cyan);}
+.par-step output small{display:block;font-size:.68rem;color:var(--muted);}
+.par-try{min-height:44px;padding:8px 14px;border-radius:12px;border:1px solid rgba(6,214,255,.4);background:rgba(6,214,255,.08);color:var(--white);font-family:'Nunito',sans-serif;font-weight:800;font-size:.84rem;cursor:pointer;}
+.par-saved{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:50;padding:8px 16px;border-radius:99px;background:var(--dark3);border:1px solid rgba(0,255,136,.5);box-shadow:0 6px 20px rgba(0,0,0,.5);font-weight:900;color:var(--green);font-size:.88rem;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;pointer-events:none;}
+.par-saved.show{opacity:1;visibility:visible;}
+.par-card button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+
+.par-foot{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);text-align:center;}
+.par-foot p{font-size:.76rem;color:var(--muted);font-weight:700;}
+
+@media(max-width:420px){.par-card{padding:12px 12px 16px;}.par-hero h1{font-size:1.3rem;}.par-rec{padding:12px;}.par-seg button{min-width:56px;padding:8px 11px;}}
+@media(prefers-reduced-motion:reduce){.par-entry-tip,.par-saved{transition:none;}.par-go:active{transform:none;}}
+/* Kladdeboka hører til kampen: skjul den på foreldresiden */
+.main-flex:has(#screen-parents.active){justify-content:center;}
+.main-flex:has(#screen-parents.active) .scratch-col,body:has(#screen-parents.active) .scratch-toggle-btn{display:none!important;}

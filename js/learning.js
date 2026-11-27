@@ -56,8 +56,8 @@ function loopNext(){
   const st=loopSt(),g=S.grade,mx=loopMaxQ(),Q=S.questions,nd=loopNewDone(),l2=Q.length>=2&&!Q[Q.length-1].ok&&!Q[Q.length-2].ok;
   if(st.rev.length){const ri=nd>=mx?0:l2?-1:st.rev.findIndex(r=>r.at<=S.idx);
     if(ri>=0){const r=st.rev.splice(ri,1)[0];S.topicId=r.tid;return Object.assign(r.qd,{revenge:true});}}
-  // seen: nye oppgaver og ventende revansjer gjentas aldri; fakta fra en spilt revansj/minioppgave bare når temaet er tomt for nye fakta
-  const nq=Q.filter(e=>!e.revenge&&!e.mini),seen=new Set(nq.map(e=>e.k||loopKey(e)).concat(st.rev.map(r=>r.k))),soft=new Set(Q.filter(e=>e.revenge||e.mini).map(e=>e.k||loopKey(e)));
+  // seen: nye oppgaver gjentas aldri; fakta fra revansj/minioppgave (spilt eller ventende) bare når temaet er tomt for nye fakta
+  const nq=Q.filter(e=>!e.revenge&&!e.mini),seen=new Set(nq.map(e=>e.k||loopKey(e))),soft=new Set(Q.filter(e=>e.revenge||e.mini).map(e=>e.k||loopKey(e)).concat(st.rev.map(r=>r.k)));
   const zero=nq.some(e=>e.z),two=nq.filter(e=>e.c2).length,weak=nq.filter(e=>e.w).length,cap=Math.max(1,Math.round(mx*.6));
   const missS=new Set(l2?[Q[Q.length-1].strat,Q[Q.length-2].strat].filter(Boolean):[]);
   let best=null,bp=99,tid=null,real=null;
@@ -70,6 +70,7 @@ function loopNext(){
   }
   let qd=best||S.topic.gen(g,S.topicId);
   if(tid)S.topicId=tid;
+  if(qd){const k=loopKey(qd),ri=st.rev.findIndex(r=>r.k===k);if(ri>=0)st.rev.splice(ri,1);} // lite tema: en ventende revansj med samme fakta faller bort
   if(S.boss&&qd&&tid&&!qd.bossTid)qd.bossTid=tid; // kandidater fra det ekte temaet (boss/troll) får temaet sitt
   // Minioppgave (C: mhMini) som bonus – én per runde i 1.–2. klasse, bare når ingen revansj er brukt (revansj går foran)
   if(st.miniAt>=0&&!st.miniDone&&nd>=st.miniAt&&nd<mx&&!st.revN&&!l2&&typeof mhMini==='function'){let m=null;try{m=mhMini(qd,g,S.topicId);}catch(e){m=null;}

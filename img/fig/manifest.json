@@ -472,6 +472,80 @@
     "x": 0.517,
     "y": 0.144
    }
+  },
+  "h-fox-r0": {
+   "kind": "hero",
+   "key": "fox",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.472,
+    "y": 0.462
+   },
+   "top": {
+    "x": 0.502,
+    "y": 0.273
+   }
+  },
+  "h-ninja-r0": {
+   "kind": "hero",
+   "key": "ninja",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.474,
+    "y": 0.386
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.136
+   }
   }
  },
  "atlas": {
@@ -820,6 +894,46 @@
   "h-wizard-r0-poster.webp": {
    "v": "6ce6598e",
    "bytes": 4202
+  },
+  "h-fox-r0-idle.webp": {
+   "v": "0ba04956",
+   "bytes": 56122
+  },
+  "h-fox-r0-atk.webp": {
+   "v": "e20f476b",
+   "bytes": 37564
+  },
+  "h-fox-r0-block.webp": {
+   "v": "3c1a57bf",
+   "bytes": 27568
+  },
+  "h-fox-r0-win.webp": {
+   "v": "50d18131",
+   "bytes": 56492
+  },
+  "h-fox-r0-poster.webp": {
+   "v": "5bd81fa2",
+   "bytes": 4148
+  },
+  "h-ninja-r0-idle.webp": {
+   "v": "5466d433",
+   "bytes": 54702
+  },
+  "h-ninja-r0-atk.webp": {
+   "v": "8bd07f6d",
+   "bytes": 39824
+  },
+  "h-ninja-r0-block.webp": {
+   "v": "924bdefd",
+   "bytes": 26970
+  },
+  "h-ninja-r0-win.webp": {
+   "v": "03f7a3fd",
+   "bytes": 55732
+  },
+  "h-ninja-r0-poster.webp": {
+   "v": "cd7fb27a",
+   "bytes": 4050
   },
   "s-atlas.webp": {
    "v": "8e48be04",

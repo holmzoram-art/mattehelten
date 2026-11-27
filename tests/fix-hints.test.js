@@ -68,11 +68,15 @@ module.exports=function({R,ok,CUR,ls}){
   // Minioppgaver: kort tilbakemelding
   {const mhMini=R('mhMini');let long=0,n=0;for(const [g,id] of [[1,'add10'],[1,'sub20'],[2,'add100'],[2,'dbl2']]){const t=CUR[g].topics.find(x=>x.id===id);
     for(let i=0;i<200;i++){setLvl(g,id,1,3);const q=t.gen(g,id);if(isCh(q))continue;const m=mhMini(q,g,id);if(!m)continue;n++;const w=m.choices.map(String).find(c=>c!==String(m.ans));R('S').current=Object.assign({},m,{givenTxt:w});if(wc(t.fb(m.q,w,m.ans))>12)long++;}}
-   ok(n>100&&long===0,`fix: minioppgave-tilbakemelding over 12 ord (${long} av ${n})`);}
+   ok(n>100&&long===0,`fix: minioppgave-tilbakemelding over 12 ord (${long} av ${n})`);
+   // loopNext setter qd.mini=true: tilbakemeldingen skal likevel vise fasiten
+   const t=CUR[1].topics.find(x=>x.id==='add10');let m=null;for(let i=0;i<50&&!m;i++)m=mhMini({q:'3 + 4 = ?',ans:7,ops:{a:3,b:4,op:'+'},strat:'tell-videre'},1,'add10');
+   m.mini=true;const w=m.choices.map(String).find(c=>c!==String(m.ans));R('S').current=Object.assign({},m,{givenTxt:w});const f=t.fb(m.q,w,m.ans);
+   ok(f.includes(`<strong>${m.ans}</strong>`),`fix: minioppgave i kamp mister tilbakemeldingen: «${f}»`);}
 
   // ---- 2) Feiltyper (detectMisc) ----
   const M=[[{ans:13,ops:{a:8,b:5,op:'+'}},12,'en'],[{ans:11,ops:{a:8,b:3,op:'+'}},10,'starttall'],[{ans:52,ops:{a:47,b:5,op:'+'}},51,'en'],
-    [{ans:1,ops:{a:9,b:8,op:'-'}},2,'en'],[{ans:6,ops:{a:9,b:3,op:'-'}},7,'starttall'],[{ans:8,ops:{a:13,b:5,op:'-'}},12,'veksling'],
+    [{ans:1,ops:{a:9,b:8,op:'-'}},2,'en'],[{ans:9,ops:{a:11,b:2,op:'-'}},11,null],[{ans:30,ops:{a:6,b:5,op:'·'}},3,null],[{ans:6,ops:{a:9,b:3,op:'-'}},7,'starttall'],[{ans:8,ops:{a:13,b:5,op:'-'}},12,'veksling'],
     [{ans:3,ops:{a:4,b:3,op:'+',unk:'b'}},11,'pluss'],[{ans:60,ops:{a:60,b:5,op:'+',unk:'a'}},6,'plass'],[{ans:70,ops:{a:30,b:40,op:'+'}},7,'plass'],
     [{ans:2,strat:'likhet',ops:{a:5,b:2,op:'+',unk:'b'},x:{l:'4 + 3',lv:7,c:5}},7,'likhet'],[{ans:2,strat:'likhet',ops:{a:5,b:2,op:'+',unk:'b'},x:{l:'4 + 3',lv:7,c:5}},12,'likhet'],
     [{ans:'Halv 4',choices:['Halv 3','Halv 4','Klokka 3'],whyM:{'Halv 3':'halvtime'}},'Halv 3','halvtime'],[{ans:'Ja',choices:['Ja','Nei']},'Nei',null]];

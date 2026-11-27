@@ -476,18 +476,18 @@ function mhMini(qd,g,topicId){
     if(Math.random()<.6){
       let truth=Math.random()<.5,sh=truth?v:t12Wrong(v,a,b,op);if(sh==null){truth=true;sh=v;}
       const q=`${E} ${is} ${sh}. Stemmer det?`;
-      return {...base,q,ans:truth?'Ja':'Nei',choices:['Ja','Nei'],type:'Stemmer det?',sub:'mini-tf',hint:'Regn ut selv først',say:`Stemmer det? ${t12Say(E)} er ${sh}.`,mini:{kind:'tf',e:E,is,v,sh,truth}};
+      const r={...base,q,ans:truth?'Ja':'Nei',choices:['Ja','Nei'],type:'Stemmer det?',sub:'mini-tf',hint:'Regn ut selv først',say:`Stemmer det? ${t12Say(E)} er ${sh}.`,mini:{kind:'tf',e:E,is,v,sh,truth}};r.mx=r.mini;return r;
     }
     let other=null,ov=null;
     if(!unary&&Math.random()<.5)for(let n=0;n<12&&other==null;n++){const dd=t12P([-2,-1,1,2]),fx=Math.random()<.5,x=fx?a+dd:a,y=fx?b:b+dd;if(x<0||y<0)continue;const w=t12Calc(op,x,y);if(!Number.isInteger(w)||w<0||w===v)continue;other=mk(x,y);ov=w;}
     if(other==null){const dd=t12P([-3,-2,-1,1,2,3]);ov=v+dd>=0?v+dd:v-dd;other=String(ov);}
     const ch=t12Sh([E,other]),A={e:E,v},B={e:other,v:ov},big=v>ov?A:B;
-    return {...base,q:'Hvilken er størst?',ans:big.e,choices:ch,type:'Hvilken er størst?',sub:'mini-cmp',hint:'Regn ut begge',say:`Hvilken er størst? ${t12Say(ch[0])}, eller ${t12Say(ch[1])}?`,mini:{kind:'cmp',a:A,b:B}};
+    const r={...base,q:'Hvilken er størst?',ans:big.e,choices:ch,type:'Hvilken er størst?',sub:'mini-cmp',hint:'Regn ut begge',say:`Hvilken er størst? ${t12Say(ch[0])}, eller ${t12Say(ch[1])}?`,mini:{kind:'cmp',a:A,b:B}};r.mx=r.mini;return r;
   }catch(e){return null;}
 }
 // Tilbakemelding for minioppgaver (brukes av fb-innpakningen under; A2 kan også kalle den direkte)
 function mhMiniFb(qd,given){
-  const m=qd&&qd.mini;if(!m||typeof m!=='object')return '';
+  const m=qd&&(qd.mini&&typeof qd.mini==='object'?qd.mini:qd.mx);if(!m||typeof m!=='object')return ''; // loopNext setter qd.mini=true; dataene ligger også i qd.mx
   if(m.kind==='tf')return m.truth?`<strong>Ja</strong>, det stemmer: ${m.e} ${m.is} ${m.v}.`:`<strong>Nei</strong>. ${m.e} ${m.is} ${m.v}, ikke ${m.sh}.`;
   const big=m.a.v>m.b.v?m.a:m.b,sm=big===m.a?m.b:m.a,val=x=>x.e===String(x.v)?x.e:`${x.e} ${/av/.test(x.e)?'er':'='} ${x.v}`;
   return `${val(big)} og ${val(sm)}. 💡 <strong>${big.e}</strong> er størst.`; // ≤ 12 ord

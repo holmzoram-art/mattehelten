@@ -72,11 +72,11 @@ function detectMisc(qd,given){
   if(typeof c!=='number'||typeof given!=='number'||!isFinite(given)||Math.abs(given-c)<.01)return null;
   if(c>=10&&given>=10&&Number.isInteger(c)&&Number.isInteger(given)&&String(given)===String(c).split('').reverse().join(''))return 'snudd';
   if(qd.strat==='likhet'&&x&&x.lv!=null&&x.c!=null&&(given===x.lv||given===x.lv+x.c))return 'likhet'; // 4 + 3 = 5 + ?: svarte 7 eller 12
-  if(c>=20&&c%10===0&&given===c/10)return 'plass'; // skrev antall tiere (6 for 60)
+  if(c>=20&&c%10===0&&given===c/10&&(!o||o.op==='+'||o.op==='-'||o.op==='seq'))return 'plass'; // skrev antall tiere (6 for 60)
   if(o&&typeof o.a==='number'){const a=o.a,b=o.b;
     // «Telte med starttallet» bare med små tall (ellers er det en tellefeil, og strategihintet hjelper mer)
     if(o.op==='-'&&!o.unk){if(given===a+b)return 'pluss';
-      if(a>=10&&a%10<b%10&&given===10*(Math.floor(a/10)-Math.floor(b/10))+(b%10-a%10))return 'veksling';
+      if(a>=10&&a%10<b%10&&given!==a&&given===10*(Math.floor(a/10)-Math.floor(b/10))+(b%10-a%10))return 'veksling';
       if(b>=2&&b<=4&&a<=20&&a-b>2&&given===c+1)return 'starttall';}
     else if(o.op==='-'&&o.unk){if(given===a+(a-b))return 'pluss';if(given===c+1&&c>=2&&c<=5)return 'starttall';}
     else if(o.op==='+'&&!o.unk){if(given===Math.abs(a-b))return 'minus';if(Math.min(a,b)>=2&&Math.min(a,b)<=4&&a+b<=20&&given===c-1)return 'starttall';}

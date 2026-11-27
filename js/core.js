@@ -43,6 +43,7 @@ function storyShow(i){
   if(ov)ov.classList.toggle('ask',!!ask); // ingen «Hopp over» på spørsmålet om klasse
   if(ask&&typeof ttsNoteMaybe==='function')ttsNoteMaybe(); // ingen norsk stemme: beskjed til den voksne (speech.js)
   storySay();
+  if(typeof figStory==='function')figStory(); // Nullius som figur (figures.js)
 }
 // Les panelet høyt (når opplesing er på); force = 🔊-knappen
 function storySay(force){
@@ -101,6 +102,7 @@ function buildSidekickGrid(){
     const d=document.createElement('div');
     d.className='sk-card'+(i===0?' selected':'');
     d.innerHTML=`<span class="sk-emoji">${s.emoji}</span><div class="sk-name">${s.name}</div>`;
+    if(typeof figSidekick==='function')figSidekick(d.querySelector('.sk-emoji'),i); // figur fra atlas (figures.js)
     d.onclick=()=>{selectedSidekick=i;document.querySelectorAll('.sk-card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');};
     g.appendChild(d);
   });
@@ -123,6 +125,7 @@ function sidekickReact(type){
 function updateSidekick(){
   const el=document.getElementById('hud-sidekick');
   if(el)el.textContent=getSidekickEmoji();
+  if(el&&typeof figSidekick==='function')figSidekick(el,parseInt(localStorage.getItem('mh_sidekick')||'0')||0);
 }
 
 // ============================================================
@@ -201,6 +204,7 @@ function showEvolution() {
   const eo = document.getElementById('evo-old'), en = document.getElementById('evo-new');
   eo.textContent = emoji; en.textContent = emoji; // samme helt, nå sterkere
   if(typeof applyHeroDecor === 'function') { applyHeroDecor(eo, {pet:false, tier:from}); applyHeroDecor(en, {pet:false, tier:to}); }
+  if(typeof figHero === 'function') { figHeroPoster(eo, {rank:from}); figHero(en, 'win', {rank:to, once:true}); } // figur: gammel rang, så seier i ny rang
   document.getElementById('evo-rank-badge').textContent = rank.name;
   document.getElementById('evo-rank-badge').style.background = `linear-gradient(135deg,${rank.color},${rank.color}99)`;
   document.getElementById('evo-desc').textContent = rank.desc;
@@ -225,6 +229,7 @@ function updatePlayerEmoji() {
   // Update everywhere
   document.getElementById('hud-char').textContent = emoji;
   document.getElementById('player-avatar').textContent = emoji;
+  if(typeof figHero === 'function') { figHeroPoster(document.getElementById('hud-char')); figHero(document.getElementById('player-avatar')); } // figur (figures.js), emoji er reserven
   const p = getPlayer();
   p.emoji = emoji;
   // HUD level label with rank badge
@@ -239,9 +244,10 @@ function buildCharGrid(){
     const d=document.createElement('div');
     d.className='char-card'+(i===0?' selected':'');
     d.innerHTML=`<span class="char-emoji">${c.emoji}</span><div class="char-name">${c.name}</div>`;
-    d.onclick=()=>{selectedChar=i;document.querySelectorAll('.char-card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');};
+    d.onclick=()=>{selectedChar=i;document.querySelectorAll('.char-card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');if(typeof figPick==='function')figPick(d.querySelector('.char-emoji'),i);};
     g.appendChild(d);
   });
+  if(typeof figCharGrid==='function')figCharGrid(); // plakater (figures.js)
 }
 
 function saveCharacter(){

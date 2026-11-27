@@ -4,7 +4,7 @@
 // Inngang: «👪 Hold inne for voksne» øverst på klassekartet (hold inne i 2 s, parHold*), eller «Se hele oversikten»
 // i rundens rapport (showParentReport → parentsLink). Skjermen #screen-parents lages fra JS (parentsScreen).
 // Leser: mh_stats (learning.js), mh_learn via topicStars/hasCrown/mstLastDay (mastery.js), mh_fam (curriculum.js), mh_player.
-// Skriver bare innstillinger med setSetting('session'|'tts'|'startGrade'). Ingen knapp sletter fremgang.
+// Skriver bare innstillinger med setSetting('session'|'tts'|'startGrade'|'fig'). Ingen knapp sletter fremgang.
 const PAR_HOLD_MS=2000,PAR_SESSION_MIN=2,PAR_SESSION_MAX=8,PAR_LOW=.65;
 const PAR={from:'grades',t0:0,tm:0,tipT:0,savedT:0,metric:'min',opened:0};
 const PAR_WD=['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'],PAR_MON=['jan.','feb.','mars','april','mai','juni','juli','aug.','sep.','okt.','nov.','des.'];
@@ -319,8 +319,15 @@ function parSetHTML(M){
     `<div class="par-seg" role="group" aria-label="Opplesing">${seg('tts','auto','Auto')}${seg('tts','on','På')}${seg('tts','off','Av')}</div>`+
     (ready?`<button type="button" class="par-try" onclick="parTryVoice()">🔊 Prøv stemmen</button>`:`<p class="par-note">Fant ingen norsk stemme i denne nettleseren, så opplesing virker ikke her. Prøv en annen nettleser eller legg til norsk tale i innstillingene på enheten.</p>`)+`</div>`;
   h+=`<div class="par-set"><div class="par-set-lbl"><b>Startnivå</b><small>Går barnet i 2. klasse, blir 2. klasse åpen på kartet med en gang. Fremgang og åpne klasser tas aldri bort.</small></div>`+
-    `<div class="par-seg" role="group" aria-label="Startnivå">${seg('startGrade',1,'1. klasse')}${seg('startGrade',2,'2. klasse')}</div></div>`+'</section>';
+    `<div class="par-seg" role="group" aria-label="Startnivå">${seg('startGrade',1,'1. klasse')}${seg('startGrade',2,'2. klasse')}</div></div>`+parFigHTML()+'</section>';
   return h;
+}
+// Figurer: 3D-figurer (bilder, lastes etter hvert) eller bare emoji (figures.js). Standard 3D.
+function parFigHTML(){
+  if(typeof figOn!=='function')return '';const v=typeof getSetting==='function'&&getSetting('fig')==='emoji'?'emoji':'3d';
+  const b=(x,l)=>`<button type="button" id="par-fig-${x}" aria-pressed="${String(v===x)}" onclick="parSet('fig','${x}','par-fig-${x}')">${l}</button>`;
+  return `<div class="par-set" id="par-set-fig"><div class="par-set-lbl"><b>Figurer</b><small>3D: helter, monstre og bosser som tegnede figurer. Emoji: enklere, og ingen bilder lastes. Sparer nettleseren data, brukes emoji uansett.</small></div>`+
+    `<div class="par-seg" role="group" aria-label="Figurer">${b('3d','3D')}${b('emoji','Emoji')}</div></div>`;
 }
 function parStarsInfoHTML(){
   const Q=typeof TQ==='number'&&TQ>0?TQ:8,n1=Math.ceil(Q*(typeof MST_PASS==='number'?MST_PASS:.75)-1e-9),n2=Math.ceil(Q*(typeof MST_GOOD==='number'?MST_GOOD:.875)-1e-9);
@@ -376,9 +383,11 @@ function parSet(k,v,fid){
   if(k==='session'){v=parseInt(v,10);if(!isFinite(v))return false;v=Math.min(PAR_SESSION_MAX,Math.max(PAR_SESSION_MIN,v));}
   else if(k==='tts'){if(!['auto','on','off'].includes(v))return false;}
   else if(k==='startGrade'){v=+v===2?2:1;}
+  else if(k==='fig'){if(!['3d','emoji'].includes(v))return false;}
   else return false;
   setSetting(k,v);
   if(k==='tts'&&v==='off'&&typeof ttsStop==='function')ttsStop();
+  if(k==='fig'&&typeof figSetting==='function')figSetting(); // figurer av/på med en gang (figures.js)
   // Tegn siden på nytt (startnivå kan åpne en klasse), men hold knappen på samme sted på skjermen
   const top=id=>{try{const e=id&&document.getElementById(id);return e&&e.getBoundingClientRect?e.getBoundingClientRect().top:null;}catch(e){return null;}},y0=top(fid);
   parentsRender();

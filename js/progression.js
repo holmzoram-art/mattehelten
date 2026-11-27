@@ -113,6 +113,7 @@ function applyHeroDecor(el,opts){
   const set=(k,v)=>{if(v)el.setAttribute(k,v);else el.removeAttribute(k);};
   set('data-pg-hat',d.hat&&d.hat.emoji);set('data-pg-aura',d.aura&&d.aura.id);set('data-pg-pet',pet&&d.pet&&d.pet.emoji);
   if(typeof funDecor==='function')funDecor(el,opts&&opts.tier); // rang: glød/vinger/krone/stjernestøv (fun.js)
+  if(typeof figPetDecor==='function')figPetDecor(el); // pet som bilde når atlaset finnes (figures.js)
 }
 // The equipped victory effect (confetti colours and/or emoji rain). Returns false if none is equipped.
 function heroVictoryFx(n){return pgPlayFx(getHeroDecor().fx,n||80);}
@@ -158,7 +159,7 @@ function pgHud(){
   if(gl)gl.textContent=`Mot nivå ${l+1} ✨`;
   const d=getHeroDecor();
   applyHeroDecor(document.getElementById('hud-char'),{decor:d,pet:false});
-  const sk=document.getElementById('hud-sidekick');if(sk){if(d.pet)sk.setAttribute('data-pg-pet',d.pet.emoji);else sk.removeAttribute('data-pg-pet');}
+  const sk=document.getElementById('hud-sidekick');if(sk){if(d.pet)sk.setAttribute('data-pg-pet',d.pet.emoji);else sk.removeAttribute('data-pg-pet');if(typeof figPetDecor==='function')figPetDecor(sk);}
   const fill=document.getElementById('hud-fill');
   if(fill&&pgHudT)fill.style.width='100%'; // level wrap in progress: stay full
   if(fill&&pgHudXp!==null&&prog.xp>pgHudXp&&!pgRM()){
@@ -174,7 +175,7 @@ function pgLevelUp(){
   const o=document.getElementById('pg-lvl');
   if(o){
     document.getElementById('pg-lvl-num').textContent=`Nivå ${l}!`;
-    const h=document.getElementById('pg-lvl-hero');h.textContent=getCharEmoji(getCharIdx(),l);applyHeroDecor(h,{pet:false});
+    const h=document.getElementById('pg-lvl-hero');h.textContent=getCharEmoji(getCharIdx(),l);applyHeroDecor(h,{pet:false});if(typeof figHeroPoster==='function')figHeroPoster(h);
     document.getElementById('pg-lvl-sub').textContent=`Neste: nivå ${l+1} ✨`;
     if(o.setAttribute){o.setAttribute('role','status');o.setAttribute('aria-live','polite');}
     o.classList.remove('show');void o.offsetWidth;o.classList.add('show');
@@ -246,7 +247,8 @@ function celFoe(kind){
   const m=funMonster(S.grade,S.topicId),hero=localStorage.getItem('mh_player')?getCharEmoji(getCharIdx()):getPlayer().emoji;
   f.innerHTML=kind==='friend'?`<span class="cel-foe-hero">${pgEsc(hero)}</span><span class="cel-heart">💛</span><span class="cel-mon">${pgEsc(m.e)}</span>`:`<span class="cel-mon">${pgEsc(m.e)}</span><span class="cel-flag">🏳️</span>`;
   f.title=kind==='friend'?`${m.n} er vennen din!`:`${m.n} gir seg!`;
-  if(kind==='friend'){const h=f.querySelector('.cel-foe-hero');if(h)applyHeroDecor(h,{pet:false});}
+  if(kind==='friend'){const h=f.querySelector('.cel-foe-hero');if(h)applyHeroDecor(h,{pet:false});if(h&&typeof figHeroPoster==='function')figHeroPoster(h);}
+  if(typeof figMon==='function')figMon(f.querySelector('.cel-mon'),S.grade,S.topicId,kind==='friend'?'idle':'au'); // monsteret som figur (gir seg: au)
   f.className='cel-foe show '+kind;
 }
 function celClear(){const L=document.getElementById('cel-layer');if(L)L.textContent='';}
@@ -506,7 +508,7 @@ function celFight(win,g,o){
     },900+k*600);
   });
 }
-function pgHeroCard(){applyHeroDecor(document.getElementById('hc-char'));}
+function pgHeroCard(){const e=document.getElementById('hc-char');applyHeroDecor(e);if(typeof figHero==='function')figHero(e,'idle');}
 
 // ---- Coin shop ----
 let pgSel=null;
@@ -524,6 +526,7 @@ function pgShopDraw(){
   const hero=document.getElementById('pg-shop-hero');
   hero.textContent=localStorage.getItem('mh_player')?getCharEmoji(getCharIdx(),curLvl()):getPlayer().emoji;
   applyHeroDecor(hero,{decor:pgDecor(sel)}); // try it on before buying
+  if(typeof figHero==='function')figHero(hero,'idle'); // figur (figures.js)
   const info=document.getElementById('pg-shop-info'),act=document.getElementById('pg-shop-act');
   act.className='pg-shop-act';act.disabled=false;act.style.display='';
   if(!sel){info.innerHTML='<b>Prøv noe! 👆</b><span>Trykk på en ting for å se den på helten din.</span>';act.style.display='none';}
@@ -540,7 +543,8 @@ function pgShopDraw(){
     const has=own.includes(i.id),on=has&&eq[s.id]===i.id,op=pgItemOpen(i),B=i.boss&&BOSSES[i.boss];
     const tag=on?'✓ På deg':has?'Din!':!op?`🔒 ${B?B.emoji:''}`:`🪙 ${i.price}`;
     const cls=['pg-item',on&&'on',has&&'owned',!op&&'locked',!has&&op&&prog.coins<i.price&&'dear',pgSel===i.id&&'sel'].filter(Boolean).join(' ');
-    return `<button class="${cls}" onclick="pgShopPick('${i.id}')"><span class="pg-item-emoji"${s.id==='aura'?` data-pg-aura="${i.id}"`:''}>${i.emoji}</span><span class="pg-item-name">${pgEsc(i.name)}</span><span class="pg-item-tag">${tag}</span></button>`;}).join('')}</div></div>`).join('');
+    return `<button class="${cls}" onclick="pgShopPick('${i.id}')"><span class="pg-item-emoji"${s.id==='aura'?` data-pg-aura="${i.id}"`:''}${s.id==='pet'?` data-fig-pet="${i.id}"`:''}>${i.emoji}</span><span class="pg-item-name">${pgEsc(i.name)}</span><span class="pg-item-tag">${tag}</span></button>`;}).join('')}</div></div>`).join('');
+  if(typeof figPet==='function')document.querySelectorAll('#pg-shop-list [data-fig-pet]').forEach(e=>figPet(e,e.getAttribute('data-fig-pet'))); // pets som bilder
 }
 function pgShopPick(id){const it=pgItem(id);if(!it)return;pgSel=id;pgShopDraw();tone(880,.05,'sine',.12);if(it.slot==='fx'&&pgItemOpen(it))pgPlayFx(pgDecor(it).fx,60);}
 function pgShopAct(){

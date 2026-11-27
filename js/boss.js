@@ -129,6 +129,7 @@ function bossAddTopicNode(g){
       <div class="boss-gate-icon">${b.emoji}${beaten?'<div class="boss-crown">👑</div>':''}${open?'':'<div class="map-node-lock">🔒</div>'}</div>
       <div class="boss-gate-info"><div class="boss-gate-tag">${g===10?'⚠️ SISTE BOSS':'👑 BOSS'}</div><div class="boss-gate-name">${b.name}</div><div class="boss-gate-status">${status}</div></div>
     </div>`;
+  if(typeof figBossGate==='function')figBossGate(gate.querySelector('.boss-gate-icon'),g,open&&!beaten); // bossen som figur når den venter (figures.js)
   gate.onclick=()=>{
     if(isBossDefeated(g)||isBossUnlocked(g))openBossIntro(g);
     else bossToast('🔒','Låst!','Få ⭐ på alle temaene først!');
@@ -370,7 +371,8 @@ function showBossResult(win){
   const em=document.getElementById('br-emoji');
   em.className='boss-emoji '+(win?'boss-ko':'boss-run');
   em.textContent=win?'🏆':b.emoji+'💨';
-  if(typeof figClear==='function'){figClear(em);if(!win&&typeof figBoss==='function')figBoss(em,g,'taunt',{once:true});}
+  if(typeof figClear==='function'){figClear(em);if(!win&&typeof figBoss==='function')figBoss(em,g,'taunt',{once:true});else if(win&&typeof figHero==='function')figHero(em,'win',{once:true});}
+  if(win&&typeof figWarmHero==='function')figWarmHero(); // ny rang: hent figuren til «sterkere»-skjermen
   document.getElementById('br-title').textContent=win?(g===10?'👑 DU VANT! 👑':'🏆 SEIER! 🏆'):'Nesten! 💪';
   let sub;const weak=win?null:bossWeakest(),c=bossFirstOk(),n=S.bossLog.filter(Boolean).length||S.questions.length;
   if(win){
@@ -476,6 +478,7 @@ function showEnding(fromBoss){
       ${i<P.length-1?'<button class="story-btn" onclick="endingNext()">Neste →</button>':'<button class="story-btn end-btn" onclick="closeEnding()">🗺️ Til kartet</button>'}
     </div>`).join('');
   bossEndIdx=0;
+  if(typeof figStory==='function')figStory(); // Nullius og «liten null» som figurer
   document.getElementById('ending-overlay').classList.remove('hidden');
   launch(60,['#ffd93d','#06d6ff','#a855f7']);
   sndLvl();

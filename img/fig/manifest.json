@@ -1,0 +1,200 @@
+{
+ "about": "figs.<id>: {kind:\"boss\"|\"hero\"|\"mon\"|\"still\", size:<px per ramme>, anims:{<navn>:{n:<rammer>,ms:<varighet>,loop?:true}}, poster?:true (fil <id>-poster.webp), head?:{x,y} (hodet, andel av rammen), top?:{x,y} (toppen av hodet), key?/rank? (helt), tid? (temaets monster)}. Fil per animasjon: <id>-<navn>.webp (vannrett stripe med n kvadratiske rammer; n=1 er stillbilde). atlas.<s|p|h>: {file, cell:<px>, items:{<nøkkel>:[x,y]}} – s = venner (SIDEKICKS-indeks), p = pets (PG_ITEMS-id), h = helteplakater (heltens key). files fylles av tools/figsync.js: {v:<hash>, bytes}.",
+ "figs": {
+  "troll": {
+   "kind": "boss",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 16,
+     "ms": 2200,
+     "loop": true
+    },
+    "taunt": {
+     "n": 16,
+     "ms": 1600
+    },
+    "hit": {
+     "n": 12,
+     "ms": 650
+    },
+    "fall": {
+     "n": 16,
+     "ms": 1300
+    }
+   }
+  },
+  "orm": {
+   "kind": "boss",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 16,
+     "ms": 1900,
+     "loop": true
+    },
+    "taunt": {
+     "n": 16,
+     "ms": 1500
+    },
+    "hit": {
+     "n": 12,
+     "ms": 650
+    },
+    "fall": {
+     "n": 16,
+     "ms": 1300
+    }
+   }
+  },
+  "h-dragon-r0": {
+   "kind": "hero",
+   "key": "dragon",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.467,
+    "y": 0.358
+   },
+   "top": {
+    "x": 0.5,
+    "y": 0.147
+   }
+  },
+  "h-unicorn-r0": {
+   "kind": "hero",
+   "key": "unicorn",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.599,
+    "y": 0.465
+   },
+   "top": {
+    "x": 0.648,
+    "y": 0.32
+   }
+  }
+ },
+ "atlas": {},
+ "files": {
+  "troll-idle.webp": {
+   "v": "d6170ea9",
+   "bytes": 127332
+  },
+  "troll-taunt.webp": {
+   "v": "ec3d67c2",
+   "bytes": 126282
+  },
+  "troll-hit.webp": {
+   "v": "ded5462f",
+   "bytes": 89276
+  },
+  "troll-fall.webp": {
+   "v": "60408fed",
+   "bytes": 104630
+  },
+  "orm-idle.webp": {
+   "v": "376940ad",
+   "bytes": 96504
+  },
+  "orm-taunt.webp": {
+   "v": "a3bbf7b4",
+   "bytes": 84548
+  },
+  "orm-hit.webp": {
+   "v": "c51fb278",
+   "bytes": 71782
+  },
+  "orm-fall.webp": {
+   "v": "720150bd",
+   "bytes": 99558
+  },
+  "h-dragon-r0-idle.webp": {
+   "v": "0bebfcb2",
+   "bytes": 52202
+  },
+  "h-dragon-r0-atk.webp": {
+   "v": "896cbad2",
+   "bytes": 37628
+  },
+  "h-dragon-r0-block.webp": {
+   "v": "1406e22c",
+   "bytes": 24616
+  },
+  "h-dragon-r0-win.webp": {
+   "v": "226b0726",
+   "bytes": 54318
+  },
+  "h-dragon-r0-poster.webp": {
+   "v": "6b375b8d",
+   "bytes": 3972
+  },
+  "h-unicorn-r0-idle.webp": {
+   "v": "c60d24f5",
+   "bytes": 29160
+  },
+  "h-unicorn-r0-atk.webp": {
+   "v": "a765fbe7",
+   "bytes": 19034
+  },
+  "h-unicorn-r0-block.webp": {
+   "v": "df090b36",
+   "bytes": 14724
+  },
+  "h-unicorn-r0-win.webp": {
+   "v": "3f5241ce",
+   "bytes": 26128
+  },
+  "h-unicorn-r0-poster.webp": {
+   "v": "4d796a6f",
+   "bytes": 2590
+  }
+ }
+}

@@ -88,7 +88,7 @@ function openTrollIntro(from){
   trollFrom=from==null?'grades':from;
   bossPendingGrade='troll';
   document.getElementById('bi-tag').textContent='🧌 TROLLET ER TILBAKE! 🧌';
-  document.getElementById('bi-emoji').textContent=b.emoji;
+  document.getElementById('bi-emoji').textContent=b.emoji;if(typeof figBossIntro==='function')figBossIntro('troll'); // 3D-figur (figures.js)
   document.getElementById('bi-name').textContent=b.name;
   document.getElementById('bi-grade').textContent=`${TROLL_Q} oppgaver · ${TROLL_NEED} riktige vinner${r.mastered?' 👑':''}`;
   document.getElementById('bi-taunt').textContent=b.taunt;
@@ -132,6 +132,7 @@ function trollResult(win){
   const em=document.getElementById('br-emoji');
   em.className='boss-emoji '+(win?'boss-ko':'boss-run');
   em.textContent=win?(crowns.length?'👑':'🏆'):b.emoji+'💨';
+  if(typeof figClear==='function'){figClear(em);if(win&&typeof figHero==='function')figHero(em,'win',{once:true});else if(!win&&typeof figBoss==='function')figBoss(em,g,'taunt',{once:true});}
   document.getElementById('br-title').textContent=win?'Du husket det! 🎉':'Nesten! 💪';
   const names=crowns.map(t=>`${trollEsc(t.icon)} ${trollEsc(t.name)}`).join(', '),fg=forgot.map(t=>trollEsc(t.icon)).join(' ');
   document.getElementById('br-sub').innerHTML=win?

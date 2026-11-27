@@ -1,21 +1,98 @@
-/* Mattehelten – 3D-figurer som animerte bildestriper (js/figures.js). Figuren tegnes i ::before, emojien skjules. */
-.fig{--fs:96px;position:relative;font-size:0!important;line-height:0;width:var(--fs);height:var(--fs);display:inline-block;}
-.fig::before{content:'';position:absolute;inset:0;background-image:var(--fig-img);background-repeat:no-repeat;
-  background-size:calc(var(--fs) * var(--fig-n)) var(--fs);background-position:0 0;
-  animation:figRunA var(--fig-ms) steps(var(--fig-n)) infinite;}
-.fig.fig-alt::before{animation-name:figRunB;}
-.fig.fig-once::before{animation-name:figOnceA;animation-timing-function:steps(var(--fig-n1),jump-none);animation-iteration-count:1;animation-fill-mode:forwards;}
-.fig.fig-once.fig-alt::before{animation-name:figOnceB;}
+/* Mattehelten – figurer som animerte bildestriper og stillbilder (js/figures.js). Emoji er reserven: elementet beholder teksten sin. */
+/* Felles: én vannrett stripe med --fig-n kvadratiske rammer på --fs px. Stillbilde/atlas: --fig-bs og --fig-bp. */
 @keyframes figRunA{from{background-position-x:0}to{background-position-x:calc(var(--fs) * var(--fig-n) * -1)}}
 @keyframes figRunB{from{background-position-x:0}to{background-position-x:calc(var(--fs) * var(--fig-n) * -1)}}
 @keyframes figOnceA{from{background-position-x:0}to{background-position-x:calc(var(--fs) * var(--fig-n1) * -1)}}
 @keyframes figOnceB{from{background-position-x:0}to{background-position-x:calc(var(--fs) * var(--fig-n1) * -1)}}
-/* Størrelser */
+
+/* ---- 1) Bosser og monstre: figuren i ::before, emojien får font-size 0 ---- */
+.fig{--fs:96px;position:relative;font-size:0!important;line-height:0;width:var(--fs);height:var(--fs);display:inline-block;}
+.fig::before{content:'';position:absolute;inset:0;background-image:var(--fig-img);background-repeat:no-repeat;
+  background-size:var(--fig-bs,calc(var(--fs) * var(--fig-n)) var(--fs));background-position:var(--fig-bp,0 0);
+  animation:figRunA var(--fig-ms) steps(var(--fig-n)) infinite;}
+.fig.fig-alt::before{animation-name:figRunB;}
+.fig.fig-once::before{animation-name:figOnceA;animation-timing-function:steps(var(--fig-n1),jump-none);animation-iteration-count:1;animation-fill-mode:forwards;}
+.fig.fig-once.fig-alt::before{animation-name:figOnceB;}
+.fig.fig-still::before,.fig.fig-f0::before{animation:none;}
+.fig.fig-still::before{background-size:var(--fig-bs,var(--fs) var(--fs));}
+
+/* ---- 2) Helter, venner og pets: eget lag <i class="fig-l">; emojien er gjennomsiktig (em-størrelsene til hatt og pet stemmer) ---- */
+:where([data-fig-l]){--fs:48px;}
+[data-fig-l]{position:relative;display:inline-block;width:var(--fs);height:var(--fs);line-height:var(--fs);vertical-align:middle;
+  color:transparent!important;text-shadow:none!important;background-image:none!important;}
+[data-fig-l]>:not(.fig-l){color:#fff;} /* andre barn (💤) vises fortsatt */
+.fig-l{position:absolute;inset:0;pointer-events:none;background-image:var(--fig-img);background-repeat:no-repeat;
+  background-size:var(--fig-bs,calc(var(--fs) * var(--fig-n)) var(--fs));background-position:var(--fig-bp,0 0);
+  animation:figRunA var(--fig-ms) steps(var(--fig-n)) infinite;}
+.fig-l.fig-alt{animation-name:figRunB;}
+.fig-l.fig-once{animation-name:figOnceA;animation-timing-function:steps(var(--fig-n1),jump-none);animation-iteration-count:1;animation-fill-mode:forwards;}
+.fig-l.fig-once.fig-alt{animation-name:figOnceB;}
+.fig-l.fig-still,.fig-l.fig-f0{animation:none;}
+/* Rangpynt er bakt inn i figuren (vinger r1/r2, krone r3): i stedet for text-shadow og CSS-vinger får laget en glød per rang */
+[data-fig-l][data-fun-tier="1"]>.fig-l{filter:drop-shadow(0 0 .1em rgba(6,214,255,.8));}
+[data-fig-l][data-fun-tier="2"]>.fig-l{filter:drop-shadow(0 0 .1em rgba(255,140,60,.85));}
+[data-fig-l][data-fun-tier="3"]>.fig-l{filter:drop-shadow(0 0 .1em rgba(255,217,61,.95));}
+[data-fig-l][data-fun-tier="4"]>.fig-l{filter:drop-shadow(0 0 .08em rgba(6,214,255,.85)) drop-shadow(0 0 .2em rgba(168,85,247,.95));}
+:is(#hud-char,#pg-lvl-hero,#pg-shop-hero,#evo-old,#evo-new,#fun-day-hero,#fun-night-hero,#map-you)[data-fig-l]{padding-left:0;padding-right:0;margin-left:0;margin-right:0;}
+/* Hatt og krone sitter på figurens hode (--fig-hx/--fig-hy fra manifestet, andel av rammen); pet ved føttene */
+[data-fig-l][data-pg-hat]::before,
+[data-fig-l]:is([data-fun-tier="3"],[data-fun-tier="4"]):not([data-pg-hat]):not([data-pg-pet])::after,
+[data-fig-l]:is([data-fun-tier="3"],[data-fun-tier="4"])[data-pg-pet]:not([data-pg-hat]):not(.fx-pow)::before{
+  left:calc(var(--fig-hx,.5) * 100%);top:calc(var(--fig-hy,.14) * 100%);font-size:calc(var(--fs) * .3);transform:translate(-50%,-75%) rotate(-10deg);z-index:2;color:#fff;}
+[data-fig-l][data-fig-r="3"]:not([data-pg-hat]):not([data-pg-pet])::after,
+[data-fig-l][data-fig-r="3"][data-pg-pet]:not([data-pg-hat]):not(.fx-pow)::before{content:none;} /* kronen er bakt inn (r3) */
+[data-fig-l][data-pg-pet]::after{left:auto;right:-8%;bottom:0;font-size:calc(var(--fs) * .3);z-index:2;color:#fff;}
+/* Pet som bilde (figPetDecor): data-pg-pet-img + --pet-img/--pet-bs/--pet-bp; --ps er petens størrelse i em av pseudoelementet */
+[data-pg-pet][data-pg-pet-img]{--ps:1.35em;}
+[data-pg-pet][data-pg-pet-img]::after{content:''!important;width:var(--ps);height:var(--ps);background-image:var(--pet-img);background-repeat:no-repeat;
+  background-size:var(--pet-bs);background-position:var(--pet-bp);filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
+
+/* ---- Størrelser (ART-PLAN §6) ---- */
 .enemy-avatar.fig{--fs:104px;}
 #screen-game.boss-mode .enemy-avatar.fig{--fs:150px;}
 .boss-emoji.fig{--fs:190px;margin:0 auto;}
-@media(max-width:420px){.enemy-avatar.fig{--fs:88px;}#screen-game.boss-mode .enemy-avatar.fig{--fs:120px;}.boss-emoji.fig{--fs:150px;}}
+.boss-gate-icon.fig{--fs:66px;display:flex;}
+.cel-mon.fig{--fs:52px;}
+.story-villain.fig{--fs:130px;}
+.end-morph span.fig{--fs:100px;}
+#player-avatar{--fs:104px;}
+#hud-char{--fs:40px;}
+#hud-sidekick{--fs:32px;}
+.char-emoji{--fs:72px;}
+.char-emoji[data-fig-l]{display:block;margin:0 auto 6px;}
+.sk-emoji{--fs:48px;}
+.sk-emoji[data-fig-l]{display:block;margin:0 auto 3px;}
+#map-you{--fs:48px;}
+#map-you[data-fig-l]{position:absolute;animation-name:figYou;}
+@keyframes figYou{0%,100%{transform:translate(-50%,calc(-100% - 24px))}50%{transform:translate(-50%,calc(-100% - 30px))}}
+#pg-shop-hero{--fs:80px;}
+#hc-char{--fs:120px;}
+#hc-char[data-fig-l]{display:block;margin:0 auto 8px;}
+#pg-lvl-hero{--fs:96px;}
+#evo-old{--fs:88px;}
+#evo-new{--fs:140px;}
+#fun-day-hero,#fun-night-hero{--fs:96px;}
+#res-mascot{--fs:120px;}
+#res-mascot[data-fig-l]{display:block;margin:0 auto 8px;}
+#br-emoji[data-fig-l]{--fs:160px;display:block;margin:0 auto;}
+.cel-foe-hero{--fs:56px;}
+.pg-item-emoji{--fs:44px;}
+.pg-item-emoji[data-fig-l]{display:block;margin:0 auto;}
+@media(max-width:500px){.char-emoji{--fs:52px;}.char-emoji[data-fig-l]{margin-bottom:0;}}
+@media(max-width:420px){.enemy-avatar.fig{--fs:88px;}#screen-game.boss-mode .enemy-avatar.fig{--fs:120px;}.boss-emoji.fig{--fs:150px;}
+  #player-avatar{--fs:88px;}#hud-char{--fs:36px;}#hud-sidekick{--fs:28px;}#evo-new{--fs:112px;}#evo-old{--fs:72px;}#br-emoji[data-fig-l]{--fs:130px;}#hc-char{--fs:104px;}}
+
 /* Figurene har egen bevegelse: demp emojiens glød-skygge litt så de ikke blir uskarpe */
 .enemy-avatar.fig{filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) drop-shadow(0 0 12px rgba(255,68,102,.45));}
 #screen-game.troll-mode .enemy-avatar.fig{filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) drop-shadow(0 0 12px rgba(67,233,123,.5));}
-@media (prefers-reduced-motion: reduce){.fig::before{animation:none!important;}}
+#player-avatar[data-fig-l]{filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) drop-shadow(0 0 10px rgba(168,85,247,.5));}
+
+/* Redusert bevegelse: ramme 0 (en «hold»-animasjon, som K.O., viser siste ramme) */
+@media (prefers-reduced-motion: reduce){
+  .fig::before,.fig-l{animation:none!important;}
+  .fig.fig-hold::before,.fig-l.fig-hold{background-position-x:calc(var(--fs) * var(--fig-n1) * -1);}
+  #map-you[data-fig-l]{animation:none;transform:translate(-50%,calc(-100% - 24px));}
+}
+/* Heltevalget: like høye kort når noen av heltene har figur */
+#char-grid:has([data-fig-l]) .char-emoji{display:block;height:var(--fs);line-height:var(--fs);margin-left:auto;margin-right:auto;}
+#sidekick-grid:has([data-fig-l]) .sk-emoji{display:block;height:var(--fs);line-height:var(--fs);}

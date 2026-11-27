@@ -238,6 +238,7 @@ function funShowDay(){
     <div class="fun-night-txt">Helten din hviler nå.<br>Vi ses i morgen! 🌙</div>
   </div>`;
   ['fun-day-hero','fun-night-hero'].forEach(id=>{const e=document.getElementById(id);if(typeof applyHeroDecor==='function')applyHeroDecor(e,{pet:false});else funDecor(e);});
+  if(typeof figHero==='function'){figHero(document.getElementById('fun-day-hero'),'idle');figHeroPoster(document.getElementById('fun-night-hero'));} // figur (figures.js)
   o.classList.remove('night');o.classList.add('show');
   if(typeof ttsStop==='function')try{ttsStop();}catch(e){}
   if(typeof speak==='function')try{speak(`Bra jobba i dag!${d.stars?` Du fikk ${d.stars===1?'en ny stjerne':d.stars+' nye stjerner'}.`:''}${d.fixed?' Du rettet selv.':''} Vil du ta en pause?`);}catch(e){}

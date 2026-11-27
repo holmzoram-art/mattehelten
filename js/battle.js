@@ -20,6 +20,7 @@ function startGame(g,topicId){
   document.getElementById('player-name').textContent=p.name;
   const mo=typeof funMonster==='function'?funMonster(g,topicId):{e:ENEMIES[g]||'👾',n:'Tallmonsteret'},ea=document.getElementById('enemy-avatar'); // eget monster per tema (fun.js)
   ea.textContent=mo.e;if(mo.a)ea.setAttribute('data-fun-idle',mo.a);else ea.removeAttribute('data-fun-idle');
+  if(typeof figMon==='function')figMon(ea,g,topicId); // monsteret som figur (figures.js)
   document.getElementById('enemy-name').textContent=mo.n;
   document.getElementById('player-hp').style.width='100%';
   document.getElementById('enemy-hp').style.width='100%';
@@ -288,6 +289,7 @@ function buildResults(){
   if(perfect)h.title=`PERFEKT! ${c} av ${n}!`;
   if(S.enemyDefeated)h.sub='💥 K.O.! '+h.sub;
   document.getElementById('res-mascot').textContent=h.emoji;
+  if(typeof figHero==='function')figHero(document.getElementById('res-mascot'),pct>=.5?'win':'idle',{once:pct>=.5}); // helten jubler (figures.js)
   document.getElementById('res-title').textContent=h.title;
   document.getElementById('res-sub').textContent=h.sub;
   document.getElementById('res-stars').innerHTML=mstStarsHTML(topicStars(g,tid),null,hasCrown(g,tid),mstEffOf(g,tid)); // temaets stjerner (💪 = øvd godt)

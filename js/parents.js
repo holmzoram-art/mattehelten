@@ -137,12 +137,14 @@ function parNextStar(g,id,s){
   const R=typeof mstRounds==='function'&&typeof mstGet==='function'?mstRounds(mstGet(g,id)):[],l3=R.slice(-3),today=mhDay(0);
   const best=l3.reduce((m,r)=>Math.max(m,r[1]/r[2]*Q),0);
   if(s>=3)return{gap:99,txt:typeof hasCrown==='function'&&hasCrown(g,id)?'Mestret og husket senere 👑.':'Mestret. Trollet kan gi 👑 senere.'};
-  if(s<1)return{gap:Math.max(0,n1-best),txt:`${n1} av ${Q} riktige i én runde gir ⭐.`};
+  const eff=s<1&&typeof topicEffort==='function'&&topicEffort(g,id);
+  if(s<1)return{gap:Math.max(0,n1-best),txt:`${eff?'💪 Øvd godt (jevn innsats, neste tema er åpnet). ':''}${n1} av ${Q} riktige i én runde gir ⭐.`};
   if(s<2)return{gap:Math.max(0,n2-best),txt:`${n2} av ${Q} riktige i én runde gir ⭐⭐.`};
-  const good=l3.filter(r=>r[2]>=4&&r[1]/r[2]>=G-1e-9);
-  if(good.some(r=>r[0]!==today))return{gap:0,txt:`Én runde til med ${n2} av ${Q} riktige gir ⭐⭐⭐.`};
-  if(good.length)return{gap:.5,txt:`Spill temaet igjen i morgen: ${n2} av ${Q} riktige da gir ⭐⭐⭐.`};
-  return{gap:Math.max(0,n2-best)+1,txt:`${n2} av ${Q} riktige på to ulike dager gir ⭐⭐⭐.`};
+  const T=typeof MST_TOP==='number'?MST_TOP:21/24,tot=Math.ceil(T*3*Q-1e-9),t=typeof mstTopNeed==='function'?mstTopNeed(R,today):{need:null,days:false};
+  if(t.need!=null&&t.days)return{gap:0,txt:`Én runde til med ${Math.max(1,t.need)} av ${Q} riktige gir ⭐⭐⭐.`};
+  if(t.need!=null)return{gap:.5,txt:`Spill temaet igjen i morgen: ${Math.max(1,t.need)} av ${Q} riktige da gir ⭐⭐⭐.`};
+  const l2=R.slice(-2),miss=tot-l2.reduce((a,r)=>a+r[1],0)-Q;
+  return{gap:1+Math.max(0,miss)/Q,txt:`Minst ${tot} av ${3*Q} riktige i de tre siste rundene, på minst to ulike dager, gir ⭐⭐⭐.`};
 }
 function parGradeOpen(g){return typeof isGradeUnlocked==='function'?!!isGradeUnlocked(g):g<=1;}
 // Klassetrinn som vises: 1 og 2 alltid, høyere når de er åpne eller har fremgang
@@ -159,7 +161,8 @@ function parRow(g,t,i,gOpen,st,a7,a14,aAll,daysDesc){
   let last=typeof mstLastDay==='function'?mstLastDay(g,t.id)||'':'';
   const sd=daysDesc.find(d=>st[d]&&st[d].t[k]);if(sd&&sd>last)last=sd; // oppgaver i boss og trollet teller også
   const started=(typeof topicStarted==='function'&&topicStarted(g,t.id))||xa[0]>0;
-  const r={g,id:t.id,i,name:t.name,icon:t.icon||'',optional:!!t.optional,open,started,stars,crown,n7:x7[0],ok7:x7[1],n14:x14[0],ok14:x14[1],n:xa[0],ok:xa[1],rounds,last};
+  const eff=stars<1&&typeof topicEffort==='function'&&topicEffort(g,t.id);
+  const r={g,id:t.id,i,name:t.name,icon:t.icon||'',optional:!!t.optional,open,started,stars,crown,eff,n7:x7[0],ok7:x7[1],n14:x14[0],ok14:x14[1],n:xa[0],ok:xa[1],rounds,last};
   r.nx=parNextStar(g,t.id,stars);
   return r;
 }
@@ -202,7 +205,7 @@ function parRoundMin(aAll){const Q=typeof TQ==='number'&&TQ>0?TQ:8;if(!aAll||aAl
 // ============================================================
 // VISNING
 // ============================================================
-function parStarsHTML(s,crown){return typeof mstStarsHTML==='function'?mstStarsHTML(s,null,crown):('⭐'.repeat(s)+'☆'.repeat(3-s)+(crown?' 👑':''));}
+function parStarsHTML(s,crown,eff){return typeof mstStarsHTML==='function'?mstStarsHTML(s,null,crown,eff?1:0):((eff&&s<1?'💪☆☆':'⭐'.repeat(s)+'☆'.repeat(3-s))+(crown?' 👑':''));}
 function parPctCell(n,ok,lbl){
   const p=parPct(n,ok);if(p===null)return `<span class="par-k">${lbl}</span><span class="par-pct par-none">–</span>`;
   const c=n<4?'few':p>=85?'hi':p>=PAR_LOW*100?'mid':'lo';
@@ -213,7 +216,7 @@ function parTopicRowHTML(r){
   if(!r.started&&!r.n)return `<li class="par-trow"><div class="par-tname"><span class="par-tic">${r.icon}</span>${parEsc(r.name)}${r.optional?' <small class="par-opt">valgfritt</small>':''} <small class="par-new">ny</small></div><div class="par-tstars">${parStarsHTML(0,false)}</div><div class="par-meta"><span class="par-locked">Åpent, ikke spilt ennå</span></div></li>`;
   const rd=r.rounds?(r.rounds>=10?'10+':String(r.rounds)):'–';
   return `<li class="par-trow"><div class="par-tname"><span class="par-tic">${r.icon}</span>${parEsc(r.name)}${r.optional?' <small class="par-opt">valgfritt</small>':''}</div>`+
-    `<div class="par-tstars">${parStarsHTML(r.stars,r.crown)}</div><div class="par-meta">`+
+    `<div class="par-tstars">${parStarsHTML(r.stars,r.crown,r.eff)}</div><div class="par-meta">`+
     `<div class="par-cell">${parPctCell(r.n7,r.ok7,'Riktig 7 d')}</div><div class="par-cell">${parPctCell(r.n,r.ok,'Totalt')}</div>`+
     `<div class="par-cell"><span class="par-k">Runder</span><span class="par-v">${rd}</span></div><div class="par-cell"><span class="par-k">Sist spilt</span><span class="par-v">${parWhen(r.last)}</span></div></div></li>`;
 }
@@ -234,7 +237,7 @@ function parRecHTML(M,who){
   const R=M.rec,r=R.r,Who=who.charAt(0).toUpperCase()+who.slice(1);
   let title,why='',next='',tip='',fam=null,btn='';
   if(R.kind==='empty'){title='Ingen runder ennå';why=r?`Start med «${parEsc(r.name)}». Etter et par runder ser du her hva ${parEsc(who)} kan, og hva som er vanskelig.`:'';}
-  else if(R.kind==='done'){title='Alt som er åpnet, er mestret 🎉';why='Nå er repetisjon viktigst. «Trollet er tilbake!» dukker opp på kartet én gang om dagen og gir 👑 for temaer som sitter.';}
+  else if(R.kind==='done'){title='Alt som er åpnet, er mestret 🎉';why='Nå er repetisjon viktigst. «Trollet er tilbake!» dukker opp på kartet når et mestret tema bør repeteres (minst to dager etter sist, en uke etter 👑), og gir 👑 når alt på temaet er riktig.';}
   else{
     title=parEsc(r.name);const a=R.acc,p=a?parPct(a.n,a.ok):null;
     if(R.kind==='low')why=`${p} % riktig på første forsøk ${a.w} (${a.ok} av ${a.n}). Her trenger ${parEsc(who)} mest støtte nå.`;
@@ -251,7 +254,7 @@ function parRecHTML(M,who){
   const boss=bossG?`<p class="par-rec-boss">⚔️ Bossen i ${bossG.g}. klasse er klar. ${CUR[bossG.g+1]?`Når ${parEsc(who)} slår den, åpnes ${bossG.g+1}. klasse.`:''}</p>`:'';
   const more=R.more&&R.more.length?`<div class="par-more"><div class="par-more-t">Også nær neste stjerne:</div><ul>${R.more.map(m=>`<li><span class="par-tic">${m.icon}</span><b>${parEsc(m.name)}</b> – ${parEsc(m.nx.txt)}</li>`).join('')}</ul></div>`:'';
   return `<section class="par-sec par-rec" id="par-sec-rec"><h2>🎯 Øv på nå</h2><div class="par-rec-main">${r?`<div class="par-rec-ic">${r.icon}</div>`:''}<div class="par-rec-body">`+
-    `<div class="par-rec-title">${title}${r&&R.kind!=='empty'?` <span class="par-rec-g">${parGradeLbl(r.g)}</span>`:''}</div>${r&&R.kind!=='empty'?`<div class="par-rec-stars">${parStarsHTML(r.stars,r.crown)}</div>`:''}`+
+    `<div class="par-rec-title">${title}${r&&R.kind!=='empty'?` <span class="par-rec-g">${parGradeLbl(r.g)}</span>`:''}</div>${r&&R.kind!=='empty'?`<div class="par-rec-stars">${parStarsHTML(r.stars,r.crown,r.eff)}</div>`:''}`+
     `<p class="par-rec-why">${why}</p>${next?`<p class="par-rec-next">${next}</p>`:''}</div></div>${tip?`<div class="par-tip">${tip}</div>`:''}${btn}${boss}${more}</section>`;
 }
 function parErrHTML(M){
@@ -305,11 +308,12 @@ function parSetHTML(M){
 function parStarsInfoHTML(){
   const Q=typeof TQ==='number'&&TQ>0?TQ:8,n1=Math.ceil(Q*(typeof MST_PASS==='number'?MST_PASS:.75)-1e-9),n2=Math.ceil(Q*(typeof MST_GOOD==='number'?MST_GOOD:.875)-1e-9);
   return `<div class="par-legend"><div class="par-legend-t">Slik virker stjernene</div><ul>`+
-    `<li><span>⭐</span><div><b>Bestått:</b> ${n1} av ${Q} riktige på første forsøk i én runde (eller jevn innsats over tre runder, så ingen står fast).</div></li>`+
+    `<li><span>💪</span><div><b>Øvd godt:</b> jevn innsats over tre runder (snitt minst 40 %). Neste tema åpnes, så ingen står fast, men det er ikke en stjerne og teller ikke for bossen.</div></li>`+
+    `<li><span>⭐</span><div><b>Bestått:</b> ${n1} av ${Q} riktige på første forsøk i én runde.</div></li>`+
     `<li><span>⭐⭐</span><div>${n2} av ${Q} riktige i én runde.</div></li>`+
-    `<li><span>⭐⭐⭐</span><div><b>Mestret:</b> ${n2} av ${Q} i to runder på to ulike dager. Da sitter det.</div></li>`+
-    `<li><span>👑</span><div><b>Husket senere:</b> vant «Trollet er tilbake!», en repetisjon av temaer fra før.</div></li></ul>`+
-    `<p>Stjerner tas aldri bort. Bare første forsøk teller, men barnet får alltid prøve igjen med et hint. Neste klasse åpnes når barnet slår bossen.</p></div>`;
+    `<li><span>⭐⭐⭐</span><div><b>Mestret:</b> minst ${Math.ceil((typeof MST_TOP==='number'?MST_TOP:21/24)*3*Q-1e-9)} av ${3*Q} riktige i de tre siste rundene, spilt på minst to ulike dager. Da begynner det å sitte. Trollet sjekker om det huskes.</div></li>`+
+    `<li><span>👑</span><div><b>Husket senere:</b> vant «Trollet er tilbake!» med alt riktig på temaet, en repetisjon noen dager senere.</div></li></ul>`+
+    `<p>Stjerner tas aldri bort. En runde er ${Q} nye oppgaver, og bare første forsøk teller. Barnet får alltid prøve igjen med et hint. «🔁 Revansj» (en lignende oppgave etter en feil) og «⚡ Lynoppgave» er bonus og teller ikke. Neste klasse åpnes når barnet slår bossen.</p></div>`;
 }
 function parHTML(){
   const M=parModel();M.metric=PAR.metric;

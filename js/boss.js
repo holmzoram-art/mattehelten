@@ -10,18 +10,21 @@
 // isGradeUnlocked, buildGradeMap, buildTopicMap, submitAnswer, handleNext.
 // Parent test shortcut: ?boss=<grade> (e.g. ?boss=1) opens that boss directly;
 // every localStorage change made during the test is rolled back afterwards.
-// Rules: about 12 questions from all required (non-optional) topics. Win = K.O. = at least 75 % right on
-// the first try AND no topic where all its boss questions were wrong. A missed topic comes back ~3 questions
-// later. Otherwise the boss flees after BOSS_MAXQ questions and the child gets «Øv på <tema>».
-// The same fight engine runs «Trollet er tilbake!» (review.js: S.troll, 6 questions, 5 right wins).
+// Rules: 12 new questions (no revenge in boss or troll). 1.–2. klasse: the core topics (BOSS_CORE, the open ones) get 2 questions
+// each, one in each half of the fight; the other slots are spread over the other topics. A core topic whose first question was
+// wrong gets its second question about 3 questions later. Win = K.O. = at least 9 of 12 right on the first try AND every core
+// topic asked with at least one right (none at 0 of 2). Grades 3+: questions mixed evenly, a missed topic comes back once
+// (a new question), and no asked topic may have only wrong answers. Otherwise the boss flees after BOSS_MAXQ questions and
+// the child gets «Øv på <tema>». The same fight engine runs «Trollet er tilbake!» (review.js: S.troll, 6 questions, 5 right wins).
 const BOSS_MAXQ=12,BOSS_WIN=.75;
+const BOSS_CORE={1:['add20','sub20','eq1','ten1'],2:['add100','sub100','place2','miss2']};
 const BOSSES={
   1:{name:'Pluss-trollet',emoji:'🧌',hp:12,badge:'Trolltemmer',skills:'pluss og minus',
      taunt:'Hå hå! Jeg har blandet sammen alle plusstykkene i Talland. Du klarer aldri å telle riktig!',
      hit:['Au! Du kan jo telle!','Hæ?! Riktig igjen?!','Trollknærne mine skjelver!','Uff, det kilte i nesa!'],
      miss:['Hå hå, bom! Prøv igjen!','Hehe, den var lur, hva?','Nesten! Tell en gang til!'],
      ko:'Uff da, du vant! Nå skal jeg plusse riktig!'},
-  2:{name:'Gange-ormen',emoji:'🐍',hp:12,badge:'Ormetemmer',skills:'pluss, minus og ganging',
+  2:{name:'Gange-ormen',emoji:'🐍',hp:12,badge:'Ormetemmer',skills:'tiere og enere, pluss og minus',
      taunt:'Sssss! Jeg har kveilet meg rundt alle tallene i Tallskogen. Ingen sssslipper forbi meg!',
      hit:['Ssssau! Det kilte!','Sss... du er flink!','Halen min knyter seg!','Sssstopp, ikke så fort!'],
      miss:['Sssss! Bom! Prøv igjen!','Hisss, den var vrien, hva?','Ssssnart har du den!'],
@@ -185,13 +188,27 @@ function startBoss(g){
   if(!gd||!b||!topics.length)return;
   bossBegin(g,topics,b,{q:BOSS_MAXQ,tag:'👑 '});
 }
+// Fast plan for bossen i 1.–2. klasse (indekser i topics): kjernetemaene én gang i hver halvdel, de andre plassene fordelt på resten
+function bossPlan(topics,core,q){
+  const C=[],O=[];topics.forEach((t,i)=>(core.includes(t.id)?C:O).push(i));
+  const nO=Math.max(0,q-2*C.length),oth=[];let bag=[];
+  for(let k=0;k<nO;k++){if(!bag.length)bag=bossShuffle((O.length?O:C).slice());oth.push(bag.pop());}
+  const h=Math.ceil(nO/2),A=bossShuffle(C.concat(oth.slice(0,h))),B=bossShuffle(C.concat(oth.slice(h)));
+  if(A.length&&B.length&&A[A.length-1]===B[0]){const j=B.findIndex(x=>x!==B[0]);if(j>0)[B[0],B[j]]=[B[j],B[0]];} // ikke samme tema to ganger på rad i skjøten
+  return A.concat(B);
+}
 // Shared fight engine (boss and «Trollet er tilbake!»). b = {name,emoji,hit,miss,ko,flee?,phases?}; o = {q,need?,tag,troll?}
 function bossBegin(g,topics,b,o){
   const gd=CUR[g];let bag=[];const seen=new Set();
+  const core=o.troll?[]:(BOSS_CORE[g]||[]).filter(id=>topics.some(t=>t.id===id));
   const base={id:o.troll?'troll':'boss'+g,name:b.name,icon:b.emoji,
-    gen(gg){ // mix the topics evenly; a topic whose first question was wrong comes back once, about 3 questions later
-      const i=S.questions.length;let t=null;
-      if(!S.troll)t=topics.find(x=>{const st=S.bossStats[x.id];return st&&st.n===1&&st.ok===0&&i-(S.bossAt[x.id]??-9)>=3;})||null;
+    gen(gg){ // 1.–2. kl.: fast plan (kjernetemaer 2 ganger); ellers jevn blanding der et bommet tema kommer igjen én gang, ca. 3 oppgaver senere
+      const i=S.questions.length,P=S.bossPlan;let t=null;
+      if(P&&P.length){ // et kjernetema med bare feil får sin andre oppgave ca. 3 oppgaver senere (antallet per tema endres ikke)
+        let j=P.findIndex((k,jj)=>{const id=topics[k].id,st=S.bossStats[id];return jj>0&&st&&st.n>0&&st.ok===0&&i-(S.bossAt[id]??-9)>=3;});
+        if(j<=0){const pv=S.bossTopic&&S.bossTopic.id;j=Math.max(0,P.findIndex(k=>topics[k].id!==pv));} // ikke samme tema to ganger på rad
+        t=topics[P.splice(j,1)[0]];}
+      else if(!S.troll&&!P)t=topics.find(x=>{const st=S.bossStats[x.id];return st&&st.n===1&&st.ok===0&&i-(S.bossAt[x.id]??-9)>=3;})||null;
       if(!t){if(!bag.length)bag=bossShuffle(topics.map((_,k)=>k));t=topics[bag.pop()];}
       S.bossTopic=t;S.topicId=t.id;S.bossAt[t.id]=i; // so recordAttempt/fb use the real topic
       let qd=t.gen(gg,t.id),n=0;
@@ -205,7 +222,7 @@ function bossBegin(g,topics,b,o){
   const topic=new Proxy(base,{get(ob,k){return k in ob?ob[k]:(S.bossTopic||topics[0])[k];}});
   const need=o.need||Math.ceil(o.q*BOSS_WIN-1e-9);
   S={grade:g,topicId:topics[0].id,topic,maxQ:o.q,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false,
-     boss:true,troll:!!o.troll,bossB:b,bossQ:o.q,bossNeed:need,bossTag:o.tag||'👑 ',bossTopics:topics,
+     boss:true,troll:!!o.troll,bossB:b,bossQ:o.q,bossNeed:need,bossTag:o.tag||'👑 ',bossTopics:topics,bossCore:core,bossPlan:core.length?bossPlan(topics,core,o.q):null,
      bossPts:need*10,bossMax:need*10,bossPhase:0,bossEmoji:b.emoji,bossFled:false,bossOver:false,bossTopic:null,bossStats:{},bossAt:{},bossLog:[]};
   document.getElementById('player-avatar').textContent=bossHero();
   document.getElementById('player-name').textContent=getPlayer().name;
@@ -232,20 +249,25 @@ function bossTidOf(q){return (q&&q.tid&&S.bossTopics.some(t=>t.id===q.tid)?q.tid
 // Logs the last answered question once (idempotent per index); waits while a second try is open (S.answered false)
 function bossLogLast(force){ // force: a right answer always ends the question
   const i=S.questions.length-1,q=S.questions[i];if(i<0||!q||(!S.answered&&!force)||S.bossLog[i]!==undefined)return;
-  const tid=bossTidOf(q);S.bossLog[i]={tid,ok:!!q.ok};
-  if(tid){const st=S.bossStats[tid]||(S.bossStats[tid]={ok:0,n:0});st.n++;if(q.ok)st.ok++;}
+  const tid=bossTidOf(q),ok=!!q.ok&&!q.revenge&&!q.mini;S.bossLog[i]={tid,ok}; // bare nye oppgaver teller (det kommer ingen ekstra i boss/troll)
+  if(tid){const st=S.bossStats[tid]||(S.bossStats[tid]={ok:0,n:0});st.n++;if(ok)st.ok++;}
 }
-// K.O. when enough first-try hits and no asked topic has only wrong answers
-function bossVerdict(stats,c,need){return c>=need&&!Object.values(stats).some(st=>st.n>0&&st.ok===0);}
+// K.O. when enough first-try hits and: core topics given → every core topic asked with at least one right (none at 0 of 2);
+// otherwise no asked topic has only wrong answers
+function bossVerdict(stats,c,need,core){
+  if(c<need)return false;
+  if(core&&core.length)return core.every(id=>stats[id]&&stats[id].ok>0);
+  return !Object.values(stats).some(st=>st.n>0&&st.ok===0);
+}
 function bossFirstOk(){return S.bossLog.filter(x=>x&&x.ok).length;}
 
 // Damage hook (submitAnswer): returns the boss' new HP in percent. HP follows the number of first-try hits
-// (need hits = K.O.); it stays at a sliver while a topic still has only wrong answers.
+// (need hits = K.O.); it stays at a sliver while a (core) topic still has only wrong answers. The troll only falls at the end.
 function bossHit(){
   bossLogLast(true);
   const c=bossFirstOk();
   let pts=Math.max(0,S.bossMax-10*c);
-  if(pts<=0&&!bossVerdict(S.bossStats,c,S.bossNeed))pts=5;
+  if(pts<=0&&(!bossVerdict(S.bossStats,c,S.bossNeed,S.bossCore)||S.troll&&S.questions.length<(S.bossQ||TROLL_Q)))pts=5;
   S.bossPts=pts;
   return pts<=0?0:Math.max(1,Math.round(pts/S.bossMax*100));
 }
@@ -264,6 +286,9 @@ function bossAfterAnswer(){
   const av=document.getElementById('enemy-avatar'),nm=document.getElementById('enemy-name');
   if(!S.answered){setSpeech(`${S.bossEmoji} ${pick(b.miss)}`);bossProg();return;} // a second try is open (A2): wait for the final answer
   if(ok){S.playerHp=Math.min(100,S.playerHp+5);document.getElementById('player-hp').style.width=S.playerHp+'%';} // long fight: hits heal a little
+  // Last question: enough hits wins even if this one was wrong (the troll only falls at the end, so every topic gets all its questions)
+  if(!S.enemyDefeated&&S.idx>=(S.bossQ||BOSS_MAXQ)&&bossVerdict(S.bossStats,bossFirstOk(),S.bossNeed,S.bossCore)){
+    S.enemyDefeated=true;S.enemyHp=0;S.bossPts=0;document.getElementById('enemy-hp').style.width='0%';}
   let line;
   if(S.enemyDefeated){
     S.bossEmoji=b.koEmoji||'😵';

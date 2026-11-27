@@ -22,7 +22,7 @@ function famHist(g,tid,strat,all){const o=(all||mhLoad('mh_fam',{}))[g+':'+tid];
 function famErr(g,tid,strat,all){const s=famHist(g,tid,strat,all);return s.length<2?0:s.split('').filter(c=>c==='0').length/s.length;}
 function famWeak(g,tid,strat){const s=famHist(g,tid,strat);return s.length>=2&&famErr(g,tid,strat)>=.4;}
 // Velger familie: grunnvekt × (1 + 2 · feilrate siste 8). W = {strat: vekt}
-function famPick(g,tid,W){const all=mhLoad('mh_fam',{}),ks=Object.keys(W),ws=ks.map(k=>W[k]*(1+2*famErr(g,tid,k,all)));let r=Math.random()*ws.reduce((a,b)=>a+b,0);for(let i=0;i<ks.length;i++)if((r-=ws[i])<0)return ks[i];return ks[ks.length-1];}
+function famPick(g,tid,W){const all=mhLoad('mh_fam',{}),ks=Object.keys(W),ws=ks.map(k=>W[k]*(1+3*famErr(g,tid,k,all)));let r=Math.random()*ws.reduce((a,b)=>a+b,0);for(let i=0;i<ks.length;i++)if((r-=ws[i])<0)return ks[i];return ks[ks.length-1];}
 // Vektet trekning med desimalvekter
 function wPick(items,wFn){const ws=items.map(it=>Math.max(0,wFn(it))),T=ws.reduce((a,b)=>a+b,0);let r=Math.random()*T;for(let i=0;i<items.length;i++)if((r-=ws[i])<0)return items[i];return items[items.length-1];}
 function getBest(g,id){const s=mhLoad(`hs_${g}_${id}`,[]);return Array.isArray(s)&&s[0]&&typeof s[0]==='object'?s[0].score:null;}

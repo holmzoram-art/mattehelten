@@ -4,9 +4,10 @@
 // ============================================================
 // GAME STATE
 // ============================================================
-// S.questions[i] = {q,given,correct,ok,sub,givenTxt,correctTxt,eq, first,fixed,misc,revenge,tid, strat,mini,last,lastTxt,k,z,w}
+// S.questions[i] = {q,given,correct,ok,sub,givenTxt,correctTxt,eq, first,fixed,misc,revenge,tid, strat,mini,last,lastTxt,k,z,w,c2}
 //   ok = riktig på første forsøk; given/givenTxt/first = første svar; fixed = feil først, riktig på andre; last/lastTxt = andre svar.
-//   S.score = antall riktige på første forsøk. Hjelpefunksjonene for løkka ligger i learning.js (loop*).
+//   revenge/mini = ekstra oppgave (teller ikke); c2 = bare to valg.
+//   S.score = antall riktige på første forsøk på NYE oppgaver. Hjelpefunksjonene for løkka ligger i learning.js (loop*).
 let S={grade:null,topicId:null,topic:null,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false};
 const TQ=8;
 
@@ -61,8 +62,8 @@ function loadQuestion(){
   const qd=loopNext(); // learning.js: revansj, minioppgave, ingen gjentakelse, maks én 0-oppgave, tak på svake
   S.current=qd;S.answered=false;qd._t0=Date.now();
   const cat=document.getElementById('q-cat');
-  cat.textContent=qd.revenge?'🔁 Revansj!':(qd.type||'');
-  cat.classList.toggle('loop-rev',!!qd.revenge);
+  cat.textContent=qd.revenge?'🔁 Revansj!':qd.mini?'⚡ Lynoppgave':(qd.type||'');
+  cat.classList.toggle('loop-rev',!!(qd.revenge||qd.mini));
   const qt=document.getElementById('q-txt');
   qt.textContent=qd.q;qt.style.animation='none';void qt.offsetWidth;qt.style.animation='';
   qt.classList.toggle('q-long',/[a-zæøå]{4}/i.test(qd.q)&&qd.q.length>20);
@@ -82,7 +83,7 @@ function loadQuestion(){
   const ar=document.querySelector('#screen-game .ans-row');if(ar)ar.style.display=hasCh?'none':'';
   document.getElementById('numpad').style.display=hasCh?'none':'grid';
   updateBattleProg();
-  if(qd.revenge)setSpeech('Revansj! Nå klarer du den! 💪');
+  if(qd.revenge)setSpeech('Revansj! En som ligner! 💪');else if(qd.mini)setSpeech('Lynoppgave! Bonus! ⚡');
   if(typeof speakQ==='function')try{speakQ(qd);}catch(e){} // opplesing (speech.js)
 }
 // Valgoppgave: qd.choices er en liste med svaralternativ (tekst/tall); riktig er String(qd.ansTxt??qd.ans)
@@ -90,10 +91,11 @@ function isChoiceQ(qd){return !!(qd&&Array.isArray(qd.choices)&&qd.choices.lengt
 function choiceKey(qd){return String(qd.ansTxt!=null?qd.ansTxt:qd.ans);}
 function submitChoice(v,btn){if(S.answered)return;S.choiceBtn=btn||null;document.getElementById('ans-input').value=String(v);submitAnswer();}
 
+// Fremdrift: «Spørsmål k av 8» teller bare nye oppgaver; en ekstra vises som «🔁 Revansj!» / «⚡ Lynoppgave» uten å flytte telleren
 function updateBattleProg(){
-  const mx=loopMaxQ();
-  document.getElementById('prog-fill').style.width=(S.idx/mx*100)+'%';
-  document.getElementById('prog-label').textContent=`Spørsmål ${Math.min(S.idx+(S.answered?0:1),mx)} av ${mx}`;
+  const mx=loopMaxQ(),nd=Math.min(mx,loopNewDone()),cur=S.current,ex=loopIsExtra(cur);
+  document.getElementById('prog-fill').style.width=(nd/mx*100)+'%';
+  document.getElementById('prog-label').textContent=ex?(cur.revenge?'🔁 Revansj!':'⚡ Lynoppgave'):`Spørsmål ${Math.max(1,Math.min(nd+(S.answered?0:1),mx))} av ${mx}`;
   document.getElementById('score-label').textContent=`${S.score} ${S.score===1?'riktig':'riktige'}`;
   const cb=document.getElementById('combo-badge');
   document.getElementById('combo-num').textContent=S.combo;
@@ -107,22 +109,22 @@ document.getElementById('ans-input').addEventListener('keydown',e=>{
 document.getElementById('ans-input').addEventListener('input',e=>{const v=e.target.value.replace(/[^0-9,.\/ -]/g,'');if(v!==e.target.value)e.target.value=v;});
 
 // Prøv igjen: 1. feil → kort hint med bilde, nytt forsøk, ingen HP-tap. 2. feil (eller feil på Ja/Nei) → fasit + kort forklaring.
-// Bare første forsøk teller (ok, S.score, mestring, tilpasning). En bommet oppgave kommer igjen som «Revansj!».
+// Bare første forsøk på NYE oppgaver teller (ok, S.score, mestring, tilpasning). En bommet oppgave gir en søskenoppgave som «Revansj!» (ekstra).
 function submitAnswer(){
   if(S.answered||!S.current)return;
   const inp=document.getElementById('ans-input'),fb=document.getElementById('fb-box'),raw=inp.value.trim();
   if(raw==='')return;
   const qd=S.current,isCh=isChoiceQ(qd),given=isCh?raw:parseAns(raw),correct=qd.ans;
   if(given===null){inp.classList.add('wrong');setTimeout(()=>inp.classList.remove('wrong'),500);return;}
-  const ex=qd.ansTxt!=null&&!isCh?parseAns(qd.ansTxt):correct;
+  const ex=qd.ansTxt!=null&&!isCh?parseAns(qd.ansTxt):correct,xtra=loopIsExtra(qd);
   const ok=isCh?raw===choiceKey(qd):raw.includes('/')?Math.abs(given-ex)<1e-9:Math.abs(given-correct)<0.01;qd.givenTxt=raw;
   const second=!!qd._n;let e=qd._e;
-  if(!second){ // første forsøk: teller for mestring, tilpasning og feiltyper
+  if(!second){ // første forsøk: teller for mestring, tilpasning og feiltyper (ekstra oppgaver teller ikke)
     const misc=ok?null:detectMisc(qd,given);
-    e={q:qd.q,given,correct,ok,sub:qd.sub||'?',givenTxt:raw,correctTxt:qd.ansTxt||nf(correct),eq:qd.eq,first:raw,fixed:false,misc,revenge:!!qd.revenge,tid:S.topicId,strat:qd.strat||null,mini:!!qd.mini,k:loopKey(qd),z:isZeroQ(qd),w:!!qd._w};
+    e={q:qd.q,given,correct,ok,sub:qd.sub||'?',givenTxt:raw,correctTxt:qd.ansTxt||nf(correct),eq:qd.eq,first:raw,fixed:false,misc,revenge:!!qd.revenge,tid:S.topicId,strat:qd.strat||null,mini:!!qd.mini,k:loopKey(qd),z:isZeroQ(qd),w:!!qd._w,c2:loopTwo(qd)};
     S.questions.push(e);qd._e=e;
-    recordAttempt(S.grade,S.topicId,qd.sub||'_',ok);
-    if(qd.strat&&typeof famRecord==='function')famRecord(S.grade,S.topicId,qd.strat,ok);
+    if(!xtra){recordAttempt(S.grade,S.topicId,qd.sub||'_',ok);
+      if(qd.strat&&typeof famRecord==='function')famRecord(S.grade,S.topicId,qd.strat,ok);}
   }else{e.last=given;e.lastTxt=raw;}
   if(!ok&&!second&&loopCanRetry(qd))return loopRetry(qd,given,e.misc);
 
@@ -130,20 +132,21 @@ function submitAnswer(){
   S.answered=true;S.idx++;
   inp.disabled=true;document.getElementById('sub-btn').disabled=true;
   if(isCh){const ch=document.getElementById('q-choices');if(ch)[...ch.children].forEach(b=>{b.disabled=true;if(b.textContent===choiceKey(qd))b.classList.add('right');});if(!ok&&S.choiceBtn)S.choiceBtn.classList.add('wrong');}
-  statsLog(S.grade,S.topicId,e.ok,e.misc,Date.now()-(qd._t0||Date.now()));
+  statsLog(S.grade,S.topicId,e.ok,e.misc,Date.now()-(qd._t0||Date.now()),xtra);
   const mx=loopMaxQ(),again=!e.ok&&loopQueueRevenge(qd);
   loopHelpHide();
 
   if(ok){
-    if(second){e.fixed=true;S.combo=1;}else{S.score++;S.streak++;S.combo++;}
+    if(second){e.fixed=true;S.combo=1;}else{if(!xtra)S.score++;S.streak++;S.combo++;}
     inp.className='ans-input correct';
     fb.className='fb-box correct';
-    const ph=qd.revenge?{t:'🧠 Du lærte det!',m:'Revansj vunnet! 💪'}:second?{t:'🌟 Du fant det selv!',m:pick(['Godt jobba!','Sånn ja!','Du ga ikke opp!'])}:pick(CORRECT);
+    const ph=qd.revenge?{t:'🧠 Du lærte det!',m:'Revansj vunnet! 💪'}:second?{t:'🌟 Du fant det selv!',m:pick(['Godt jobba!','Sånn ja!','Du ga ikke opp!'])}:qd.mini?{t:'⚡ Lynrask!',m:'Bonus! 🎁'}:pick(CORRECT);
     fb.innerHTML=`<div class="fb-title">${ph.t}</div>${ph.m}`;
     sndOk();
-    // Fienden tar skade. Vanlig kamp: K.O. kommer først på siste oppgave (riktig og minst 6 av 8 riktige), så runden alltid er 8 oppgaver.
+    // Fienden tar skade. Vanlig kamp: K.O. kommer først når alle de nye oppgavene er gjort (riktig og minst 6 av 8 riktige).
+    // En K.O. avslutter runden (en revansj som venter, faller bort – den var bare en bonus).
     if(S.boss){if(!second)S.enemyHp=bossHit();}
-    else{const last=S.idx>=mx;let hp=S.enemyHp-((second?6:8+Math.min(S.combo,8))+(qd.revenge?4:0));
+    else{const last=loopNewDone()>=mx;let hp=S.enemyHp-((second?6:8+Math.min(S.combo,8))+(qd.revenge?4:0));
       if(last){if(hp<=0||S.score>=Math.ceil(mx*.75))hp=0;}else hp=Math.max(5,hp);
       S.enemyHp=Math.max(0,hp);}
     document.getElementById('enemy-hp').style.width=S.enemyHp+'%';
@@ -186,7 +189,7 @@ function submitAnswer(){
     inp.className='ans-input wrong';
     fb.className='fb-box wrong loop-reveal';
     const rv=renderVis(loopReveal(qd)),body=S.topic.fb(qd.q,given,correct);
-    fb.innerHTML=`<div class="fb-title">Se her! 👀</div>${loopNb(body)}${rv?`<div class="loop-vis">${rv}</div>`:''}${again?'<div class="loop-again">🔁 Du får den igjen snart!</div>':''}`;
+    fb.innerHTML=`<div class="fb-title">Se her! 👀</div>${loopNb(body)}${rv?`<div class="loop-vis">${rv}</div>`:''}${again?'<div class="loop-again">🔁 Snart får du en som ligner!</div>':''}`;
     sndBad();
     // Player takes damage (bare når svaret vises)
     S.playerHp=Math.max(10,S.playerHp-8);
@@ -200,11 +203,11 @@ function submitAnswer(){
   }
   document.getElementById('numpad').style.display='none';
   updateBattleProg();
-  const nb=document.getElementById('next-btn');
-  nb.textContent=(S.idx>=mx||S.enemyDefeated)?'Se resultat 🏁':'Neste →';
+  const nb=document.getElementById('next-btn'),over=!S.boss&&loopRoundOver();
+  nb.textContent=over?'Se resultat 🏁':'Neste →';
   nb.style.display='block';
   if(S.boss){bossAfterAnswer();if(ok&&second&&!S.enemyDefeated&&!S.bossFled)setSpeech(`${S.bossEmoji||''} Hmpf! Du fant det til slutt!`.trim());}
-  const end=S.boss?(S.enemyDefeated||S.bossFled||S.bossOver):(S.idx>=mx||S.enemyDefeated);
+  const end=S.boss?(S.enemyDefeated||S.bossFled||S.bossOver):over;
   if(ok&&!end)loopArmAuto();
 }
 // Første feil: hint med bilde i oppgavekortet, samme oppgave igjen (ingen HP-tap, ingen fasit)
@@ -225,14 +228,15 @@ function loopRetry(qd,given,misc){
   if(loopFocusOK())inp.focus({preventScroll:true});
 }
 
-function handleNext(){if(!S.answered||S.chestDone)return;loopDisarm();if(S.boss)return bossNext();if(S.idx>=loopMaxQ()||S.enemyDefeated)showChest();else loadQuestion();}
+function handleNext(){if(!S.answered||S.chestDone)return;loopDisarm();if(S.boss)return bossNext();if(loopRoundOver())showChest();else loadQuestion();}
 
 // ============================================================
 // CHEST + RESULTS
 // ============================================================
-// Runde: c = riktige på første forsøk (S.questions[i].ok), n = antall oppgaver (en K.O. kan avslutte tidlig).
+// Runde: c = riktige på første forsøk av de NYE oppgavene (revansj og minioppgave er ekstra og teller ikke), n = antall nye oppgaver.
 // s10 = 0–10-skala for rekorder (hs_*), 10 bare uten feil. Stjernene per tema ligger i mastery.js (recordRound).
-function roundScore(){const Q=S.questions||[],n=Q.length||TQ,c=Q.filter(q=>q.ok).length,perfect=Q.length>0&&c>=n,s10=perfect?10:Math.min(9,Math.round(c/n*10));return{n,c,s10,pct:c/n,perfect};}
+function roundNew(){return (S.questions||[]).filter(q=>!q.revenge&&!q.mini);}
+function roundScore(){const Q=roundNew(),n=Q.length||TQ,c=Q.filter(q=>q.ok).length,perfect=Q.length>0&&c>=n,s10=perfect?10:Math.min(9,Math.round(c/n*10));return{n,c,s10,pct:c/n,perfect};}
 function mstSay(t){if(typeof speak==='function')try{speak(t);}catch(e){}} // opplesing (speech.js), følger innstillingen
 // Kort, barnevennlig overskrift for en runde (ingen prosent)
 function mstRoundHead(pct,perfect){
@@ -251,12 +255,12 @@ function showChest(){
   const xpEarned=s10*10+(pct>=1?50:pct>=.8?20:0);
   // Mynter for læring (fun.js): svarene ga mynter underveis; ny ⭐ og «Ny rekord!» gir ekstra. 1.–2. klasse: enkel kiste.
   const fc=typeof funChest==='function'?funChest(res,s10):{bonus:s10+newStars*3,total:s10+newStars*3,rec:false,small:false},coinsEarned=fc.total;
-  const nx=mstNext(g,tid),h=mstRoundHead(pct,perfect);
+  const nx=mstNext(g,tid),h=mstRoundHead(pct,perfect),eff=res.eff?2:mstEffOf(g,tid); // 💪 «Øvd godt» (innsats, ikke ⭐)
   if(S.enemyDefeated)h.sub='💥 K.O.! '+h.sub;
 
   document.getElementById('chest-emoji').textContent=h.emoji;
   document.getElementById('chest-title').textContent=h.title;
-  document.getElementById('chest-sub').innerHTML=`${h.sub}<div class="mst-chest-stars">${mstStarsHTML(res.to,res.from,hasCrown(g,tid))}</div><div class="mst-tip">${nx.txt}</div>`;
+  document.getElementById('chest-sub').innerHTML=`${h.sub}<div class="mst-chest-stars">${mstStarsHTML(res.to,res.from,hasCrown(g,tid),eff)}</div><div class="mst-tip">${nx.txt}</div>`;
   document.getElementById('chest-rewards').innerHTML=typeof funChestTiles==='function'?funChestTiles(fc,c,n,xpEarned):`<div class="chest-reward"><span class="chest-reward-icon">🪙</span><div class="chest-reward-val">+${coinsEarned}</div></div>`;
   const oldL=curLvl();
   prog.xp+=xpEarned;prog.coins+=fc.bonus;saveProg();renderHUD();
@@ -267,7 +271,7 @@ function showChest(){
   if(perfect)unlockAchievement('perfect');
   sidekickReact(pct>=.8?'celebrate':'happy');
   pgChest(res,xpEarned,coinsEarned,pct); // PROGRESSION: count-ups, star stamps, streak, NIVÅ OPP
-  mstSay(`${h.title} ${newStars?(res.to>=3?'Mestret!':'Ny stjerne!'):''} ${fc.rec?'Ny rekord!':''} ${nx.say}`);
+  mstSay(`${h.title} ${newStars?(res.to>=3?'Mestret!':'Ny stjerne!'):res.eff?'Du har øvd godt!':''} ${fc.rec?'Ny rekord!':''} ${nx.say}`);
 }
 
 function closeChest(){
@@ -286,7 +290,7 @@ function buildResults(){
   document.getElementById('res-mascot').textContent=h.emoji;
   document.getElementById('res-title').textContent=h.title;
   document.getElementById('res-sub').textContent=h.sub;
-  document.getElementById('res-stars').innerHTML=mstStarsHTML(topicStars(g,tid),null,hasCrown(g,tid)); // temaets stjerner
+  document.getElementById('res-stars').innerHTML=mstStarsHTML(topicStars(g,tid),null,hasCrown(g,tid),mstEffOf(g,tid)); // temaets stjerner (💪 = øvd godt)
   document.getElementById('res-num').textContent=c;
   const den=document.querySelector('#res-ring .score-den');if(den)den.textContent=`av ${n}`;
   document.getElementById('res-ring').style.background=`conic-gradient(#00ff88 ${Math.round(c/n*360)}deg,rgba(255,255,255,.1) 0)`;
@@ -296,15 +300,15 @@ function buildResults(){
   box.className='mst-res';
   const guide=typeof LEARN_GUIDES==='object'&&LEARN_GUIDES[tid]&&LEARN_GUIDES[tid].length;
   box.innerHTML=`<div class="mst-tip">${nx.txt}</div>`+(low?`<div class="mst-res-btns">${guide?`<button class="mst-btn mst-learn" onclick="showLearn(${g},'${tid}')">📖 Se hvordan</button>`:''}<button class="mst-btn mst-retry" onclick="retrySession()">🔁 Prøv igjen</button></div>`:'');
-  // Det vi øver mer på
-  const errs={};S.questions.forEach(q=>{if(!q.ok)errs[q.sub]=(errs[q.sub]||0)+1;});
+  // Det vi øver mer på (bare nye oppgaver)
+  const NQ=roundNew(),errs={};NQ.forEach(q=>{if(!q.ok)errs[q.sub]=(errs[q.sub]||0)+1;});
   const subs=Object.entries(errs).sort((a,b)=>b[1]-a[1]);
   const as=document.getElementById('adapt-sec');
   if(!subs.length){as.innerHTML='<div style="font-family:Fredoka One,cursive;font-size:.9rem;color:var(--green)">🌟 Ingen feil denne runden!</div>';}
-  else{let h2='<div class="adapt-title">🎯 Dette øver vi mer på:</div>';subs.slice(0,3).forEach(([sub,k])=>{const p=Math.round(k/S.questions.filter(q=>q.sub===sub).length*100);h2+=`<div class="adapt-row"><span style="min-width:80px;font-size:.75rem">${fmtSub(sub)}</span><div class="adapt-bar-wrap"><div class="adapt-bar" style="width:${p}%;background:${p>60?'var(--red)':p>30?'var(--gold)':'var(--green)'}"></div></div></div>`;});as.innerHTML=h2;}
-  // Rows (fixed = feil først, riktig på andre forsøk)
+  else{let h2='<div class="adapt-title">🎯 Dette øver vi mer på:</div>';subs.slice(0,3).forEach(([sub,k])=>{const p=Math.round(k/NQ.filter(q=>q.sub===sub).length*100);h2+=`<div class="adapt-row"><span style="min-width:80px;font-size:.75rem">${fmtSub(sub)}</span><div class="adapt-bar-wrap"><div class="adapt-bar" style="width:${p}%;background:${p>60?'var(--red)':p>30?'var(--gold)':'var(--green)'}"></div></div></div>`;});as.innerHTML=h2;}
+  // Rows (fixed = feil først, riktig på andre forsøk; 🔁/⚡ = ekstra oppgave som ikke teller)
   const rows=document.getElementById('res-rows');rows.innerHTML='';
-  S.questions.forEach(q=>{const fx=!q.ok&&!!q.fixed,k=q.ok?'ok':fx?'fix':'bad',ct=q.correctTxt??q.correct;const d=document.createElement('div');d.className='rb-row '+k;d.innerHTML=`<span class="rb-q">${(q.eq||q.q).replace(/, x = \?$/,'').replace(/ = \?$/,'')}</span><span class="rb-a ${k}">${q.ok?`= ${ct} ✓`:fx?`= ${ct} ✓ <small>(2. forsøk)</small>`:`${q.givenTxt??q.given} ✗ (${ct})`}</span>`;rows.appendChild(d);});
+  S.questions.forEach(q=>{const fx=!q.ok&&!!q.fixed,k=q.ok?'ok':fx?'fix':'bad',ct=q.correctTxt??q.correct;const d=document.createElement('div');d.className='rb-row '+k+(q.revenge||q.mini?' rb-extra':'');d.innerHTML=`<span class="rb-q">${q.revenge?'🔁 ':q.mini?'⚡ ':''}${(q.eq||q.q).replace(/, x = \?$/,'').replace(/ = \?$/,'')}</span><span class="rb-a ${k}">${q.ok?`= ${ct} ✓`:fx?`= ${ct} ✓ <small>(2. forsøk)</small>`:`${q.givenTxt??q.given} ✗ (${ct})`}</span>`;rows.appendChild(d);});
   saveHS();renderHS();
   // World badges (worldN = all required topics of both grades of WORLDS[N-1] mastered) + rebuild maps now that hs is saved
   WORLDS.forEach((w,i)=>{if(w.grades.every(gg=>{const ts=mstCore(gg);return ts.length>0&&ts.every(t=>isTopicMastered(gg,t.id));}))unlockAchievement('world'+(i+1));});
@@ -330,12 +334,12 @@ function showParentReport(){
   document.getElementById('pr-wrong').textContent=n-c;
   document.getElementById('pr-pct').textContent=Math.round(c/n*100)+'%';
   document.getElementById('pr-stars').textContent=mstStarsTxt(st)+(hasCrown(g,tid)?' 👑':'');
-  const ok=S.questions.filter(q=>q.ok),bad=S.questions.filter(q=>!q.ok),fixed=bad.filter(q=>q.fixed);
+  const NQ=roundNew(),ok=NQ.filter(q=>q.ok),bad=NQ.filter(q=>!q.ok),fixed=bad.filter(q=>q.fixed); // bare nye oppgaver (ekstra teller ikke)
   document.getElementById('pr-strengths').innerHTML=(ok.length?`<div class="pr-strength">Riktig på første forsøk: ${ok.length} av ${n} oppgaver i "${S.topic.name}"</div>`:
     '<div class="pr-weakness">Ingen riktige på første forsøk denne runden</div>')+(fixed.length?`<div class="pr-strength">Rettet selv på andre forsøk: ${fixed.length}</div>`:'')+(S.enemyDefeated?`<div class="pr-strength">💥 Vant kampen på K.O. etter ${n} av ${TQ} oppgaver</div>`:'');
   const subE={};bad.forEach(q=>subE[q.sub]=(subE[q.sub]||0)+1);
   document.getElementById('pr-weaknesses').innerHTML=Object.entries(subE).sort((a,b)=>b[1]-a[1]).map(([s,k])=>`<div class="pr-weakness">${fmtSub(s)}: ${k} feil</div>`).join('')||'<div class="pr-strength">Ingen svake punkter!</div>';
-  document.getElementById('pr-breakdown').innerHTML=S.questions.map((q,i)=>`<div class="pr-qrow"><span>${i+1}. ${(q.eq||q.q).replace(/, x = \?$/,'').replace(/ = \?$/,'')}</span><span style="color:${q.ok?'var(--green)':q.fixed?'var(--gold)':'var(--red)'};font-weight:800">${q.ok?`= ${q.correctTxt??q.correct} ✓`:q.fixed?`= ${q.correctTxt??q.correct} ✓ (2. forsøk)`:`${q.givenTxt??q.given} ✗ (${q.correctTxt??q.correct})`}</span></div>`).join('');
+  document.getElementById('pr-breakdown').innerHTML=S.questions.map((q,i)=>`<div class="pr-qrow"><span>${i+1}. ${q.revenge?'🔁 ':q.mini?'⚡ ':''}${(q.eq||q.q).replace(/, x = \?$/,'').replace(/ = \?$/,'')}</span><span style="color:${q.ok?'var(--green)':q.fixed?'var(--gold)':'var(--red)'};font-weight:800">${q.ok?`= ${q.correctTxt??q.correct} ✓`:q.fixed?`= ${q.correctTxt??q.correct} ✓ (2. forsøk)`:`${q.givenTxt??q.given} ✗ (${q.correctTxt??q.correct})`}</span></div>`).join('');
   const rec=document.getElementById('pr-rec');
   const goal=` Stjerner i temaet: ${mstStarsTxt(st)}. Neste mål: ${nx.say}`;
   if(perfect)rec.textContent='Perfekt resultat!'+goal;

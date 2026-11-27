@@ -316,9 +316,11 @@ function topicPlayed(g,id){
   return false;
 }
 // Start et tema: Lær første gang (hvis temaet har en guide), ellers rett i kamp
+// 💪 «Øvd godt» uten ⭐: Lær vises igjen én gang (merket '<g>:<id>:eff' i mh_learn_seen)
 function startTopic(g,id){
   const st=LEARN_GUIDES[id];
   if(st&&st.length&&!isLearnSeen(g,id)&&!topicPlayed(g,id)){showLearn(g,id,{auto:true});return 'learn';}
+  if(st&&st.length&&typeof topicEffort==='function'&&topicEffort(g,id)&&!isLearnSeen(g,id+':eff')){markLearnSeen(g,id+':eff');showLearn(g,id,{auto:true});return 'learn';}
   startGame(g,id);return 'game';
 }
 

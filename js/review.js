@@ -1,13 +1,15 @@
 // Mattehelten – «Trollet er tilbake!»: daglig repetisjonskamp på mestrede temaer (gullkrone)
 // Alle js-filer deler globalt navnerom (vanlige <script>-tagger i fast rekkefølge, se index.html).
 //
-// Hver dag (til barnet har vunnet den dagen) dukker trollet opp på klassekartet og temakartet når det finnes noe
-// å repetere: temaer med ⭐⭐⭐ (eller ⭐ hvis ingen tema er mestret ennå) som ikke er øvd på i dag.
-// 6 oppgaver fra opptil 3 temaer i samme trinn, de som er øvd på for lengst siden. Seier (≥ 5 av 6 på første forsøk)
-// → 👑 på de mestrede temaene. Tar aldri noe bort: taper barnet, kan det prøve igjen, eller trollet venter.
-// Kampen bruker boss-motoren (boss.js: bossBegin med S.troll). Lagring: mh_review = {day,g,ids,won,mastered}
-// (dagens valg); siste repetisjonsdag per tema (rv) og kronen (cr) ligger i mh_learn (mastery.js).
-const TROLL_Q=6,TROLL_NEED=5;
+// Spredt repetisjon: trollet dukker opp på klassekartet og temakartet bare når et tema med ⭐⭐⭐ er «modent»:
+//   ✨ «Puss opp» (trollet fant noe glemt en tidligere dag) kommer først, ellers minst TROLL_GAP dager siden temaet ble øvd,
+//   og etter 👑 tidligst om TROLL_GAP_CROWN dager. Uten ⭐⭐⭐ kommer ikke trollet (det er ingen krone å vinne).
+// 6 oppgaver fra opptil 3 temaer i samme trinn (2 hver), ingen revansj. Seier = ≥ 5 av 6 på første forsøk; 👑 krever i tillegg
+// at alle temaets trolloppgaver er riktige (2 av 2). Et tema med feil får ikke ny repetisjonsdag (rv), men pu («Puss opp»),
+// så det kommer først neste dag. Tar aldri noe bort: taper barnet, kan det prøve igjen samme dag.
+// Kampen bruker boss-motoren (boss.js: bossBegin med S.troll). Lagring: mh_review = {day,g,ids,won,mastered,pu}
+// (dagens valg; mastered = en krone kan vinnes); rv, pu og kronen (cr) per tema ligger i mh_learn (mastery.js).
+const TROLL_Q=6,TROLL_NEED=5,TROLL_GAP=2,TROLL_GAP_CROWN=7;
 const TROLL_BACK={name:'Glemme-trollet',emoji:'🧌',
   taunt:'Hå hå! Jeg er tilbake! Husker du fortsatt dette?',
   hit:['Au! Du husket det!','Hæ?! Ikke glemt?!','Uff, du er god!','Trollnesa mi klør!'],
@@ -18,18 +20,27 @@ if(typeof BADGES!=='undefined'&&!BADGES.some(b=>b.id==='troll_crown')){
   ACHIEVEMENTS.troll_crown={icon:'👑',title:'Gullkrone!',sub:'Vinn over trollet som kom tilbake'};
 }
 
-// Temaer som kan repeteres i dag, eldst øvd først (uten krone først ved likt)
+// Er et mestret tema modent for repetisjon i dag? ✨ Puss opp fra en tidligere dag, ellers avstand siden sist (lengre etter 👑)
+function trollRipe(g,id,today){
+  const e=mstGet(g,id)||{};if(e.pu&&e.pu<today)return true;
+  const ago=mstAgo(mstLastDay(g,id),today);
+  return ago>=TROLL_GAP&&(!e.cr||mstAgo(e.rv||e.cr,today)>=TROLL_GAP_CROWN);
+}
+// Temaer som kan repeteres i dag: bare ⭐⭐⭐. «Puss opp» først, så eldst øvd, så uten krone, så lavest trinn
 function trollPool(today){
   const all=[];
-  Object.keys(CUR).forEach(k=>{const g=+k;if(!isGradeUnlocked(g))return;(CUR[g].topics||[]).forEach(t=>{const s=topicStars(g,t.id);if(s>=1)all.push({g,id:t.id,s,last:mstLastDay(g,t.id),cr:hasCrown(g,t.id)?1:0});});});
-  const anyM=all.some(x=>x.s>=3);
-  return all.filter(x=>(!anyM||x.s>=3)&&x.last<today).sort((a,b)=>a.last<b.last?-1:a.last>b.last?1:(a.cr-b.cr)||(a.g-b.g));
+  Object.keys(CUR).forEach(k=>{const g=+k;if(!isGradeUnlocked(g))return;(CUR[g].topics||[]).forEach(t=>{
+    if(topicStars(g,t.id)<3||!trollRipe(g,t.id,today))return;const e=mstGet(g,t.id)||{};
+    all.push({g,id:t.id,s:3,last:mstLastDay(g,t.id),cr:hasCrown(g,t.id)?1:0,pu:e.pu&&e.pu<today?1:0});});});
+  return all.sort((a,b)=>(b.pu-a.pu)||(a.last<b.last?-1:a.last>b.last?1:0)||(a.cr-b.cr)||(a.g-b.g));
 }
 function trollPick(today){
   const p=trollPool(today);if(!p.length)return null;
-  const g=p[0].g;
-  return{day:today,g,ids:p.filter(x=>x.g===g).slice(0,3).map(x=>x.id),won:false,mastered:p[0].s>=3};
+  const g=p[0].g,sel=p.filter(x=>x.g===g).slice(0,3);
+  return{day:today,g,ids:sel.map(x=>x.id),won:false,mastered:sel.some(x=>!x.cr),pu:sel.filter(x=>x.pu).map(x=>x.id)};
 }
+// 👑 for et tema: alle temaets trolloppgaver riktige på første forsøk (2 av 2)
+function trollCrownOk(st){return !!(st&&st.n>0&&st.ok===st.n);}
 function trollState(){const r=mhLoad('mh_review',null);return r&&typeof r==='object'&&!Array.isArray(r)?r:null;}
 // Dagens tilbud {day,g,ids,won,mastered} eller null (vunnet i dag, eller ingenting å repetere). Fast for hele dagen.
 function trollToday(){
@@ -37,7 +48,7 @@ function trollToday(){
   if(r&&r.day===today){
     if(r.won)return null;
     const ts=CUR[r.g]?.topics||[];
-    if(Array.isArray(r.ids)&&r.ids.length&&r.ids.every(id=>ts.some(t=>t.id===id)))return r;
+    if(Array.isArray(r.ids)&&r.ids.length&&r.ids.every(id=>ts.some(t=>t.id===id)&&topicStars(r.g,id)>=3))return r; // dagens valg står (også etter tap)
   }
   r=trollPick(today);
   if(r)mhSave('mh_review',r);
@@ -56,7 +67,8 @@ function trollDecorate(where,g){
   if(!el){el=document.createElement('button');el.id=id;el.type='button';}
   el.className='troll-offer';
   const ts=trollTopics(r);
-  el.innerHTML=`<span class="troll-offer-icon">🧌</span><span class="troll-offer-txt"><b>Trollet er tilbake!</b><span>Husker du ${ts.map(t=>trollEsc(t.icon)).join(' ')}?${r.mastered?' Vinn 👑':''}</span></span><span class="troll-offer-go">⚔️</span>`;
+  const pu=Array.isArray(r.pu)&&r.pu.length?ts.filter(t=>r.pu.includes(t.id)):[];
+  el.innerHTML=`<span class="troll-offer-icon">🧌</span><span class="troll-offer-txt"><b>Trollet er tilbake!</b><span>${pu.length?`✨ Puss opp ${pu.map(t=>trollEsc(t.icon)).join(' ')}! `:''}Husker du ${ts.map(t=>trollEsc(t.icon)).join(' ')}?${r.mastered?' Vinn 👑':''}</span></span><span class="troll-offer-go">⚔️</span>`;
   el.onclick=()=>openTrollIntro(where==='topics'?(g||currentGrade):'grades');
   if(where==='topics'){
     const wrap=document.getElementById('topic-map-wrap');if(wrap&&wrap.insertAdjacentElement)wrap.insertAdjacentElement('beforebegin',el);
@@ -80,7 +92,8 @@ function openTrollIntro(from){
   document.getElementById('bi-name').textContent=b.name;
   document.getElementById('bi-grade').textContent=`${TROLL_Q} oppgaver · ${TROLL_NEED} riktige vinner${r.mastered?' 👑':''}`;
   document.getElementById('bi-taunt').textContent=b.taunt;
-  document.getElementById('bi-skills').innerHTML=`<div class="boss-skills-lbl">Husker du dette?</div><div class="boss-chips">${ts.map(t=>`<span class="boss-chip">${trollEsc(t.icon)} ${trollEsc(t.name)}</span>`).join('')}</div>`;
+  const pu=Array.isArray(r.pu)?r.pu:[];
+  document.getElementById('bi-skills').innerHTML=`<div class="boss-skills-lbl">Husker du dette?</div><div class="boss-chips">${ts.map(t=>`<span class="boss-chip">${pu.includes(t.id)?'✨ ':''}${trollEsc(t.icon)} ${trollEsc(t.name)}</span>`).join('')}</div>`;
   document.getElementById('bi-test').classList.toggle('show',!!bossTestSnap);
   const o=document.getElementById('boss-intro');
   o.classList.remove('final');o.classList.add('troll','show');
@@ -97,13 +110,15 @@ function startTroll(){
 // ---- Resultat (kalles fra showBossResult når S.troll) ----
 function trollResult(win){
   const g=S.grade,b=TROLL_BACK,today=mhDay(0),ts=S.bossTopics||[],c=bossFirstOk(),n=S.bossLog.filter(Boolean).length||S.questions.length;
-  const st0=trollState(),mastered=st0&&st0.day===today?!!st0.mastered:ts.some(t=>isTopicMastered(g,t.id));
-  ts.forEach(t=>mstMarkReview(g,t.id,today));
+  const full=t=>trollCrownOk(S.bossStats[t.id]),forgot=ts.filter(t=>S.bossStats[t.id]&&!full(t));
+  // Husket (alle riktige) → ny repetisjonsdag; glemt (minst én feil) → «✨ Puss opp», kommer først neste dag
+  ts.forEach(t=>{if(full(t))mstMarkReview(g,t.id,today);else if(S.bossStats[t.id])mstMarkForgot(g,t.id,today);});
   const crowns=[];
   if(win){
-    ts.forEach(t=>{if(isTopicMastered(g,t.id)&&mstSetCrown(g,t.id,today))crowns.push(t);});
+    ts.forEach(t=>{if(full(t)&&isTopicMastered(g,t.id)&&mstSetCrown(g,t.id,today))crowns.push(t);});
     const st=trollState()||{};st.day=today;st.won=true;if(!st.g){st.g=g;st.ids=ts.map(t=>t.id);}mhSave('mh_review',st);
   }
+  const allCr=ts.length&&ts.every(t=>hasCrown(g,t.id));
   const xp=win?40:10,coins=win?8:2,oldL=curLvl();
   prog.xp+=xp;prog.coins+=coins;saveProg();renderHUD();
   const newL=curLvl();
@@ -118,9 +133,9 @@ function trollResult(win){
   em.className='boss-emoji '+(win?'boss-ko':'boss-run');
   em.textContent=win?(crowns.length?'👑':'🏆'):b.emoji+'💨';
   document.getElementById('br-title').textContent=win?'Du husket det! 🎉':'Nesten! 💪';
-  const names=crowns.map(t=>`${trollEsc(t.icon)} ${trollEsc(t.name)}`).join(', ');
+  const names=crowns.map(t=>`${trollEsc(t.icon)} ${trollEsc(t.name)}`).join(', '),fg=forgot.map(t=>trollEsc(t.icon)).join(' ');
   document.getElementById('br-sub').innerHTML=win?
-    `${b.emoji} «${b.ko}»${crowns.length?`<div class="boss-unlock">👑 Gullkrone: ${names}!</div>`:mastered?'':'<div class="boss-practice">Få ⭐⭐⭐ på et tema, så kan du vinne 👑!</div>'}<div class="boss-practice">Trollet kommer tilbake en annen dag.</div>`:
+    `${b.emoji} «${b.ko}»${crowns.length?`<div class="boss-unlock">👑 Gullkrone: ${names}!</div>`:allCr&&!forgot.length?'<div class="boss-unlock">👑 Du husker fortsatt alt!</div>':''}${forgot.length?`<div class="boss-practice">✨ ${fg}: ${forgot.some(t=>!hasCrown(g,t.id))?'alle riktige gir 👑. ':''}Trollet kommer igjen i morgen!</div>`:'<div class="boss-practice">Trollet kommer tilbake en annen dag.</div>'}`:
     `${b.name} slapp unna! 💨<br>Prøv igjen – du klarer det!`;
   const chips=ts.filter(t=>S.bossStats[t.id]).map(t=>{const s=S.bossStats[t.id];return `<span class="boss-chip${s.ok>0?' good':''}">${hasCrown(g,t.id)?'👑':s.ok===s.n?'⭐':s.ok>0?'✓':'💪'} ${trollEsc(t.icon)} ${trollEsc(t.name)} · ${s.ok} av ${s.n}</span>`;}).join('');
   document.getElementById('br-skills').innerHTML=chips?`<div class="boss-skills-lbl">🧠 Dette husket du:</div><div class="boss-chips">${chips}</div>`:'';

@@ -13,7 +13,9 @@ module.exports=function({R,ok,CUR,ls,els}){
       if(R('S.answered'))return;
     }
   };
-  const round=(g,id,rightFn)=>{R(`startGame(${g},'${id}')`);for(let i=0;i<30&&!R(`S.questions.length>=loopMaxQ()&&S.answered`);i++){answer(rightFn(i));if(!(R('S.questions.length>=loopMaxQ()')))R('handleNext()');}R('handleNext()');};
+  const round=(g,id,rightFn)=>{R(`startGame(${g},'${id}')`);for(let i=0;i<30&&!R('S.chestDone');i++){answer(rightFn(i));R('handleNext()');}};
+  // Mynter for svarene i runden (F1): 2 (1 i mestret tema), 1 for tovalg (også ⚡ Lynoppgave), +1 for svak regnemåte
+  const ansCoins=(Q,m)=>Q.filter(x=>x.ok).reduce((a,x)=>a+(x.c2?1:m?1:2)+(x.w&&!x.c2?1:0),0);
   const fight=(g,rightFn)=>{R(`startBoss(${g})`);for(let i=0;i<40&&!R('S.bossOver');i++){answer(rightFn(i));R('handleNext()');}};
 
   // ---- 1) Rang fra boss-seire: Lærling → Kriger (1) → Mester (2) → Legende (4) → Mattegud (alle) ----
@@ -72,7 +74,7 @@ module.exports=function({R,ok,CUR,ls,els}){
   c0=R('prog.coins');sub('9',1,'add10');ok(R('prog.coins')===c0&&!R('S.answered'),'coins: feil svar gir ingen mynter (nytt forsøk)');
   els['ans-input'].value='7';R('submitAnswer()');ok(R('prog.coins')===c0&&R('S.questions[0].fixed')===true,'coins: riktig på andre forsøk gir 0 🪙');
   ok(R("mhLoad('mh_fun',{}).fix")===1&&R("mhLoad('mh_fun',{}).fx")===1,'coins: «rettet selv» telles');
-  R(`recordRound(1,'add10',7,8,'${D1}')`);R(`recordRound(1,'add10',8,8,'${D0}')`);ok(R("isTopicMastered(1,'add10')"),'coins: add10 er mestret');
+  R(`recordRound(1,'add10',7,8,'${D1}')`);R(`recordRound(1,'add10',7,8,'${D1}')`);R(`recordRound(1,'add10',8,8,'${D0}')`);ok(R("isTopicMastered(1,'add10')"),'coins: add10 er mestret');
   c0=R('prog.coins');sub('7',1,'add10');ok(R('prog.coins')-c0===1,'coins: 1 🪙 i mestret tema');
   ok(R("funAnswerCoins(1,'sub10')")===2&&R("funAnswerCoins(1,'add10')")===1,'coins: funAnswerCoins');
   ok(!R('unlockedAchievements.coins50')&&!R('unlockedAchievements.coins100'),'coins: ingen myntmerker');
@@ -83,20 +85,21 @@ module.exports=function({R,ok,CUR,ls,els}){
   let Q=R('S.questions'),ok1=Q.filter(x=>x.ok).length,res=R("mstGet(1,'sub10')");
   ok(res&&R("topicStars(1,'sub10')")===2,'chest: feilfri første runde gir ⭐⭐');
   const day1=R('prog.days'),bonusDay=5;
-  ok(R('prog.coins')-c0===ok1*2+2*5+bonusDay,`chest: mynter = 2 per riktig + 5 per ny ⭐ + dagbonus (${R('prog.coins')-c0})`);
-  ok(new RegExp(`\\+${ok1*2+10}<`).test(els['chest-rewards'].innerHTML),'chest: kista viser alle myntene fra runden');
+  const ac=ansCoins(Q,false);
+  ok(R('prog.coins')-c0===ac+2*5+bonusDay,`chest: mynter = 2 per riktig (1 for tovalg) + 5 per ny ⭐ + dagbonus (${R('prog.coins')-c0})`);
+  ok(new RegExp(`\\+${ac+10}<`).test(els['chest-rewards'].innerHTML),'chest: kista viser alle myntene fra runden');
   ok(!/✨|✅/.test(els['chest-rewards'].innerHTML)&&!/rekord/.test(els['chest-rewards'].innerHTML),'chest: 1.–2. klasse: bare mynter (ingen XP/tall), ingen rekord første gang');
   R('closeChest()');
   // Ny rekord: slår beste runde i temaet
   reset();ls.set('hs_1_sub10',JSON.stringify([{score:6,date:'1.1.2026'}]));c0=R('prog.coins');round(1,'sub10',()=>true);
   ok(/Ny rekord/.test(els['chest-rewards'].innerHTML),'chest: «Ny rekord!» når runden slår beste');
-  ok(R('prog.coins')-c0===16+10+5+5,`chest: rekord gir +5 🪙 (${R('prog.coins')-c0})`);
+  ok(R('prog.coins')-c0===ansCoins(R('S.questions'),false)+10+5+5,`chest: rekord gir +5 🪙 (${R('prog.coins')-c0})`);
   R('closeChest()');
   reset();ls.set('hs_1_sub10',JSON.stringify([{score:10,date:'1.1.2026'}]));round(1,'sub10',()=>true);ok(!/rekord/.test(els['chest-rewards'].innerHTML),'chest: ingen rekord når beste ikke slås');
   R('closeChest()');
   // Mestret tema gir halvparten
-  reset();R(`recordRound(1,'sub10',7,8,'${D1}')`);R(`recordRound(1,'sub10',8,8,'${D3}')`);R(`recordRound(1,'sub10',8,8,'${D1}')`);ok(R("isTopicMastered(1,'sub10')"),'chest: sub10 mestret');
-  R(`prog.lastDay='${D0}'`);c0=R('prog.coins');round(1,'sub10',()=>true);ok(R('prog.coins')-c0===8,`chest: feilfri runde i mestret tema gir 8 🪙 (${R('prog.coins')-c0})`);
+  reset();R(`recordRound(1,'sub10',7,8,'${D3}')`);R(`recordRound(1,'sub10',8,8,'${D3}')`);R(`recordRound(1,'sub10',8,8,'${D1}')`);ok(R("isTopicMastered(1,'sub10')"),'chest: sub10 mestret');
+  R(`prog.lastDay='${D0}'`);c0=R('prog.coins');round(1,'sub10',()=>true);{const Q=R('S.questions');ok(R('prog.coins')-c0===ansCoins(Q,true)&&ansCoins(Q,true)>=8,`chest: feilfri runde i mestret tema gir 1 🪙 per riktig (${R('prog.coins')-c0})`);}
   R('closeChest()');
   // Større klasser: full kiste
   reset();round(3,CUR[3].topics[0].id,()=>true);ok(/✅/.test(els['chest-rewards'].innerHTML)&&/✨/.test(els['chest-rewards'].innerHTML),'chest: 3. klasse viser fortsatt tall');
@@ -106,7 +109,7 @@ module.exports=function({R,ok,CUR,ls,els}){
   reset();ok(R('funCheckBadges()').length===0,'badge: ingen merker for ny spiller');
   R("mhSave('mh_fun',{fix:9,rev:10})");let got=R('funCheckBadges(true)');ok(got.includes('g_rev10')&&!got.includes('g_fix10'),'badge: 10 revansjer gir merke, 9 rettet gir ikke');
   R("mhSave('mh_fun',{fix:10,rev:10})");ok(R('funCheckBadges(true)').join()==='g_fix10'&&R('unlockedAchievements.g_fix10'),'badge: rettet selv 10 ganger');
-  reset();R(`recordRound(1,'add10',7,8,'${D1}')`);R(`recordRound(1,'add10',8,8,'${D0}')`);got=R('funCheckBadges()');ok(got.includes('g_star3')&&!got.includes('g_master3'),'badge: første ⭐⭐⭐');
+  reset();R(`recordRound(1,'add10',7,8,'${D1}')`);R(`recordRound(1,'add10',7,8,'${D1}')`);R(`recordRound(1,'add10',8,8,'${D0}')`);got=R('funCheckBadges()');ok(got.includes('g_star3')&&!got.includes('g_master3'),'badge: første ⭐⭐⭐');
   CUR[1].topics.slice(0,5).forEach(t=>R(`recordRound(1,'${t.id}',6,8)`));ok(R('funCheckBadges()').includes('g_pass5'),'badge: 5 temaer bestått');
   boss(2);ok(R('funCheckBadges()').includes('g_boss1'),'badge: første boss (alle klassetrinn)');
   R('prog.days=5');ok(R('funCheckBadges()').includes('g_days5'),'badge: 5 spilledager');

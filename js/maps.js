@@ -180,7 +180,7 @@ function buildTopicMap(gradeNum){
         ${crown&&unlocked?'<div class="mst-node-crown">👑</div>':''}
       </div>
       <div class="map-node-name">${t.name}</div>
-      ${unlocked?`<div class="topic-mst-wrap mst-node-stars">${mstStarsHTML(stars,null,crown)}</div>`:'<div class="map-node-stars">🔒</div>'}`;
+      ${unlocked?`<div class="topic-mst-wrap mst-node-stars">${mstStarsHTML(stars,null,crown,typeof mstEffOf==='function'?mstEffOf(gradeNum,t.id):0)}</div>`:'<div class="map-node-stars">🔒</div>'}`;
     if(unlocked){
       node.onclick=()=>(typeof startTopic==='function'?startTopic:startGame)(gradeNum,t.id);
     } else {
@@ -202,7 +202,7 @@ function buildTopicMap(gradeNum){
       const lnk=document.createElement('div');lnk.setAttribute('role','button');lnk.tabIndex=0; // ikke <button> rundt «Lær»-knappen (ugyldig HTML)
       lnk.className='topic-btn';lnk.style.marginBottom='6px';
       const st=isTopicUnlocked(gradeNum,i)?topicStars(gradeNum,t.id):-1;
-      lnk.innerHTML=`<div class="tb-icon" style="background:${t.bg||'rgba(124,58,237,.3)'}">${t.icon}</div><div><div class="tb-name">${t.name}${st>=0?` <span class="mst-list-stars">${mstStarsHTML(st,null,hasCrown(gradeNum,t.id))}</span>`:' 🔒'}</div><div class="tb-desc">${t.desc}</div></div>${st>=0?`<button class="topic-learn-btn" onclick="event.stopPropagation();showLearn(${gradeNum},'${t.id}')">📖 Lær</button>`:''}`;
+      lnk.innerHTML=`<div class="tb-icon" style="background:${t.bg||'rgba(124,58,237,.3)'}">${t.icon}</div><div><div class="tb-name">${t.name}${st>=0?` <span class="mst-list-stars">${mstStarsHTML(st,null,hasCrown(gradeNum,t.id),typeof mstEffOf==='function'?mstEffOf(gradeNum,t.id):0)}</span>`:' 🔒'}</div><div class="tb-desc">${t.desc}</div></div>${st>=0?`<button class="topic-learn-btn" onclick="event.stopPropagation();showLearn(${gradeNum},'${t.id}')">📖 Lær</button>`:''}`;
       lnk.onclick=st>=0?()=>(typeof startTopic==='function'?startTopic:startGame)(gradeNum,t.id):node.onclick; // låst: samme «Låst!»-melding som på kartet
       lnk.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();lnk.onclick();}};
       list.appendChild(lnk);

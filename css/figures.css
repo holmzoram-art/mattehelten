@@ -64,7 +64,7 @@
 .sk-emoji[data-fig-l]{display:block;margin:0 auto 3px;}
 #map-you{--fs:48px;}
 #map-you[data-fig-l]{position:absolute;animation-name:figYou;}
-@keyframes figYou{0%,100%{transform:translate(-50%,calc(-100% - 24px))}50%{transform:translate(-50%,calc(-100% - 30px))}}
+@keyframes figYou{0%,100%{transform:translate(-50%,calc(-100% - 30px))}50%{transform:translate(-50%,calc(-100% - 36px))}}
 #pg-shop-hero{--fs:80px;}
 #hc-char{--fs:120px;}
 #hc-char[data-fig-l]{display:block;margin:0 auto 8px;}
@@ -91,7 +91,7 @@
 @media (prefers-reduced-motion: reduce){
   .fig::before,.fig-l{animation:none!important;}
   .fig.fig-hold::before,.fig-l.fig-hold{background-position-x:calc(var(--fs) * var(--fig-n1) * -1);}
-  #map-you[data-fig-l]{animation:none;transform:translate(-50%,calc(-100% - 24px));}
+  #map-you[data-fig-l]{animation:none;transform:translate(-50%,calc(-100% - 30px));}
 }
 /* Heltevalget: like høye kort når noen av heltene har figur */
 #char-grid:has([data-fig-l]) .char-emoji{display:block;height:var(--fs);line-height:var(--fs);margin-left:auto;margin-right:auto;}

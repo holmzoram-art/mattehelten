@@ -165,8 +165,8 @@ const CHARS=[
   {emoji:'🧙',name:'Trollmannen'},{emoji:'🦸',name:'Superhelten'},
   {emoji:'🥷',name:'Ninjaen'},{emoji:'🧚',name:'Alven'},
   {emoji:'🤖',name:'Roboten'},{emoji:'🦊',name:'Reven'},
-  {emoji:'🐉',name:'Dragen'},{emoji:'⚡',name:'Lynet'},
-  {emoji:'🦄',name:'Enhørningen'},{emoji:'🚀',name:'Raketten'},
+  {emoji:'🐉',name:'Dragen'},{emoji:'🦖',name:'Lyn-dinoen'},
+  {emoji:'🦄',name:'Enhørningen'},{emoji:'🧑‍🚀',name:'Rakett-astronauten'},
 ];
 
 // Helten forblir helten: samme figur hele veien. Rangen gir pynt rundt figuren (glød, vinger, krone, stjernestøv – fun.js/css/fun.css).
@@ -174,8 +174,8 @@ const CHARS=[
 // lvl = gammel nivågrense (brukes bare til farge på heltekortet); gift = det helten får.
 const RANKS = [
   {name:'Lærling 🌱', lvl:1,  color:'#8878cc', gift:'mot',         desc:'Du har akkurat begynt eventyret ditt!'},
-  {name:'Kriger ⚔️',  lvl:3,  color:'#06d6ff', gift:'glød',        desc:'Du slo din første boss!'},
-  {name:'Mester 🔥',  lvl:5,  color:'#ff6b35', gift:'vinger',      desc:'To bosser er slått!'},
+  {name:'Kriger ⚔️',  lvl:3,  color:'#06d6ff', gift:'vinger',      desc:'Du slo din første boss!'},
+  {name:'Mester 🔥',  lvl:5,  color:'#ff6b35', gift:'gullvinger',  desc:'To bosser er slått!'},
   {name:'Legende ⭐', lvl:8,  color:'#ffd93d', gift:'krone',       desc:'Fire bosser er slått!'},
   {name:'Mattegud 🌌',lvl:12, color:'#a855f7', gift:'stjernestøv', desc:'Alle bossene er slått!'},
 ];
@@ -186,7 +186,7 @@ function getCharEmoji(charIdx) { return CHARS[charIdx]?.emoji || (typeof getPlay
 
 function getCharIdx() {
   const v = localStorage.getItem('mh_char_idx');
-  if(v == null && typeof getPlayer === 'function') { const i = CHARS.findIndex(c => c.emoji === getPlayer().emoji); if(i >= 0) return i; }
+  if(v == null && typeof getPlayer === 'function') { const e = getPlayer().emoji, i = CHARS.findIndex(c => c.emoji === e); if(i >= 0) return i; if(e === '⚡') return 7; if(e === '🚀') return 9; } // ⚡/🚀 ble Lyn-dinoen og Rakett-astronauten
   return parseInt(v || '0') || 0;
 }
 

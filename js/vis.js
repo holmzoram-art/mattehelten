@@ -11,3 +11,74 @@ function renderVis(v){
   if(typeof f!=='function')return '';
   try{return f(v)||'';}catch(e){console.warn('renderVis',v.kind,e);return '';}
 }
+function visEsc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function visN(n,max){n=Math.round(+n||0);return Math.max(0,Math.min(max||100,n));}
+
+// Tierramme: {a, b, cross, split}. a prikker i farge 1, så b i farge 2; de siste «cross» prikkene er strøket over.
+// split: a i første ramme, b i andre (dobling). Antall rammer = så mange som trengs (maks 2).
+window.VIS.tenframe=v=>{
+  const a=visN(v.a,20),b=visN(v.b,20-a),x=Math.min(a+b,visN(v.cross,20)),tot=a+b,F=v.split?2:Math.max(1,Math.min(2,Math.ceil(tot/10)));
+  let h='<div class="lv lv-tf">',d=0;
+  for(let f=0;f<F;f++){
+    h+='<div class="lv-frame">';
+    for(let i=0;i<10;i++){
+      let k=0,ord=0;
+      if(v.split){k=f===0?(i<a?1:0):(i<b?2:0);ord=f===0?i:a+i;}
+      else{const j=f*10+i;k=j<a?1:j<tot?2:0;ord=j;}
+      h+=`<i class="lv-c${k?' lv-'+k:''}${k&&ord>=tot-x?' lv-x':''}"${k?` style="--d:${d++}"`:''}></i>`;
+    }
+    h+='</div>';
+  }
+  return h+'</div>';
+};
+
+// Prikker i grupper: {g:[n1,n2,…], cross, emoji, op}. Hver gruppe står i rader på fem.
+// cross = så mange av de siste i siste gruppe er strøket over. op = tegn mellom gruppene (f.eks. '+').
+window.VIS.dots=v=>{
+  const G=(Array.isArray(v.g)?v.g:[v.n]).slice(0,12).map(n=>visN(n,50)),x=visN(v.cross,50),E=v.emoji?visEsc(v.emoji):'';
+  let h=`<div class="lv lv-dots${G.length>4?' lv-many':''}">`,d=0;
+  G.forEach((n,gi)=>{
+    if(gi&&v.op)h+=`<span class="lv-op">${visEsc(v.op)}</span>`;
+    h+=`<span class="lv-grp${E?' lv-emo':''}">`;
+    for(let i=0;i<n;i++)h+=`<i class="lv-d lv-${gi%2+1}${gi===G.length-1&&i>=n-x?' lv-x':''}" style="--d:${d++}">${E}</i>`;
+    h+='</span>';
+  });
+  return h+'</div>';
+};
+
+// Tallinje med hopp: {from, to, step, start, hops:[+3,-2,…], hopLab:['+3',…], endLab:'?', top:'?', hide:[tall], hl:[tall]}
+// Opptil 12 streker: vanlig tallinje. Flere: «tom tallinje» med bare de viktige tallene.
+// endLab '?' skjuler tallet der hoppene lander, hide viser '?' for gitte tall, hl uthever tall, top = tekst over hele hoppet.
+window.VIS.line=v=>{
+  const st=Math.max(1,Math.abs(+v.step||1)),hops=(v.hops||[]).slice(0,12).map(Number),start=+v.start||0,pts=[start];
+  hops.forEach(h=>pts.push(pts[pts.length-1]+h));
+  const from=Math.min(+v.from||0,...pts),to=Math.max(+v.to||0,...pts,from+st),N=Math.round((to-from)/st),open=N>12;
+  const W=open?300:Math.max(150,N*28+28),P=16,X=n=>P+(n-from)/(to-from)*(W-2*P),Y=46,H=72,end=pts[pts.length-1];
+  const hide=new Set((v.hide||[]).map(Number)),hl=new Set((v.hl||[]).map(Number));
+  let s=`<svg class="lv lv-line" viewBox="0 0 ${W} ${H}" style="max-width:${W}px" aria-hidden="true"><line class="lv-ax" x1="${P-8}" y1="${Y}" x2="${W-P+8}" y2="${Y}"/>`;
+  const num=n=>{const q=hide.has(n)||(hops.length&&n===end&&v.endLab==='?'),c=q?' lv-q':hl.has(n)||(hops.length&&n===end&&!q&&v.endLab!=null&&v.endLab!=='?')?' lv-hl':'';
+    return `<text class="lv-n${c}" x="${X(n).toFixed(1)}" y="${Y+21}">${q?'?':n}</text>`;};
+  const marks=new Set(pts);hide.forEach(n=>marks.add(n));hl.forEach(n=>marks.add(n));
+  if(open){[...marks].forEach(n=>{s+=`<line class="lv-tk" x1="${X(n).toFixed(1)}" y1="${Y-6}" x2="${X(n).toFixed(1)}" y2="${Y+6}"/>`+num(n);});}
+  else{const every=N>8?2:1;for(let i=0;i<=N;i++){const n=from+i*st,xn=X(n).toFixed(1);s+=`<line class="lv-tk" x1="${xn}" y1="${Y-5}" x2="${xn}" y2="${Y+5}"/>`;if(i%every===0||i===N||marks.has(n))s+=num(n);}}
+  hops.forEach((h,i)=>{const x0=X(pts[i]),x1=X(pts[i+1]),k=Math.min(24,7+Math.abs(x1-x0)*.3);
+    s+=`<path class="lv-hop" style="--d:${i}" d="M${x0.toFixed(1)} ${Y-4} Q${((x0+x1)/2).toFixed(1)} ${(Y-4-2*k).toFixed(1)} ${x1.toFixed(1)} ${Y-4}"/><circle class="lv-tip" style="--d:${i}" cx="${x1.toFixed(1)}" cy="${Y-4}" r="2.6"/>`;
+    const L=v.hopLab&&v.hopLab[i];if(L!=null&&L!=='')s+=`<text class="lv-hl" x="${((x0+x1)/2).toFixed(1)}" y="${(Y-9-k).toFixed(1)}">${visEsc(L)}</text>`;});
+  if(v.top!=null&&v.top!==''&&hops.length)s+=`<text class="lv-top" x="${((X(start)+X(end))/2).toFixed(1)}" y="11">${visEsc(v.top)}</text>`;
+  s+=`<circle class="lv-st" cx="${X(start).toFixed(1)}" cy="${Y}" r="5"/>`;
+  if(hops.length)s+=`<circle class="lv-en" cx="${X(end).toFixed(1)}" cy="${Y}" r="5"/>`;
+  return s+'</svg>';
+};
+
+// Tiere og enere: {a, b, cross}. Tierstaver og enerruter for a (farge 1) og b (farge 2, med + imellom).
+// cross = så mye som tas bort fra a (enere først). Er det for få enere, veksles én tier til ti enere.
+window.VIS.blocks=v=>{
+  const a=visN(v.a,200),b=visN(v.b,200),x=Math.min(a,visN(v.cross,200)),xt=Math.floor(x/10),xo=x%10,ex=xo>a%10&&a>=10;
+  const grp=(n,c,ct,co,ex)=>{let t=Math.floor(n/10),o=n%10,h='<span class="lv-grp lv-blk">';if(ex){t--;o+=10;}
+    for(let i=0;i<t;i++)h+=`<i class="lv-ten lv-${c}${i>=t-ct?' lv-x':''}" style="--d:${i}"></i>`;
+    if(o){h+='<span class="lv-ones">';for(let i=0;i<o;i++)h+=`<i class="lv-one lv-${c}${ex&&i>=o-10?' lv-ex':''}${i>=o-co?' lv-x':''}" style="--d:${t+i}"></i>`;h+='</span>';}
+    return h+'</span>';};
+  let h='<div class="lv lv-blocks">'+grp(a,1,xt,xo,ex);
+  if(b)h+='<span class="lv-op">+</span>'+grp(b,2,0,0,false);
+  return h+'</div>';
+};

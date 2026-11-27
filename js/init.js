@@ -19,6 +19,8 @@ if(savedPlayer){
   showScreen('grades');
 } else if(!localStorage.getItem('mh_story_seen')){
   showStory();
+} else if(!gradeChosen()){
+  showGradeAsk(); // ny spiller som lukket siden før klassevalget
 }
 renderHUD();
 

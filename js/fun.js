@@ -47,6 +47,11 @@ function funEvoShow(p){
   document.getElementById('evo-rank-text').textContent='Samme helt – nå med '+r.gift+'!';
   if(typeof speak==='function')try{speak(`Helten din ble sterkere! Du er nå ${r.name}. ${r.desc}`);}catch(e){}
   if(!funRM()&&typeof launch==='function')launch(120,['#ffd93d','#a855f7','#06d6ff','#ff6b35','#00ff88']);
+  // Større: et lysglimt, stråler bak den nye helten, og et smell når pynten kommer på (samme helt, bare sterkere)
+  const o=document.getElementById('evo-overlay'),en=document.getElementById('evo-new');
+  if(o&&o.classList){o.classList.remove('fun-evo-go');void o.offsetWidth;o.classList.add('fun-evo-go');}
+  if(typeof celRays==='function')celRays(en,'evo',3200);
+  if(!funRM()&&typeof celBurst==='function'&&typeof celPt==='function')setTimeout(()=>{const p=celPt(en);if(p&&o&&o.classList.contains('show'))celBurst(p.x,p.y,true);},650);
 }
 
 // ============================================================
@@ -161,7 +166,7 @@ function funSessionLen(){const v=parseInt(typeof getSetting==='function'?getSett
 // En ferdig runde (kista) eller kamp (boss/troll): tell den, husk nye stjerner, og se etter økt-grensen
 function funRoundDone(res){
   const s=funState();s.r=(s.r||0)+1;
-  if(res&&res.to>res.from&&S&&S.topicId){const k=S.grade+':'+S.topicId,u=s.up[k];s.st=(s.st||0)+(res.to-res.from);s.up[k]=[u?u[0]:res.from,res.to];}
+  if(res&&res.to>res.from&&S&&S.topicId){const k=S.grade+':'+S.topicId,u=s.up[k];s.st=(s.st||0)+(res.to-res.from);delete s.up[k];s.up[k]=[u?u[0]:res.from,res.to];} // sist forbedret sist i lista
   funSave(s);funCheckBadges();funSessionWatch();
   return s;
 }
@@ -209,8 +214,8 @@ function funShowDay(){
   const chip=x=>`<span class="fun-day-chip">${funEsc(x.t.icon)} ${funEsc(x.t.name)}${x.to!=null&&typeof mstStarsHTML==='function'?' '+mstStarsHTML(x.to):''}</span>`;
   let h='';
   if(d.stars)h+=row('⭐',`<b>${d.stars} ${d.stars===1?'ny stjerne':'nye stjerner'}!</b>`);
-  if(d.up.length)h+=`<div class="fun-day-chips">${d.up.slice(0,4).map(chip).join('')}</div>`;
-  else if(d.played.length)h+=row('🗺️','Du øvde på:')+`<div class="fun-day-chips">${d.played.slice(0,4).map(t=>chip({t})).join('')}</div>`;
+  if(d.up.length)h+=funDayChips(d.up.slice().reverse(),chip); // nyeste først, alle (eller «+N til»)
+  else if(d.played.length)h+=row('🗺️','Du øvde på:')+funDayChips(d.played.slice().reverse().map(t=>({t})),chip);
   if(d.crowns)h+=row('👑',`<b>${d.crowns===1?'Gullkrone!':d.crowns+' gullkroner!'}</b>`);
   if(d.fixed)h+=row('💪',`Du rettet selv <b>${d.fixed}</b> ${d.fixed===1?'gang':'ganger'}!`);
   if(d.ok)h+=row('✅',`<b>${d.ok}</b> riktige i dag`);
@@ -237,6 +242,9 @@ function funShowDay(){
   const bt=o.querySelector&&o.querySelector('.fun-day-done');if(bt&&bt.focus)try{bt.focus({preventScroll:true});}catch(e){}
   return true;
 }
+// Temaene i sammendraget: opptil FUN_DAY_CHIPS, resten som «+N til»
+const FUN_DAY_CHIPS=6;
+function funDayChips(list,chip){const n=list.length,max=n>FUN_DAY_CHIPS?FUN_DAY_CHIPS-1:n;return `<div class="fun-day-chips">${list.slice(0,max).map(chip).join('')}${n>max?`<span class="fun-day-chip fun-day-plus">+${n-max} til</span>`:''}</div>`;}
 let funNightT=0;
 // «Ferdig for i dag»: rolig god-natt-scene, så tilbake til kartet
 function funDayDone(){

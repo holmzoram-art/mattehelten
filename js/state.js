@@ -10,7 +10,7 @@ function mhProg(){const p=Object.assign({xp:0,coins:0,streak:0,lastDay:''},mhObj
 function mhAch(){return mhObj(mhLoad('mh_ach',{}));}
 let prog=mhProg();
 function saveProg(){localStorage.setItem('mh_prog3',JSON.stringify(prog));}
-function lvlFor(l){return l*80;}
+function lvlFor(l){return typeof pgLvlSize==='function'?pgLvlSize(l):l*80;} // nivåkurven ligger i progression.js (sjeldnere nivåer, ingen mister nivå)
 function curLvl(){let l=1,x=prog.xp;while(x>=lvlFor(l)){x-=lvlFor(l);l++;}return l;}
 function xpInLvl(){let l=1,x=prog.xp;while(x>=lvlFor(l)){x-=lvlFor(l);l++;}return x;}
 function renderHUD(){
@@ -184,6 +184,7 @@ function showScreen(n){
   // Ny skjerm: stopp opplesing (kampen leser selv neste oppgave)
   if(prev!==el&&n!=='game'&&typeof ttsStop==='function')ttsStop();
   if(n==='grades'&&typeof goFightLabel==='function')goFightLabel();
+  if(n==='grades'&&typeof ttsNoteMaybe==='function')ttsNoteMaybe(); // ingen norsk stemme: beskjed til den voksne (én gang)
   fxScreen(n,el); // BATTLE FX: screen transition
 }
 function setSpeech(txt,show=true){

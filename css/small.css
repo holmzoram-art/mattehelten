@@ -106,3 +106,46 @@ button,.map-node,.char-card,.sk-card,.boss-gate,.topic-btn,[onclick]{touch-actio
 @media(prefers-reduced-motion:reduce){.lp-ans.lp-shake{animation:none;}}
 /* Heltevalg på mobil: 5 i bredden uten navn (barnet velger på bildet), så «Start» blir synlig uten mye scrolling */
 @media(max-width:500px){.char-grid{grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}.char-card{padding:8px 2px;min-height:60px;}.char-emoji{font-size:2.2rem;margin-bottom:0;}.char-name{display:none;}.sidekick-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}.sk-card{min-width:0;padding:6px 2px;}.sk-emoji{font-size:1.6rem;margin-bottom:0;}.sk-name{display:none;}.cs-title{font-size:1.6rem;margin-bottom:10px;}}
+
+/* ---- ← i kamp: «Vil du stoppe kampen?» (learn.js: battleBack*) ---- */
+.bk-overlay{position:fixed;inset:0;z-index:660;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(13,11,30,.82);}
+.bk-overlay.show{display:flex;animation:fxFadeIn .18s ease-out;}
+.bk-card{width:100%;max-width:400px;background:var(--dark2);border:2px solid rgba(255,255,255,.16);border-radius:24px;padding:22px 18px 18px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.6);}
+.bk-faces{display:flex;align-items:center;justify-content:center;gap:12px;font-size:3rem;line-height:1.1;margin-bottom:6px;}
+.bk-vs{font-size:1.6rem;}
+.bk-title{font-family:'Fredoka One',cursive;font-size:1.7rem;line-height:1.2;color:#fff;}
+.bk-sub{margin-top:4px;font-size:1rem;font-weight:700;color:rgba(255,255,255,.75);}
+.bk-btns{display:flex;flex-direction:column;gap:12px;margin-top:18px;}
+.bk-stay,.bk-stop{width:100%;min-height:64px;border-radius:18px;font-family:'Fredoka One',cursive;font-size:1.5rem;cursor:pointer;}
+.bk-stay{border:none;background:linear-gradient(135deg,#00cc66,var(--green));color:var(--dark);box-shadow:var(--glow-g),0 5px 0 rgba(0,0,0,.3);}
+.bk-stay:active{transform:translateY(3px);box-shadow:var(--glow-g),0 2px 0 rgba(0,0,0,.3);}
+.bk-stop{border:2px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);color:#fff;font-size:1.3rem;min-height:56px;}
+.bk-stop:active{transform:scale(.97);}
+
+/* ---- Ingen norsk stemme: beskjed til voksne (speech.js: ttsNote*) ---- */
+.tts-note{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(13,11,30,.88);overflow-y:auto;}
+.tts-note.show{display:flex;animation:fxFadeIn .2s ease-out;}
+.tts-note-card{width:100%;max-width:460px;margin:auto;background:var(--dark2);border:2px solid rgba(6,214,255,.45);border-radius:22px;padding:20px 20px 18px;color:rgba(255,255,255,.9);font-size:1rem;line-height:1.45;box-shadow:0 12px 40px rgba(0,0,0,.6);}
+.tts-note-icon{font-size:2.4rem;text-align:center;line-height:1;}
+.tts-note-lbl{margin-top:6px;text-align:center;font-weight:800;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);}
+.tts-note-title{text-align:center;font-family:'Fredoka One',cursive;font-size:1.5rem;color:#fff;margin:2px 0 10px;}
+.tts-note-card p{margin:0 0 8px;}
+.tts-note-how{font-weight:800;color:#fff;}
+.tts-note-card ul{margin:0 0 10px;padding-left:20px;}
+.tts-note-card li{margin-bottom:6px;}
+.tts-note-card b{color:#fff;}
+.tts-note-kid{padding:8px 10px;border-radius:12px;background:rgba(255,217,61,.1);border:1px solid rgba(255,217,61,.35);color:#ffe9a8;font-weight:700;}
+.tts-note-ok{display:block;width:100%;min-height:56px;margin-top:6px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;font-family:'Fredoka One',cursive;font-size:1.3rem;cursor:pointer;box-shadow:var(--glow-p);}
+@media(max-width:420px){.tts-note-card{padding:16px 14px;font-size:.95rem;}.tts-note-title{font-size:1.3rem;}}
+
+/* ---- Lær: bilde i hintet ved «Prøv igjen» ---- */
+.lp-fb-v{display:flex;justify-content:center;margin-top:8px;max-width:100%;overflow:hidden;}
+.lp-fb-v .lv-line{max-width:100%;height:auto;}
+.lp-fb-v .t12-pv-b{min-height:80px;}
+@media (prefers-reduced-motion:no-preference){.lp-blink-h .t12-hand-h{animation:lpBlink 1s ease-in-out infinite;}}
+@keyframes lpBlink{0%,100%{opacity:1}50%{opacity:.2}}
+@media (prefers-reduced-motion:reduce){.lp-blink-h .t12-hand-h{stroke:#ff9f43;}}
+
+/* ---- «Gå til kamp» når barnet er klart for neste klasse ---- */
+.go-fight.gf-up{background:linear-gradient(135deg,#ffb703,#ff6b35 45%,var(--purple2));}
+.go-fight.gf-up .gf-sub{font-size:1.1rem;}

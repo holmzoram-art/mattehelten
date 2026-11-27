@@ -109,11 +109,27 @@ function selectGrade(gradeNum){
   showScreen('topics');
 }
 
+// Temakart: få temaer i én sikksakk-rad (opptil 5 på bred skjerm, 3 på mobil). Flere: slangesti i rader (venstre→høyre,
+// så høyre→venstre), 3 per rad på smal skjerm (2 hvis 4 temaer), ellers 2 rader. Setter også høyden på #topic-map-wrap og strekker SVG-stiene likt med nodene.
+function topicMapWidth(){const w=document.getElementById('topic-map-wrap'),cw=w?+w.clientWidth||0:0;return cw>0?cw:Math.min(Math.max(+window.innerWidth||640,320)-24,620);}
+function topicMapCols(n,W){const nw=(W||topicMapWidth())<480;if(n<=3||(n<=5&&!nw))return n;return nw?(n===4?2:3):Math.min(5,Math.ceil(n/2));}
 function getTopicPositions(n){
-  if(n<=2)return[[22,50],[78,50]];
-  if(n===3)return[[15,55],[50,30],[85,55]];
-  if(n===4)return[[10,58],[37,32],[63,58],[90,32]];
-  return[[8,55],[27,30],[50,58],[73,30],[92,55]];
+  const wrap=document.getElementById('topic-map-wrap'),svg=document.getElementById('topic-map-svg'),W=topicMapWidth();
+  const setH=h=>{if(wrap&&wrap.style)wrap.style.height=h+'px';};
+  if(svg&&svg.setAttribute)svg.setAttribute('preserveAspectRatio','none');
+  const cols=topicMapCols(n,W);getTopicPositions.cols=cols; // brukes når skjermbredden endres (topics12.js)
+  if(cols===n){setH(260);
+    if(n<=2)return[[22,50],[78,50]];
+    if(n===3)return[[15,55],[50,30],[85,55]];
+    if(n===4)return[[10,58],[37,32],[63,58],[90,32]];
+    return[[8,55],[27,30],[50,58],[73,30],[92,55]];}
+  const rows=Math.ceil(n/cols),narrow=W<480,top=30,rowH=narrow?126:142,H=top+rows*rowH+8,mx=narrow?15:9;
+  setH(H);
+  return Array.from({length:n},(_,i)=>{
+    const r=Math.floor(i/cols);let c=i%cols;if(r%2)c=cols-1-c;
+    const x=cols===2?[28,72][c]:mx+c*(100-2*mx)/(cols-1),y=top+(r+.5)*rowH+(c%2?-8:8);
+    return [Math.round(x*10)/10,Math.round(y/H*1000)/10];
+  });
 }
 
 function buildTopicMap(gradeNum){

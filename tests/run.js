@@ -180,6 +180,15 @@ r=submit('7',{q:'3 + 4 = ?',ans:7,sub:'3+4'},1,'add10');ok(r&&r.ok&&r.correctTxt
 r=submit('2,5',{q:'25 % av 10 = ?',ans:2.5,sub:'p25'},5,'pct5');ok(r&&r.ok&&r.correctTxt==='2,5',`submit 2,5 ok with comma correctTxt`);
 r=submit('5/2',{q:'25 % av 10 = ?',ans:2.5,sub:'p25'},5,'pct5');ok(r&&r.ok,`submit 5/2 for 2.5 ok`);
 
+// ---- Egne testfiler: tests/*.test.js eksporterer function({R,ok,CUR,ls,els,ctx,submit,submitCh,solve}) ----
+// R(kode) kjører kode i spillets globale rom; ls er localStorage-Map (tøm med ls.clear()); els er stubbede elementer per id.
+for(const f of fs.readdirSync(__dirname).filter(f=>f.endsWith('.test.js')).sort()){
+  const before=fails;
+  try{require(path.join(__dirname,f))({R,ok,CUR,ls,els,ctx,submit,submitCh,solve});}
+  catch(e){ok(false,`${f} threw: ${e&&e.stack||e}`);}
+  console.log(`  ${f}: ${fails-before?fails-before+' failures':'ok'}`);
+}
+
 console.log(`\n${checks} checks, ${fails} failures`);
 for(const [m,n] of Object.entries(failMsgs).slice(0,40))console.log(`  x${n}  ${m}`);
 console.log('\nSample questions:');

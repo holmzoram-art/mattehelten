@@ -11,7 +11,7 @@
   background-size:var(--fig-bs,calc(var(--fs) * var(--fig-n)) var(--fs));background-position:var(--fig-bp,0 0);
   animation:figRunA var(--fig-ms) steps(var(--fig-n)) infinite;}
 .fig.fig-alt::before{animation-name:figRunB;}
-.fig.fig-once::before{animation-name:figOnceA;animation-timing-function:steps(var(--fig-n1),jump-none);animation-iteration-count:1;animation-fill-mode:forwards;}
+.fig.fig-once::before{animation-name:figOnceA;animation-timing-function:steps(var(--fig-n),jump-none);animation-iteration-count:1;animation-fill-mode:forwards;}
 .fig.fig-once.fig-alt::before{animation-name:figOnceB;}
 .fig.fig-still::before,.fig.fig-f0::before{animation:none;}
 .fig.fig-still::before{background-size:var(--fig-bs,var(--fs) var(--fs));}
@@ -25,7 +25,7 @@
   background-size:var(--fig-bs,calc(var(--fs) * var(--fig-n)) var(--fs));background-position:var(--fig-bp,0 0);
   animation:figRunA var(--fig-ms) steps(var(--fig-n)) infinite;}
 .fig-l.fig-alt{animation-name:figRunB;}
-.fig-l.fig-once{animation-name:figOnceA;animation-timing-function:steps(var(--fig-n1),jump-none);animation-iteration-count:1;animation-fill-mode:forwards;}
+.fig-l.fig-once{animation-name:figOnceA;animation-timing-function:steps(var(--fig-n),jump-none);animation-iteration-count:1;animation-fill-mode:forwards;}
 .fig-l.fig-once.fig-alt{animation-name:figOnceB;}
 .fig-l.fig-still,.fig-l.fig-f0{animation:none;}
 /* Rangpynt er bakt inn i figuren (vinger r1/r2, krone r3): i stedet for text-shadow og CSS-vinger får laget en glød per rang */

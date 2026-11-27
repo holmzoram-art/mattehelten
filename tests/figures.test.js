@@ -35,7 +35,7 @@ module.exports=function({R,ok,ls,ctx}){
       const d=dims(file);ok(d&&d.h===f.size&&d.w===f.size*x.n,`fig: ${file} er ${x.n} rammer à ${f.size} px (er ${d&&d.w}x${d&&d.h})`);}
     if(f.poster){const p=`${id}-poster.webp`;ok(D.files[p]&&size(p)<=CAP.poster,`fig: plakat ${p} finnes og er ≤ ${CAP.poster} B`);}
     if(f.kind==='hero'){ok(R('FIG_HEROES').includes(f.key)&&f.rank>=0&&f.rank<=4&&id===`h-${f.key}-r${f.rank}`,`fig: helten ${id} har key og rang som stemmer med id`);
-      ['atk','block','win'].forEach(a=>ok(!f.anims[a]||f.anims[a].n>2,`fig: ${id} ${a} har minst 3 rammer (steps(n-1, jump-none))`));}
+      ['atk','block','win'].forEach(a=>ok(!f.anims[a]||f.anims[a].n>=2,`fig: ${id} ${a} har minst 2 rammer (steps(n, jump-none))`));}
     if(f.kind==='mon')ok(R('FUN_MONSTERS')[f.tid],`fig: monsteret ${id} hører til et tema (${f.tid})`);
   }
   for(const[k,a]of Object.entries(D.atlas||{})){ok(D.files[a.file]&&size(a.file)<=CAP.atlas,`fig: atlas ${a.file} ≤ ${CAP.atlas} B`);

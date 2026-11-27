@@ -76,12 +76,12 @@
    },
    "poster": true,
    "head": {
-    "x": 0.467,
-    "y": 0.358
+    "x": 0.488,
+    "y": 0.47
    },
    "top": {
-    "x": 0.5,
-    "y": 0.147
+    "x": 0.514,
+    "y": 0.302
    }
   },
   "h-unicorn-r0": {
@@ -620,6 +620,117 @@
     "x": 0.497,
     "y": 0.146
    }
+  },
+  "h-dragon-r1": {
+   "kind": "hero",
+   "key": "dragon",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.488,
+    "y": 0.47
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.302
+   }
+  },
+  "h-dragon-r2": {
+   "kind": "hero",
+   "key": "dragon",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.488,
+    "y": 0.47
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.302
+   }
+  },
+  "h-dragon-r3": {
+   "kind": "hero",
+   "key": "dragon",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.488,
+    "y": 0.47
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.302
+   }
   }
  },
  "atlas": {
@@ -722,24 +833,24 @@
    "bytes": 99558
   },
   "h-dragon-r0-idle.webp": {
-   "v": "0bebfcb2",
-   "bytes": 52202
+   "v": "c5c17730",
+   "bytes": 40044
   },
   "h-dragon-r0-atk.webp": {
-   "v": "896cbad2",
-   "bytes": 37628
+   "v": "9162ac7a",
+   "bytes": 29450
   },
   "h-dragon-r0-block.webp": {
-   "v": "1406e22c",
-   "bytes": 24616
+   "v": "c0a21f40",
+   "bytes": 19122
   },
   "h-dragon-r0-win.webp": {
-   "v": "226b0726",
-   "bytes": 54318
+   "v": "34f7a166",
+   "bytes": 42096
   },
   "h-dragon-r0-poster.webp": {
-   "v": "6b375b8d",
-   "bytes": 3972
+   "v": "ea5c50ad",
+   "bytes": 3324
   },
   "h-unicorn-r0-idle.webp": {
    "v": "233be9b7",
@@ -1048,6 +1159,66 @@
   "h-robot-r0-poster.webp": {
    "v": "7e4963cc",
    "bytes": 3690
+  },
+  "h-dragon-r1-idle.webp": {
+   "v": "de432c16",
+   "bytes": 51188
+  },
+  "h-dragon-r1-atk.webp": {
+   "v": "2772c27e",
+   "bytes": 35516
+  },
+  "h-dragon-r1-block.webp": {
+   "v": "58d07ac5",
+   "bytes": 22552
+  },
+  "h-dragon-r1-win.webp": {
+   "v": "585124e6",
+   "bytes": 53326
+  },
+  "h-dragon-r1-poster.webp": {
+   "v": "ed7867c6",
+   "bytes": 3658
+  },
+  "h-dragon-r2-idle.webp": {
+   "v": "b4c05a6c",
+   "bytes": 55680
+  },
+  "h-dragon-r2-atk.webp": {
+   "v": "c5d8f5ff",
+   "bytes": 38828
+  },
+  "h-dragon-r2-block.webp": {
+   "v": "ec298d9e",
+   "bytes": 23590
+  },
+  "h-dragon-r2-win.webp": {
+   "v": "696ca24c",
+   "bytes": 53156
+  },
+  "h-dragon-r2-poster.webp": {
+   "v": "8ff9d442",
+   "bytes": 4008
+  },
+  "h-dragon-r3-idle.webp": {
+   "v": "144d45a1",
+   "bytes": 55200
+  },
+  "h-dragon-r3-atk.webp": {
+   "v": "84fc0791",
+   "bytes": 36704
+  },
+  "h-dragon-r3-block.webp": {
+   "v": "9c228ef2",
+   "bytes": 23484
+  },
+  "h-dragon-r3-win.webp": {
+   "v": "4c92ed72",
+   "bytes": 52264
+  },
+  "h-dragon-r3-poster.webp": {
+   "v": "c5f6e88e",
+   "bytes": 4226
   },
   "s-atlas.webp": {
    "v": "8e48be04",

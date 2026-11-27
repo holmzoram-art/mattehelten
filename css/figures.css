@@ -55,7 +55,7 @@
 .cel-mon.fig{--fs:52px;}
 .story-villain.fig{--fs:130px;}
 .end-morph span.fig{--fs:100px;}
-#player-avatar{--fs:104px;}
+#player-avatar{--fs:124px;} /* rammen er satt for største rang (vinger og krone), så helten trenger litt mer plass enn monsteret */
 #hud-char{--fs:40px;}
 #hud-sidekick{--fs:32px;}
 .char-emoji{--fs:72px;}
@@ -80,7 +80,7 @@
 .pg-item-emoji[data-fig-l]{display:block;margin:0 auto;}
 @media(max-width:500px){.char-emoji{--fs:52px;}.char-emoji[data-fig-l]{margin-bottom:0;}}
 @media(max-width:420px){.enemy-avatar.fig{--fs:88px;}#screen-game.boss-mode .enemy-avatar.fig{--fs:120px;}.boss-emoji.fig{--fs:150px;}
-  #player-avatar{--fs:88px;}#hud-char{--fs:36px;}#hud-sidekick{--fs:28px;}#evo-new{--fs:112px;}#evo-old{--fs:72px;}#br-emoji[data-fig-l]{--fs:130px;}#hc-char{--fs:104px;}}
+  #player-avatar{--fs:104px;}#hud-char{--fs:36px;}#hud-sidekick{--fs:28px;}#evo-new{--fs:112px;}#evo-old{--fs:72px;}#br-emoji[data-fig-l]{--fs:130px;}#hc-char{--fs:104px;}}
 
 /* Figurene har egen bevegelse: demp emojiens glød-skygge litt så de ikke blir uskarpe */
 .enemy-avatar.fig{filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) drop-shadow(0 0 12px rgba(255,68,102,.45));}

@@ -62,6 +62,7 @@ const FUN_MONSTERS={
   sub100:{e:'🦈',n:'Minus-haien',a:'float'},  miss2:{e:'🐒',n:'Gjemme-apen',a:'hop'},
   even2:{e:'🦓',n:'Par-sebraen',a:'tilt'},    money2:{e:'🐷',n:'Sparegrisen',a:'pulse'},
   dbl2:{e:'🦜',n:'Dobbel-papegøye',a:'tilt'}, mul25:{e:'🐞',n:'Prikke-billen',a:'pulse'},
+  pat1:{e:'🐍',n:'Mønster-slangen',a:'sway'}, line2:{e:'🦘',n:'Hopp-kenguruen',a:'hop'}, count2:{e:'🦉',n:'Telle-ugla',a:'tilt'}, // bølge 3 (C2)
 };
 const FUN_GRADE_FOES={1:'Tall-larven',2:'Minus-billen',3:'Gange-øglen',4:'Dele-krokodillen',5:'Komma-dinoen',6:'Brøk-dragen',7:'Algebra-trollet',8:'Likningszombien',9:'Pytha-romvesenet',10:'Funksjons-ufoen'};
 // Monsteret i temaet (reserve: dagens monster per klassetrinn)

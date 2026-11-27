@@ -187,6 +187,7 @@ function pgNextIn(g){
 function pgGoalCard(){
   const el=document.getElementById('pg-goal');if(!el)return;
   let f=1;for(let g=1;g<=10;g++)if(CUR[g]&&isGradeUnlocked(g))f=g;
+  if(typeof fightGrade==='function')f=fightGrade(); // B2: samme trinn som «Gå til kamp» (eget trinn først, learn.js)
   const nx=pgNextIn(f);el.dataset.g=f;
   el.innerHTML=nx?`<span class="pg-goal-lbl">🎯 Neste mål · ${f}. klasse</span><span class="pg-goal-txt">${pgEsc(nx.icon)} ${pgEsc(nx.txt)}</span>`:'<span class="pg-goal-lbl">👑 Du har klart alt!</span><span class="pg-goal-txt">Talland er reddet!</span>';
 }
@@ -202,12 +203,12 @@ function pgResults(){
   if(!isTopicPassed(g,tid)){txt=`🔁 Prøv igjen! ${nx.txt}`;go=retrySession;}
   else{
     const i=ts.findIndex((t,j)=>!t.optional&&isTopicUnlocked(g,j)&&!isTopicPassed(g,t.id));
-    if(i>=0){txt=`Neste: ${ts[i].icon} ${ts[i].name} ▶`;go=()=>selectGrade(g);}
-    else if(B&&isBossUnlocked(g)&&!isBossDefeated(g)){txt=`Bossen venter! ${B.emoji} ▶`;go=()=>selectGrade(g);}
+    if(i>=0){txt=`Neste: ${ts[i].icon} ${ts[i].name} ▶`;go=()=>typeof goNextTopic==='function'?goNextTopic(g,ts[i].id):selectGrade(g);} // B2: rett i temaet (learn.js)
+    else if(B&&isBossUnlocked(g)&&!isBossDefeated(g)){txt=`Bossen venter! ${B.emoji} ▶`;go=()=>typeof goNextBoss==='function'?goNextBoss(g):selectGrade(g);}
     else if(!isTopicMastered(g,tid)&&nx.now){txt=`🔁 ${nx.txt}`;go=retrySession;}
     else{const j=ts.findIndex((t,k)=>t.id!==tid&&isTopicUnlocked(g,k)&&!isTopicMastered(g,t.id)&&mstNext(g,t.id).now);
-      if(j>=0){txt=`Neste: ${ts[j].icon} ${ts[j].name} ▶`;go=()=>selectGrade(g);}
-      else if(g<10&&CUR[g+1]&&isGradeUnlocked(g+1)){txt=`Neste: ${g+1}. klasse ${GRADE_INFO[g].icon} ▶`;go=()=>showScreen('grades');}
+      if(j>=0){txt=`Neste: ${ts[j].icon} ${ts[j].name} ▶`;go=()=>typeof goNextTopic==='function'?goNextTopic(g,ts[j].id):selectGrade(g);}
+      else if(g<10&&CUR[g+1]&&isGradeUnlocked(g+1)&&(typeof fightGrade!=='function'||fightGrade()>g)){txt=`Neste: ${g+1}. klasse ${GRADE_INFO[g].icon} ▶`;go=()=>typeof goFight==='function'?goFight():showScreen('grades');} // B2: bare når eget trinn er mestret
       else{txt=isTopicMastered(g,tid)?'🗺️ Til kartet ▶':'🌙 Kom tilbake i morgen!';go=()=>showScreen('grades');}}
   }
   b.textContent=txt;b.onclick=go;

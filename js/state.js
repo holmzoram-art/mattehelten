@@ -184,6 +184,7 @@ function showScreen(n){
   // Ny skjerm: stopp opplesing (kampen leser selv neste oppgave)
   if(prev!==el&&n!=='game'&&typeof ttsStop==='function')ttsStop();
   if(n==='grades'&&typeof goFightLabel==='function')goFightLabel();
+  if(n==='grades'&&typeof ttsNoteMaybe==='function')ttsNoteMaybe(); // ingen norsk stemme: beskjed til den voksne (én gang)
   fxScreen(n,el); // BATTLE FX: screen transition
 }
 function setSpeech(txt,show=true){

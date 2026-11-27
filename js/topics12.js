@@ -67,24 +67,24 @@ function t12ClockSvg(h,m,px){
   let s=`<svg class="t12-clock" viewBox="0 0 200 200" width="${px}" height="${px}" role="img" aria-label="Klokke" data-h="${h}" data-m="${m}">`;
   s+='<circle cx="100" cy="100" r="95" fill="#fffaf0" stroke="#6c4ee3" stroke-width="8"/>';
   for(let i=0;i<60;i++){const a=i*Math.PI/30,big=i%5===0,r1=big?80:85,r2=89;s+=`<line x1="${t12Num(100+r1*Math.sin(a))}" y1="${t12Num(100-r1*Math.cos(a))}" x2="${t12Num(100+r2*Math.sin(a))}" y2="${t12Num(100-r2*Math.cos(a))}" stroke="${big?'#3a3166':'#c9c2e6'}" stroke-width="${big?3.5:1.5}" stroke-linecap="round"/>`;}
-  for(let i=1;i<=12;i++){const a=i*Math.PI/6;s+=`<text x="${t12Num(100+66*Math.sin(a))}" y="${t12Num(100-66*Math.cos(a))}" class="t12-cl-n">${i}</text>`;}
-  s+=`<line class="t12-hand-h" x1="100" y1="100" x2="100" y2="58" stroke="#e23b54" stroke-width="12" stroke-linecap="round" transform="rotate(${t12Num(ha)} 100 100)"/>`;
-  s+=`<line class="t12-hand-m" x1="100" y1="100" x2="100" y2="34" stroke="#2b6cff" stroke-width="7" stroke-linecap="round" transform="rotate(${t12Num(ma)} 100 100)"/>`;
+  for(let i=1;i<=12;i++){const a=i*Math.PI/6;s+=`<text x="${t12Num(100+68*Math.sin(a))}" y="${t12Num(100-68*Math.cos(a))}" class="t12-cl-n">${i}</text>`;}
+  s+=`<line class="t12-hand-h" x1="100" y1="100" x2="100" y2="62" stroke="#e23b54" stroke-width="12" stroke-linecap="round" transform="rotate(${t12Num(ha)} 100 100)"/>`;
+  s+=`<line class="t12-hand-m" x1="100" y1="100" x2="100" y2="45" stroke="#2b6cff" stroke-width="7" stroke-linecap="round" transform="rotate(${t12Num(ma)} 100 100)"/>`;
   return s+'<circle cx="100" cy="100" r="8" fill="#1d1840"/></svg>';
 }
 // {h,m} = én klokke; {list:[{h,m,tag}]} = flere små klokker med merke under
 window.VIS.clock=v=>{
-  if(v&&Array.isArray(v.list))return `<div class="t12-clocks">${v.list.map(c=>`<div class="t12-clk-item">${t12ClockSvg(c.h,c.m,88)}${c.tag?`<div class="t12-clk-tag">${c.tag}</div>`:''}</div>`).join('')}</div>`;
-  return `<div class="t12-clock-wrap">${t12ClockSvg(v.h,v.m,v.size||150)}</div>`;
+  if(v&&Array.isArray(v.list))return `<div class="t12-clocks">${v.list.map(c=>`<div class="t12-clk-item">${t12ClockSvg(c.h,c.m,104)}${c.tag?`<div class="t12-clk-tag">${c.tag}</div>`:''}</div>`).join('')}</div>`;
+  return `<div class="t12-clock-wrap">${t12ClockSvg(v.h,v.m,v.size||170)}</div>`;
 };
 // Norske mynter: 1 og 5 kr er sølvfarget med hull, 10 og 20 kr gullfarget (5 kr er større enn 10 kr, som ekte)
 function t12CoinSvg(kr){
   const D={1:52,5:62,10:58,20:66}[kr]||56,gold=kr>=10,O=gold?'#d4a017':'#aab2bd',I=gold?'#f5cd4e':'#e4e8ee',T=gold?'#6b4500':'#2d3440';
-  const disc=(r,hole)=>hole?`M ${-r} 0 a ${r} ${r} 0 1 0 ${2*r} 0 a ${r} ${r} 0 1 0 ${-2*r} 0 Z M -11 0 a 11 11 0 1 0 22 0 a 11 11 0 1 0 -22 0 Z`:`M ${-r} 0 a ${r} ${r} 0 1 0 ${2*r} 0 a ${r} ${r} 0 1 0 ${-2*r} 0 Z`;
+  const disc=(r,hole)=>hole?`M ${-r} 0 a ${r} ${r} 0 1 0 ${2*r} 0 a ${r} ${r} 0 1 0 ${-2*r} 0 Z M -9 0 a 9 9 0 1 0 18 0 a 9 9 0 1 0 -18 0 Z`:`M ${-r} 0 a ${r} ${r} 0 1 0 ${2*r} 0 a ${r} ${r} 0 1 0 ${-2*r} 0 Z`;
   let s=`<svg class="t12-coin" viewBox="-50 -50 100 100" width="${D}" height="${D}" role="img" aria-label="${kr} krone${kr===1?'':'r'}" data-kr="${kr}">`;
   s+=`<path d="${disc(49,!gold)}" fill="${O}" fill-rule="evenodd"/><path d="${disc(42,!gold)}" fill="${I}" fill-rule="evenodd" stroke="${O}" stroke-width="2"/>`;
   if(gold)s+=`<text x="0" y="-2" class="t12-coin-n" fill="${T}" font-size="${kr===20?44:48}">${kr}</text><text x="0" y="29" class="t12-coin-k" fill="${T}">kr</text>`;
-  else s+=`<circle r="11" fill="none" stroke="${O}" stroke-width="2"/><text x="0" y="-25" class="t12-coin-n" fill="${T}" font-size="32">${kr}</text><text x="0" y="29" class="t12-coin-k" fill="${T}">kr</text>`;
+  else s+=`<circle r="9" fill="none" stroke="${O}" stroke-width="2"/><text x="0" y="-24" class="t12-coin-n" fill="${T}" font-size="36">${kr}</text><text x="0" y="27" class="t12-coin-k" fill="${T}">kr</text>`;
   return s+'</svg>';
 }
 window.VIS.coins=v=>{const c=(v&&v.c)||[];return `<div class="t12-coins">${c.map(t12CoinSvg).join('')}</div>`;};
@@ -107,7 +107,7 @@ window.VIS.compare=v=>`<div class="t12-cmp">${(v.rows||[]).map(r=>`<div class="t
 // Vekt i balanse: venstre = høyre
 window.VIS.scale=v=>{
   const tx=s=>String(s).replace(/\?/g,'<tspan class="t12-q">?</tspan>');
-  return `<svg class="t12-scale" viewBox="0 0 320 150" role="img" aria-label="Vekt: ${v.l} er lik ${v.r}"><polygon points="146,146 174,146 160,52" fill="#7c5cf0"/><rect x="34" y="47" width="252" height="7" rx="3.5" fill="#c9b8ff"/><circle cx="160" cy="50" r="7" fill="#ffd93d"/><line x1="74" y1="54" x2="74" y2="76" stroke="#c9b8ff" stroke-width="3"/><line x1="246" y1="54" x2="246" y2="76" stroke="#c9b8ff" stroke-width="3"/><rect x="10" y="76" width="128" height="50" rx="14" class="t12-pan"/><rect x="182" y="76" width="128" height="50" rx="14" class="t12-pan"/><text x="74" y="102" class="t12-sc-t">${tx(v.l)}</text><text x="246" y="102" class="t12-sc-t">${tx(v.r)}</text><text x="160" y="28" class="t12-sc-eq">=</text></svg>`;
+  return `<svg class="t12-scale" viewBox="0 0 320 150" role="img" aria-label="Vekt: ${v.l} er lik ${v.r}"><polygon points="146,146 174,146 160,52" fill="#7c5cf0"/><rect x="34" y="47" width="252" height="7" rx="3.5" fill="#c9b8ff"/><circle cx="160" cy="50" r="7" fill="#ffd93d"/><line x1="74" y1="54" x2="74" y2="76" stroke="#c9b8ff" stroke-width="3"/><line x1="246" y1="54" x2="246" y2="76" stroke="#c9b8ff" stroke-width="3"/><rect x="10" y="76" width="128" height="50" rx="14" class="t12-pan"/><rect x="182" y="76" width="128" height="50" rx="14" class="t12-pan"/><text x="74" y="102" class="t12-sc-t">${tx(v.l)}</text><text x="246" y="102" class="t12-sc-t">${tx(v.r)}</text><text x="160" y="22" class="t12-sc-eq">=</text></svg>`;
 };
 // Lær: tierrammer der noen prikker er tatt bort (gjenbruker .tf-stilene fra index.html)
 function t12Frames(n,gone){
@@ -160,8 +160,8 @@ function t12GenCmp1(g,id){
       vis:{kind:'compare',rows:[{who:A[0],n:n1,e:E},{who:B[0],n:n2,e:E}]},say:`Hvem har flest ${nn}, ${A[1]} eller ${B[1]}? Eller har de like mange?`,x:{n1,n2,A:A[0],B:B[0]}};
   }
   if(t==='c1d'){
-    const mx=[10,15,20][L],a=t12R(3,mx),b=t12R(Math.max(1,a-(L?9:4)),a-1),[A,B]=t12Sh(T12_ANIMALS.slice()),[E,,nn]=t12P(T12_THINGS);
-    const o={q:`${a} - ${b} = ?`,ans:a-b,type:T,sub:t,hint:'Tell de som ikke har en makker',ops:{a,b,op:'-'},strat:'sammenlign'};
+    const a=t12R([3,6,10][L],[10,15,20][L]),b=t12R(Math.max(1,a-(L?9:4)),a-1),[A,B]=t12Sh(T12_ANIMALS.slice()),[E,,nn]=t12P(T12_THINGS);
+    const o={q:`${a} - ${b} = ?`,ans:a-b,type:T,sub:t,hint:'Tell de som blir til overs',ops:{a,b,op:'-'},strat:'sammenlign'};
     t12Story(o,`${A[0]} har ${a} ${E}. ${B[0]} har ${b} ${E}. Hvor mange flere har ${A[0]}?`,`${t12Cap(A[1])} har ${a} ${nn}. ${t12Cap(B[1])} har ${b}. Hvor mange flere har ${A[1]}?`);
     if(a<=12)o.vis={kind:'compare',rows:[{who:A[0],n:a,e:E},{who:B[0],n:b,e:E}]};
     return o;
@@ -187,7 +187,7 @@ function t12GenCmp1(g,id){
 function t12FbCmp1(q,g,c,qd){
   const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
   if(d.sub==='c1m'){if(c==='Like mange')return `<strong>Like mange</strong>: begge har ${x.n1}. 💡 Alle har en makker.`;const big=Math.max(x.n1,x.n2),sm=Math.min(x.n1,x.n2);return `<strong>${c}</strong> har flest: ${big} mot ${sm}. 💡 Pek på én og én.`;}
-  if(d.sub==='c1d'){const e=d.ops;return `${+g===e.a+e.b?'Oi, du la sammen!':t12Warm(g,c)} ${e.a} - ${e.b} = <strong>${c}</strong>. 💡 ${c} har ikke en makker.`;}
+  if(d.sub==='c1d'){const e=d.ops;return `${+g===e.a+e.b?'Oi, du la sammen!':t12Warm(g,c)} ${e.a} - ${e.b} = <strong>${c}</strong>. 💡 Pek på én og én. ${c} blir til overs.`;}
   if(d.sub==='c1j'){const a=x.a,b=x.b,rel=a>b?'større':'mindre';return `<strong>${c}</strong>. ${a} er ${rel} enn ${b}. 💡 ${Math.max(a,b)} kommer sist når du teller.`;}
   const ns=x.ns||[],tip=ns.some(n=>n>=10)&&ns.some(n=>n<10)?`${x.min?'Det uten tier er minst.':'Tall med en tier er større.'}`:x.min?'Det kommer først når du teller.':'Det kommer sist når du teller.';
   return `<strong>${c}</strong> er ${x.min?'minst':'størst'}. 💡 ${tip}`;
@@ -225,7 +225,7 @@ function t12GenEq1(g,id){
 }
 function t12FbEq1(q,g,c,qd){
   const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
-  if(d.sub==='e1l')return `${t12Warm(g,c)} ${x.s} = ${x.a} + <strong>${c}</strong>. 💡 ${c<=5?`Tell fra ${x.a}: ${t12Cnt(x.a,1,c)}.`:`Tenk minus: ${x.s} - ${x.a} = ${c}.`}`;
+  if(d.sub==='e1l')return `${t12Warm(g,c)} ${x.s} = ${x.a} + <strong>${c}</strong>. 💡 ${c<=5?`Tell fra ${x.a}: ${t12Cnt(x.a,1,c)}. ${c} hopp!`:`Tenk minus: ${x.s} - ${x.a} = ${c}.`}`;
   if(d.sub==='e1b'||d.sub==='e1m')return `${String(g)===String(x.lv)?'= betyr «like mye». ':''}Svaret er <strong>${c}</strong>. ${x.l} = ${x.lv}, og ${x.c} + ${c} = ${x.lv}. 💡 Begge sider er like mye.`;
   const num=s=>/^\d+$/.test(s);
   if(c==='Ja')return `<strong>Ja</strong>, det stemmer. Begge sider er ${x.lv}.${d.sub==='e1v'?' 💡 Svaret kan stå først.':''}`;
@@ -266,11 +266,11 @@ function t12GenClock1(g,id){
 function t12FbClock1(q,g,c,qd){
   const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
   const how=(h,m)=>m===30?`💡 Lang viser på 6: halv. Kort viser er på vei til ${t12H(h+1)}.`:`💡 Lang viser på 12: hel time. Kort viser på ${t12H(h)}.`;
-  if(d.sub==='k1h'||d.sub==='k1t')return `Det er <strong>${c}</strong>. ${how(x.h,x.m)}`;
+  if(d.sub==='k1h'||d.sub==='k1t')return `<strong>${c}</strong>! ${how(x.h,x.m)}`;
   if(d.sub==='k1v')return `<strong>${c}</strong> viser ${x.lbl.toLowerCase()}. ${how(x.h,x.m)}`;
   if(d.sub==='k1d')return `<strong>${c}</strong>. 💡 ${x.m?`Halv ${t12H(x.h+1)} er 30 minutter over ${t12H(x.h)}.`:`Hel time: 00 minutter.`}`;
-  if(x.from)return `${t12Warm(g,c)} Det er <strong>${c}</strong> ${c===1?'time':'timer'}. 💡 Tell: ${t12Cnt(x.h,1,c)}.`;
-  return `${t12Warm(g,c)} Klokka blir <strong>${c}</strong>. 💡 Tell: ${t12Cnt(x.h,1,x.k)}.`;
+  if(x.from)return `${t12Warm(g,c)} Det er <strong>${c}</strong> ${c===1?'time':'timer'}. 💡 Tell fra ${x.h}: ${t12Cnt(x.h,1,c)}.`;
+  return `${t12Warm(g,c)} Klokka blir <strong>${c}</strong>. 💡 Fra klokka ${x.h}, tell ${x.k}: ${t12Cnt(x.h,1,x.k)}.`;
 }
 
 // ============================================================
@@ -363,7 +363,7 @@ function t12GenMoney2(g,id){
   const [E,N]=t12P(T12_SHOP);
   if(t==='m2c'){const c=t12CoinSet(L),s=t12Sum(c),ans=`${s} kr`,mn=Math.min(...c);
     return {...base,q:'Hvor mange kroner?',ans,choices:t12Choices(ans,[c.length!==s?`${c.length} kr`:null,`${s-mn} kr`,`${s+10} kr`,`${s+5} kr`].filter(x=>x!=='0 kr'),3),hint:'Tell de store myntene først',say:'Hvor mange kroner er det til sammen?',vis:{kind:'coins',c},x:{c,s}};}
-  if(t==='m2n'){const c=t12CoinSet(L),s=t12Sum(c),truth=Math.random()<.5,p=truth?t12R(Math.max(1,s-9),s):t12R(s+1,s+9);
+  if(t==='m2n'){const c=t12CoinSet(L),s=t12Sum(c),truth=Math.random()<.5,p=truth?t12R(Math.max(2,s-5),s):t12R(s+1,s+5);
     return {...base,q:`${E} koster ${p} kr. Har du nok?`,ans:truth?'Ja':'Nei',choices:['Ja','Nei'],hint:'Tell pengene dine først',say:`${t12Cap(N)} koster ${t12Kr(p)}. Har du nok penger?`,vis:{kind:'coins',c},x:{s,p}};}
   if(t==='m2f'){
     const den=[20,10,5,1],mk=()=>t12CoinMix(L>1?50:30,den,3),ok=mk(),A=t12Sum(ok),seen=new Set([ok.join(' + ')]),ds=[];
@@ -438,14 +438,16 @@ function mhMiniFb(qd,given){
 // ============================================================
 // TEMAENE, REKKEFØLGE, NAVN PÅ DELOPPGAVER, LÆR
 // ============================================================
+// qd.key: samme oppgave = samme nøkkel (flere bildeoppgaver har lik tekst, f.eks. «Hva er klokka?»), til «ingen gjentakelse i runden»
+function t12Keyed(f){return function(g,id){const qd=f(g,id);if(qd&&!qd.key)qd.key=`${qd.sub}|${qd.eq||qd.q}|${qd.vis?JSON.stringify(qd.vis):''}|${(qd.choices||[]).map(String).sort().join(',')}`;return qd;};}
 const T12_TOPICS={
-  1:[{id:'cmp1',icon:'🐊',bg:'rgba(0,255,136,.2)',name:'Størst og minst',desc:'Hvilket tall er størst?',gen:t12GenCmp1,fb:t12FbCmp1},
-     {id:'eq1',icon:'⚖️',bg:'rgba(168,85,247,.2)',name:'Er det likt?',desc:'Like mye på hver side av =',gen:t12GenEq1,fb:t12FbEq1},
-     {id:'sub20',icon:'➖',bg:'rgba(255,68,102,.2)',name:'Minus til 20',desc:'Ta bort, også forbi tieren',gen:t12GenSub20,fb:t12FbSub20},
-     {id:'clock1',icon:'🕒',bg:'rgba(6,214,255,.2)',name:'Klokka',desc:'Hel og halv time',gen:t12GenClock1,fb:t12FbClock1}],
-  2:[{id:'place2',icon:'🧱',bg:'rgba(6,214,255,.2)',name:'Tiere og enere',desc:'Tall opp til 100',gen:t12GenPlace2,fb:t12FbPlace2},
-     {id:'even2',icon:'🧦',bg:'rgba(240,147,251,.2)',name:'Partall og oddetall',desc:'Får alle en makker?',gen:t12GenEven2,fb:t12FbEven2},
-     {id:'money2',icon:'🪙',bg:'rgba(255,217,61,.2)',name:'Penger',desc:'Mynter, priser og penger igjen',gen:t12GenMoney2,fb:t12FbMoney2}],
+  1:[{id:'cmp1',icon:'🐊',bg:'rgba(0,255,136,.2)',name:'Størst og minst',desc:'Hvilket tall er størst?',gen:t12Keyed(t12GenCmp1),fb:t12FbCmp1},
+     {id:'eq1',icon:'⚖️',bg:'rgba(168,85,247,.2)',name:'Er det likt?',desc:'Like mye på hver side av =',gen:t12Keyed(t12GenEq1),fb:t12FbEq1},
+     {id:'sub20',icon:'➖',bg:'rgba(255,68,102,.2)',name:'Minus til 20',desc:'Ta bort, også forbi tieren',gen:t12Keyed(t12GenSub20),fb:t12FbSub20},
+     {id:'clock1',icon:'🕒',bg:'rgba(6,214,255,.2)',name:'Klokka',desc:'Hel og halv time',gen:t12Keyed(t12GenClock1),fb:t12FbClock1}],
+  2:[{id:'place2',icon:'🧱',bg:'rgba(6,214,255,.2)',name:'Tiere og enere',desc:'Tall opp til 100',gen:t12Keyed(t12GenPlace2),fb:t12FbPlace2},
+     {id:'even2',icon:'🧦',bg:'rgba(240,147,251,.2)',name:'Partall og oddetall',desc:'Får alle en makker?',gen:t12Keyed(t12GenEven2),fb:t12FbEven2},
+     {id:'money2',icon:'🪙',bg:'rgba(255,217,61,.2)',name:'Penger',desc:'Mynter, priser og penger igjen',gen:t12Keyed(t12GenMoney2),fb:t12FbMoney2}],
 };
 const T12_ORDER={1:['add10','sub10','ten1','cmp1','seq1','eq1','add20','sub20','clock1'],2:['place2','add100','sub100','miss2','even2','money2','dbl2','mul25']};
 window.EXTRA_SUBS=Object.assign(window.EXTRA_SUBS||{},{
@@ -481,7 +483,7 @@ window.EXTRA_SUBS=Object.assign(window.EXTRA_SUBS||{},{
   const row=(...h)=>`<div class="t12-row">${h.join('')}</div>`;
   LEARN_GUIDES.sub20=[
     {icon:'🔟',title:'Ta ned til 10 først',text:'13 - 5: Ta bort 3. Da er du på 10. Ta så bort 2 til.',visual:t12Frames(13,5)+cap(`13 - 3 = 10. 10 - 2 = ${G('8')}`)},
-    {icon:'🔄',title:'Tenk pluss',text:'14 - 9: Hvor mye mangler 9 for å bli 14?',visual:(typeof numLine==='function'?numLine(8,15,5,9):'')+cap(`9 + 5 = 14. Da er 14 - 9 = ${G('5')}`)},
+    {icon:'🔄',title:'Tenk pluss',text:'14 - 9: Hvor mye mangler 9 for å bli 14?',visual:(typeof seqHops==='function'?seqHops([9,10,11,12,13,14],'+1',5):'')+cap(`Fra 9 til 14 er det 5 hopp. 14 - 9 = ${G('5')}`)},
     {icon:'👯',title:'Dobbelt hjelper',text:'7 + 7 = 14. Da er 14 - 7 = 7!',visual:P(['12 - 6 = 6','14 - 7 = 7','16 - 8 = 8','18 - 9 = 9'],'#f093fb')},
     {icon:'🎯',title:'Nå er det din tur!',text:'Ta ned til 10 først.',visual:W([['15 - 7 = ?','',false],['15 - 5 = 10','(ned til 10)',true],['10 - 2 = 8','(2 til)',true],['15 - 7 = 8 ✓','',false]])}];
   LEARN_GUIDES.cmp1=[
@@ -520,10 +522,12 @@ window.EXTRA_SUBS=Object.assign(window.EXTRA_SUBS||{},{
 // Temakartet: bygg på nytt når skjermen blir så smal/bred at antall kolonner endres (se getTopicPositions i maps.js)
 (function(){
   if(typeof window==='undefined'||typeof window.addEventListener!=='function')return;
-  let tm=0,last=null;
-  window.addEventListener('resize',()=>{clearTimeout(tm);tm=setTimeout(()=>{
-    const sc=document.getElementById('screen-topics');if(!sc||!sc.classList.contains('active')||typeof buildTopicMap!=='function'||typeof currentGrade==='undefined')return;
-    const n=(CUR[currentGrade]?.topics||[]).length,c=typeof topicMapCols==='function'?topicMapCols(n):0;
-    if(last===null)last=c;if(c!==last){last=c;buildTopicMap(currentGrade);}
-  },250);});
+  let tm=0;
+  const check=()=>{
+    const sc=document.getElementById('screen-topics');if(!sc||!sc.classList.contains('active')||typeof buildTopicMap!=='function'||typeof topicMapCols!=='function'||typeof currentGrade==='undefined')return;
+    const n=(CUR[currentGrade]?.topics||[]).length;
+    if(typeof getTopicPositions==='function'&&getTopicPositions.cols!==topicMapCols(n))buildTopicMap(currentGrade);
+  },later=()=>{clearTimeout(tm);tm=setTimeout(check,200);};
+  window.addEventListener('resize',later);
+  const w=typeof ResizeObserver==='function'&&document.getElementById('topic-map-wrap');if(w)new ResizeObserver(later).observe(w); // også når bare kartets bredde endres
 })();

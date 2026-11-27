@@ -117,13 +117,13 @@ function getTopicPositions(n){
   const wrap=document.getElementById('topic-map-wrap'),svg=document.getElementById('topic-map-svg'),W=topicMapWidth();
   const setH=h=>{if(wrap&&wrap.style)wrap.style.height=h+'px';};
   if(svg&&svg.setAttribute)svg.setAttribute('preserveAspectRatio','none');
-  const cols=topicMapCols(n,W);
+  const cols=topicMapCols(n,W);getTopicPositions.cols=cols; // brukes når skjermbredden endres (topics12.js)
   if(cols===n){setH(260);
     if(n<=2)return[[22,50],[78,50]];
     if(n===3)return[[15,55],[50,30],[85,55]];
     if(n===4)return[[10,58],[37,32],[63,58],[90,32]];
     return[[8,55],[27,30],[50,58],[73,30],[92,55]];}
-  const rows=Math.ceil(n/cols),narrow=W<480,top=30,rowH=narrow?124:132,H=top+rows*rowH+8,mx=narrow?15:9;
+  const rows=Math.ceil(n/cols),narrow=W<480,top=30,rowH=narrow?126:142,H=top+rows*rowH+8,mx=narrow?15:9;
   setH(H);
   return Array.from({length:n},(_,i)=>{
     const r=Math.floor(i/cols);let c=i%cols;if(r%2)c=cols-1-c;

@@ -31,7 +31,7 @@ module.exports=function({R,ok,CUR,ls,els,ctx,submit,submitCh,solve}){
     const nums=[...s.matchAll(/class="t12-cl-n">(\d+)</g)].map(x=>+x[1]);ok(nums.join()===[1,2,3,4,5,6,7,8,9,10,11,12].join(),'content: clock face numbers');
     return {h,m,tag:(s.match(/t12-clk-tag">([^<]+)</)||[])[1]};});}
   // Mynter: les tallet som står på hver mynt
-  function coins(html){const cs=html.split('<svg class="t12-coin"').slice(1).map(s=>{const n=+(s.match(/class="t12-coin-n"[^>]*>(\d+)</)||[])[1],kr=+(s.match(/data-kr="(\d+)"/)||[])[1];ok(n===kr,`content: coin label ${n} vs ${kr}`);ok([1,5,10,20].includes(n),`content: not a Norwegian coin: ${n}`);ok(/<circle r="11"/.test(s.split('</svg>')[0])===(n<10),`content: coin ${n} hole wrong`);return n;});return cs;}
+  function coins(html){const cs=html.split('<svg class="t12-coin"').slice(1).map(s=>{const n=+(s.match(/class="t12-coin-n"[^>]*>(\d+)</)||[])[1],kr=+(s.match(/data-kr="(\d+)"/)||[])[1];ok(n===kr,`content: coin label ${n} vs ${kr}`);ok([1,5,10,20].includes(n),`content: not a Norwegian coin: ${n}`);ok(/<circle r="9"/.test(s.split('</svg>')[0])===(n<10),`content: coin ${n} hole wrong`);return n;});return cs;}
   function place(html){const bars=html.split('class="t12-bar"').slice(1);bars.forEach(b=>ok((b.split('</span>')[0].match(/<i><\/i>/g)||[]).length===10,'content: tier-stav har ikke 10 klosser'));return {t:bars.length,o:(html.match(/class="t12-one"/g)||[]).length};}
   function pairs(html){return (html.match(/class="t12-pit"|class="t12-pdot"/g)||[]).length;}
   function cmpRows(html){return html.split('class="t12-cmp-row"').slice(1).map(r=>({who:(r.match(/t12-cmp-who">([^<]+)</)||[])[1],n:(r.match(/class="t12-it"/g)||[]).length}));}
@@ -114,6 +114,7 @@ module.exports=function({R,ok,CUR,ls,els,ctx,submit,submitCh,solve}){
       if(exp!=null)ok(String(exp)===key,`content: ${id} wrong answer: ${qd.q} -> ${key} (solver: ${exp})`);
       ok(typeof qd.sub==='string'&&EXTRA[qd.sub]&&fmtSub(qd.sub)===EXTRA[qd.sub],`content: ${id} sub name missing ${qd.sub}`);
       ok(typeof qd.type==='string'&&qd.type&&typeof qd.strat==='string'&&qd.strat,`content: ${id} type/strat missing`);
+      ok(typeof qd.key==='string'&&qd.key.includes(qd.sub),`content: ${id} key missing`);
       ok(typeof qd.hint==='string'&&qd.hint&&qd.hint.split(' ').length<10,`content: ${id} hint missing/long: ${qd.hint}`);
       textOk(qd.q,'q');textOk(qd.hint||'','hint');ok(qd.q.length<=80,`content: q too long ${qd.q}`);
       if(qd.vis)ok(html.length>0,`content: ${id} vis not rendered ${qd.vis.kind}`);

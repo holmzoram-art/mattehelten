@@ -156,7 +156,7 @@ function openBossIntro(g){
   const b=BOSSES[g];if(!b)return;
   bossPendingGrade=g;
   document.getElementById('bi-tag').textContent=g===10?'⚠️ DET STORE OPPGJØRET ⚠️':'⚠️ BOSS-KAMP ⚠️';
-  document.getElementById('bi-emoji').textContent=b.emoji;
+  document.getElementById('bi-emoji').textContent=b.emoji;if(typeof figBossIntro==='function')figBossIntro(g); // 3D-figur (figures.js)
   document.getElementById('bi-name').textContent=b.name;
   document.getElementById('bi-grade').textContent=`${g}. klasse · ${GRADE_INFO[g-1]?.mapName||''}`;
   document.getElementById('bi-taunt').textContent=b.taunt;
@@ -227,7 +227,7 @@ function bossBegin(g,topics,b,o){
   document.getElementById('player-avatar').textContent=bossHero();
   document.getElementById('player-name').textContent=getPlayer().name;
   const av=document.getElementById('enemy-avatar');
-  av.textContent=b.emoji;av.classList.remove('boss-flee','boss-morph');
+  av.textContent=b.emoji;av.classList.remove('boss-flee','boss-morph');if(typeof figBoss==='function')figBoss(av,g);
   document.getElementById('enemy-name').textContent=S.bossTag+b.name;
   document.getElementById('player-hp').style.width='100%';
   document.getElementById('enemy-hp').style.width='100%';
@@ -284,7 +284,8 @@ function bossAfterAnswer(){
   bossLogLast();
   const last=S.questions[S.questions.length-1],ok=!!(last&&last.ok);
   const av=document.getElementById('enemy-avatar'),nm=document.getElementById('enemy-name');
-  if(!S.answered){setSpeech(`${S.bossEmoji} ${pick(b.miss)}`);bossProg();return;} // a second try is open (A2): wait for the final answer
+  const fig=(a,o)=>{if(typeof figBoss==='function')figBoss(av,S.grade,a,o);};
+  if(!S.answered){fig('taunt',{once:true});setSpeech(`${S.bossEmoji} ${pick(b.miss)}`);bossProg();return;} // a second try is open (A2): wait for the final answer
   if(ok){S.playerHp=Math.min(100,S.playerHp+5);document.getElementById('player-hp').style.width=S.playerHp+'%';} // long fight: hits heal a little
   // Last question: enough hits wins even if this one was wrong (the troll only falls at the end, so every topic gets all its questions)
   if(!S.enemyDefeated&&S.idx>=(S.bossQ||BOSS_MAXQ)&&bossVerdict(S.bossStats,bossFirstOk(),S.bossNeed,S.bossCore)){
@@ -292,12 +293,12 @@ function bossAfterAnswer(){
   let line;
   if(S.enemyDefeated){
     S.bossEmoji=b.koEmoji||'😵';
-    av.textContent=S.bossEmoji;nm.textContent=S.bossTag+b.name;
+    av.textContent=S.bossEmoji;nm.textContent=S.bossTag+b.name;fig('fall',{hold:true});
     line=b.ko;
     launch(200,['#ffd93d','#ff6b35','#00ff88','#06d6ff','#a855f7']);
     bossFanfare();
   }else if(ok){
-    line=pick(b.hit);
+    line=pick(b.hit);fig('hit',{once:true});
     const ph=b.phases||[];
     while(S.bossPhase<ph.length&&S.enemyHp<=ph[S.bossPhase].at){
       const P=ph[S.bossPhase++];
@@ -311,7 +312,7 @@ function bossAfterAnswer(){
       setTimeout(()=>cf.innerHTML='',900);
       bossRumble();
     }
-  }else line=pick(b.miss);
+  }else{line=pick(b.miss);fig('taunt',{once:true});}
   if(!S.enemyDefeated&&S.idx>=(S.bossQ||BOSS_MAXQ)){
     S.bossFled=true;
     line=b.flee||'Oi, nå stikker jeg! 💨';
@@ -332,7 +333,7 @@ function bossNext(){
 
 function bossCleanup(){
   document.getElementById('screen-game').classList.remove('boss-mode','boss-final','troll-mode');
-  document.getElementById('enemy-avatar').classList.remove('boss-flee','boss-morph');
+  document.getElementById('enemy-avatar').classList.remove('boss-flee','boss-morph');if(typeof figClear==='function')figClear(document.getElementById('enemy-avatar'));
 }
 
 // The topic to practise after a lost fight: only-wrong topics first, then the lowest share right, then fewest stars
@@ -369,6 +370,7 @@ function showBossResult(win){
   const em=document.getElementById('br-emoji');
   em.className='boss-emoji '+(win?'boss-ko':'boss-run');
   em.textContent=win?'🏆':b.emoji+'💨';
+  if(typeof figClear==='function'){figClear(em);if(!win&&typeof figBoss==='function')figBoss(em,g,'taunt',{once:true});}
   document.getElementById('br-title').textContent=win?(g===10?'👑 DU VANT! 👑':'🏆 SEIER! 🏆'):'Nesten! 💪';
   let sub;const weak=win?null:bossWeakest(),c=bossFirstOk(),n=S.bossLog.filter(Boolean).length||S.questions.length;
   if(win){

@@ -1,0 +1,21 @@
+/* Mattehelten – 3D-figurer som animerte bildestriper (js/figures.js). Figuren tegnes i ::before, emojien skjules. */
+.fig{--fs:96px;position:relative;font-size:0!important;line-height:0;width:var(--fs);height:var(--fs);display:inline-block;}
+.fig::before{content:'';position:absolute;inset:0;background-image:var(--fig-img);background-repeat:no-repeat;
+  background-size:calc(var(--fs) * var(--fig-n)) var(--fs);background-position:0 0;
+  animation:figRunA var(--fig-ms) steps(var(--fig-n)) infinite;}
+.fig.fig-alt::before{animation-name:figRunB;}
+.fig.fig-once::before{animation-name:figOnceA;animation-timing-function:steps(var(--fig-n1),jump-none);animation-iteration-count:1;animation-fill-mode:forwards;}
+.fig.fig-once.fig-alt::before{animation-name:figOnceB;}
+@keyframes figRunA{from{background-position-x:0}to{background-position-x:calc(var(--fs) * var(--fig-n) * -1)}}
+@keyframes figRunB{from{background-position-x:0}to{background-position-x:calc(var(--fs) * var(--fig-n) * -1)}}
+@keyframes figOnceA{from{background-position-x:0}to{background-position-x:calc(var(--fs) * var(--fig-n1) * -1)}}
+@keyframes figOnceB{from{background-position-x:0}to{background-position-x:calc(var(--fs) * var(--fig-n1) * -1)}}
+/* Størrelser */
+.enemy-avatar.fig{--fs:104px;}
+#screen-game.boss-mode .enemy-avatar.fig{--fs:150px;}
+.boss-emoji.fig{--fs:190px;margin:0 auto;}
+@media(max-width:420px){.enemy-avatar.fig{--fs:88px;}#screen-game.boss-mode .enemy-avatar.fig{--fs:120px;}.boss-emoji.fig{--fs:150px;}}
+/* Figurene har egen bevegelse: demp emojiens glød-skygge litt så de ikke blir uskarpe */
+.enemy-avatar.fig{filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) drop-shadow(0 0 12px rgba(255,68,102,.45));}
+#screen-game.troll-mode .enemy-avatar.fig{filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) drop-shadow(0 0 12px rgba(67,233,123,.5));}
+@media (prefers-reduced-motion: reduce){.fig::before{animation:none!important;}}

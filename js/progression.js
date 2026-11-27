@@ -279,7 +279,7 @@ function pgResults(){
   let b=document.getElementById('pg-next');
   if(!b){b=document.createElement('button');b.id='pg-next';b.className='pg-next-btn';const ring=document.getElementById('mst-res')||document.getElementById('res-ring');if(ring)ring.insertAdjacentElement('afterend',b);else card.prepend(b);}
   const g=S.grade,ts=CUR[g].topics||[],tid=S.topicId,B=BOSSES[g],nx=mstNext(g,tid);
-  const Q=S.questions||[],low=Q.length>0&&Q.filter(q=>q.ok).length/Q.length<.5;
+  const Q=S.questions||[],low=Q.length>0&&roundScore().pct<.5; // bare nye oppgaver teller (ikke revansj/lyn)
   b.style.display=low?'none':''; // under 50 %: «📖 Se hvordan» + «🔁 Prøv igjen» from buildResults instead
   let txt,go;
   if(!isTopicPassed(g,tid)){txt=`🔁 Prøv igjen! ${nx.txt}`;go=retrySession;}

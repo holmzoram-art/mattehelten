@@ -69,6 +69,7 @@ function fxStart(boss){
   if(av)av.classList.remove('fx-hurt','fx-ko','fx-koboss','fx-low','fx-atk','fx-enter','fx-bossin');
   fx.xp=prog.xp;fx.coins=prog.coins;fx.hp=S.enemyHp;fx.pts=S.bossPts||0;fx.phase=S.bossPhase||0;
   fxCombo(0);fxMuteSync();fxDecor();
+  if(typeof figHero==='function')figHero(pa,'idle'); // figur (figures.js)
   fxCls(pa,'fx-enter',650);
   if(boss){ // bigger entrance: the boss drops in, slams down, roars
     fxCls(av,'fx-bossin',1150);fxSndRoar(.12);
@@ -86,6 +87,7 @@ function fxHit(pre){
   fx.hp=S.enemyHp;fx.pts=S.bossPts||0;fx.xp=prog.xp;fx.coins=prog.coins;fx.phase=S.bossPhase||0;
   const A=fxPt(pa),B=fxPt(av),T=rm?0:slow?950:lv===3?260:290,dist=Math.abs(B.x-A.x);
   fxCombo(c);
+  if(typeof figHero==='function')figHero(pa,'atk',{once:true}); // figur: angrep én gang, så idle
   // 1. hero lunges at the enemy (slow motion on the boss' final hit)
   if(!rm){const d=fxE('fx-decor'),ms=slow?1150:620;pa.style.setProperty('--fxl',Math.round(Math.max(24,Math.min(64,dist*.2)))+'px');[pa,d].forEach(e=>{if(e){e.classList.toggle('fx-slow',slow);fxCls(e,'fx-lunge',ms);}});}
   if(slow)fxSpawn('fx-dim fx-full','',0,0,1500,0,{'--x':Math.round(B.x)+'px','--y':Math.round(B.y)+'px'});
@@ -104,6 +106,7 @@ function fxHit(pre){
   fxNumPop(lv,T,B); // 3b. the child's own answer pops, and a small spark flies from it to the monster
   // 4. impact: 💥, slash, sparks, damage number, XP/coin pops near the HUD, K.O.
   fxLater(()=>{
+    if(!S.boss&&typeof figMon==='function'){figMon(av,S.grade,S.topicId,'au');if(!ko)fxLater(()=>{if(!S.enemyDefeated)figMon(av,S.grade,S.topicId,'idle');},560);} // au-ansikt (K.O.: blir stående)
     fxSpawn('fx-boom'+(slow?' huge':lv===3?' big':''),'💥',B.x,B.y,700,0);
     if(!rm){fxSpawn('fx-slash','',B.x,B.y,340,0,{'--fxc':lv===3?'#06d6ff':lv===2?'#ff6b35':'#ffd93d'});if(lv===3||slow)fxSpawn('fx-slash x','',B.x,B.y,340,40,{'--fxc':'#ffd93d'});fxSparks(B,slow?8:lv===3?6:lv===2?4:3,lv===3?['⚡','✨']:lv===2?['🔥','✨']:['⭐','✨'],slow?110:70);}
     if(lv>=2||slow)fxFlash(B,lv===3||slow?'rgba(255,245,170,.55)':'rgba(255,140,60,.4)',slow?600:380);
@@ -145,6 +148,7 @@ function fxBlock(){
   if(!rm&&!av.classList.contains('boss-flee')){av.style.setProperty('--fxl',Math.round(Math.max(20,Math.min(48,gap*.14)))+'px');fxCls(av,'fx-atk',560);fxSndThrow();fxShoot('🌀','fx-shot foe',{x:B.x-dir*16,y:B.y},sh,150,T-150);}
   fxSpawn('fx-shield','🛡️',sh.x,sh.y,1000,0);
   fxCls(pa,'fx-block',950);
+  if(typeof figHero==='function')figHero(pa,'block',{once:true}); // figur: blokk én gang
   fxLater(()=>{fxSpawn('fx-ring','',sh.x,sh.y,450,0,{'--fxc':'#06d6ff'});if(!rm)fxSparks(sh,3,['✨'],40,0);fxSpawn('fx-word','Blokkert!',fxClampX((A.x+sh.x)/2,60),A.y-A.h*.45,1000,0);},T);
   fxSndClink(T/1000);
 }

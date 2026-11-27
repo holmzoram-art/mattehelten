@@ -20,7 +20,7 @@
 // ============================================================
 let scratchTool='pen',scratchSize=2,scratchColor='#ffffff',drawing=false,lastX=0,lastY=0;
 const cvs=document.getElementById('scratch-canvas');
-const ctx2=cvs.getContext('2d');
+const ctx2=cvs.getContext('2d',{willReadFrequently:true}); // resizeCanvas leser bildet (getImageData)
 
 function resizeCanvas(){
   const w=cvs.parentElement.clientWidth||290;
@@ -92,20 +92,51 @@ setTimeout(()=>resizeCanvas(),200);
 // STORY
 // ============================================================
 let storyPanel=0;
-function storyNext(){
-  storyPanel++;
-  const panels=document.querySelectorAll('.story-panel');
-  if(storyPanel>=panels.length){skipStory();return;}
-  panels.forEach((p,i)=>p.classList.toggle('active',i===storyPanel));
+// Panelene i introen (ikke slutten i #ending-overlay). Siste panel spør om klassetrinn.
+function storyPanels(){return document.querySelectorAll('#story-overlay .story-panel');}
+function storyShow(i){
+  const panels=storyPanels();storyPanel=i;
+  panels.forEach((p,j)=>p.classList.toggle('active',j===i));
+  const ov=document.getElementById('story-overlay'),ask=panels[i]&&panels[i].id==='story-ask';
+  if(ov)ov.classList.toggle('ask',!!ask); // ingen «Hopp over» på spørsmålet om klasse
+  storySay();
 }
+// Les panelet høyt (når opplesing er på); force = 🔊-knappen
+function storySay(force){
+  const p=storyPanels()[storyPanel];if(!p||typeof speak!=='function')return;
+  speak([...p.querySelectorAll('.story-big,.story-sub')].map(e=>e.textContent).join('. '),{force:!!force});
+}
+function storyNext(){
+  const panels=storyPanels();
+  if(storyPanel+1>=panels.length){skipStory();return;}
+  storyShow(storyPanel+1);
+}
+function gradeChosen(){return typeof mhSettings==='function'&&'startGrade' in mhSettings();}
+// «Hopp over» hopper over historien, men ikke spørsmålet om klassetrinn (nye spillere)
 function skipStory(){
+  if(!localStorage.getItem('mh_player')&&!gradeChosen()){showGradeAsk();return;}
+  closeStory();
+}
+function closeStory(){
   document.getElementById('story-overlay').classList.add('hidden');
   localStorage.setItem('mh_story_seen','1');
+  if(typeof ttsStop==='function')ttsStop();
 }
 function showStory(){
-  storyPanel=0;
-  document.querySelectorAll('.story-panel').forEach((p,i)=>p.classList.toggle('active',i===0));
   document.getElementById('story-overlay').classList.remove('hidden');
+  storyShow(0);
+}
+function showGradeAsk(){
+  const panels=storyPanels();
+  document.getElementById('story-overlay').classList.remove('hidden');
+  storyShow(panels.length-1);
+}
+// «Jeg går i 1./2. klasse» → startGrade
+function pickStartGrade(g){
+  if(typeof setSetting==='function')setSetting('startGrade',g===2?2:1);
+  document.querySelectorAll('.grade-pick').forEach(b=>b.classList.toggle('selected',+b.dataset.g===g));
+  closeStory();
+  if(!localStorage.getItem('mh_player')&&typeof speak==='function')speak('Velg din helt! Trykk så på Start.',{grade:g});
 }
 
 // ============================================================
@@ -303,19 +334,9 @@ function buildCharGrid(){
 
 function saveCharacter(){
   const nameInput=document.getElementById('cs-name');
-  const name=nameInput.value.trim();
-  if(!name){
-    nameInput.style.borderColor='var(--red)';
-    nameInput.style.boxShadow='0 0 16px rgba(255,68,102,.5)';
-    nameInput.placeholder='⚠️ Du må skrive navnet ditt!';
-    nameInput.focus();
-    nameInput.addEventListener('input',()=>{
-      nameInput.style.borderColor='';
-      nameInput.style.boxShadow='';
-      nameInput.placeholder='Skriv navnet ditt...';
-    },{once:true});
-    return;
-  }
+  const name=(nameInput.value||'').trim()||'Helt'; // navn er valgfritt
+  if(nameInput.blur)nameInput.blur(); // lukk skjermtastaturet før neste skjerm
+  const first=!localStorage.getItem('mh_player');
   const player={emoji:CHARS[selectedChar].emoji,name};
   localStorage.setItem('mh_player',JSON.stringify(player));
   localStorage.setItem('mh_char_idx', String(selectedChar));
@@ -325,7 +346,9 @@ function saveCharacter(){
   updateSidekick();
   unlockAchievement('sidekick');
   buildAdventureMap();
-  showScreen('grades');
+  // Ny spiller: rett til første tema (Lær første gang), ellers kartet
+  if(first&&typeof goFight==='function')goFight();
+  else showScreen('grades');
 }
 
 function applyPlayer(p){

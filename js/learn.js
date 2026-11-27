@@ -38,22 +38,24 @@ function pills(arr,c='#00ff88'){return `<div style="display:flex;gap:6px;flex-wr
 function capLine(t){return `<div style="text-align:center;margin-top:8px;font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--white)">${t}</div>`;}
 function rectFig(w,h){const u=24,lb=t=>`<div style="font-family:'Fredoka One',cursive;color:var(--gold)">${t}</div>`;return `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px">${lb(w)}<div style="display:flex;align-items:center;gap:6px">${lb(h)}<div style="width:${w*u}px;height:${h*u}px;border:3px solid var(--cyan);border-radius:4px;box-shadow:var(--glow-c)"></div>${lb(h)}</div>${lb(w)}</div>`;}
 function grn(t){return `<span style="color:var(--green)">${t}</span>`;}
+// Emoji-rad: n stk e; gone = de siste som er tatt bort (bleke)
+function emoRow(n,e,gone=0){return `<span class="emo-row">${e.repeat(n-gone)}${gone?`<span class="emo-gone">${e.repeat(gone)}</span>`:''}</span>`;}
 
 const LEARN_GUIDES={
   add10:[
     {icon:'➕',title:'Slå sammen!',text:'Frosken har 3 epler. Uglen har 2. Hvor mange har de til sammen? 🍎',
-     visual:`<div class="dot-groups">${dotGroup(3,'#7c3aed')} <span class="dot-op">+</span> ${dotGroup(2,'#a855f7')} <span class="dot-eq">=</span> ${dotGroup(5,'#00ff88',200)}</div>`+capLine(`3 + 2 = ${grn('5')}`)},
+     visual:`<div class="dot-groups">${emoRow(3,'🍎')} <span class="dot-op">+</span> ${emoRow(2,'🍎')} <span class="dot-eq">=</span> ${emoRow(5,'🍎')}</div>`+capLine(`3 + 2 = ${grn('5')}`)},
     {icon:'🐸',title:'Hopp på tallinja',text:'Start på det første tallet. Hopp fremover like mange ganger som det andre tallet.',
      visual:numLine(0,10,3,4)+capLine(`4 + 3: Start på 4, hopp 3 → ${grn('7')}`)},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Start på 6 og tell 4 fremover.',
+    {icon:'🎯',title:'Din tur!',text:'Start på 6 og tell 4 fremover.',ask:{q:'6 + 4 = ?',ans:10},pre:numLine(0,10,0,6),
      visual:workedEx([['6 + 4 = ?','',false],['Start på 6','',false],['7, 8, 9, 10','(tell 4 fremover)',true],['6 + 4 = 10 ✓','',false]])}
   ],
   sub10:[
-    {icon:'➖',title:'Trollet tar!',text:'Du har 5 kaker. Trollet tar 2. Hvor mange er igjen? 🍪',
-     visual:`<div class="dot-groups">${dotGroup(5,'#7c3aed')} <span class="dot-op">-</span> <span style="font-size:1.2rem;font-weight:800;color:var(--red)">2</span> <span class="dot-eq">=</span> ${dotGroup(3,'#7c3aed',200)}</div>`+capLine(`5 - 2 = ${grn('3')}`)},
+    {icon:'➖',title:'Trollet tar!',text:'Du har 5 kjeks. Trollet tar 2. Hvor mange er igjen? 🍪',
+     visual:`<div class="dot-groups">${emoRow(5,'🍪',2)} <span class="dot-eq">=</span> ${emoRow(3,'🍪')}</div>`+capLine(`5 - 2 = ${grn('3')}`)},
     {icon:'🐸',title:'Hopp bakover',text:'Start på det store tallet. Hopp bakover på tallinja.',
      visual:numLine(0,10,-3,7)+capLine(`7 - 3 = ${grn('4')}`)},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Start på 8 og tell 5 bakover.',
+    {icon:'🎯',title:'Din tur!',text:'Start på 8 og tell 5 bakover.',ask:{q:'8 - 5 = ?',ans:3},pre:numLine(0,10,0,8),
      visual:workedEx([['8 - 5 = ?','',false],['Start på 8','',false],['7, 6, 5, 4, 3','(tell 5 bakover)',true],['8 - 5 = 3 ✓','',false]])}
   ],
   ten1:[
@@ -65,7 +67,7 @@ const LEARN_GUIDES={
      visual:`<div style="font-size:2.4rem">🖐️🖐️</div>`+capLine(`10 - 6 = ${grn('4')}`)},
     {icon:'📋',title:'Alle tiervennene',text:'Lær dem utenat. Da blir du lynrask! ⚡',
      visual:pills(['1 + 9','2 + 8','3 + 7','4 + 6','5 + 5'],'#ffd93d')},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Hvor mange mangler fra 8 til 10?',
+    {icon:'🎯',title:'Din tur!',text:'Hvor mange mangler fra 8 til 10?',ask:{q:'8 + ? = 10',ans:2},pre:tenFrame(8),
      visual:workedEx([['8 + ? = 10','',false],['9, 10','(2 hopp)',true],['8 + 2 = 10 ✓','',false]])}
   ],
   seq1:[
@@ -75,7 +77,7 @@ const LEARN_GUIDES={
      visual:seqHops([5,6,7,8],'+1')+'<div style="height:8px"></div>'+seqHops([5,10,15,20],'+5')+'<div style="height:8px"></div>'+seqHops([10,20,30,40],'+10')},
     {icon:'🚀',title:'Nedtelling!',text:'Raketten teller ned. Da blir tallene mindre.',
      visual:seqHops([9,8,7,'?'],'−1',3)+capLine(`Etter 7 kommer ${grn('6')}. 🚀`)},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Finn hoppet først. Hopp så videre.',
+    {icon:'🎯',title:'Din tur!',text:'Finn hoppet først. Hopp så videre.',ask:{q:'10, 20, ?, 40',ans:30},
      visual:workedEx([['10, 20, ?, 40','',false],['Hoppet er 10','(10 → 20)',true],['20 + 10 = 30','',true],['Svaret er 30 ✓','',false]])}
   ],
   add20:[
@@ -83,20 +85,24 @@ const LEARN_GUIDES={
      visual:tenFrame(8,5)+capLine(`8 + 2 = 10, og 3 til = ${grn('13')}`)},
     {icon:'✂️',title:'Del opp tallene',text:'Del opp i tiere og enere. Legg sammen enerne først.',
      visual:workedEx([['13 + 5 = ?','',false],['13 = 10 + 3','(del opp 13)',true],['3 + 5 = 8','(enerne)',true],['10 + 8 = 18 ✓','',false]])},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Bruk tiervennen til 9.',
+    {icon:'🎯',title:'Din tur!',text:'Bruk tiervennen til 9. Fyll opp til 10 først.',ask:{q:'9 + 6 = ?',ans:15},pre:tenFrame(9,6),
      visual:workedEx([['9 + 6 = ?','',false],['9 + 1 = 10','(fyll opp tieren)',true],['Det er 5 igjen av 6','',false],['10 + 5 = 15 ✓','',false]])}
   ],
   add100:[
     {icon:'✂️',title:'Tiere og enere',text:'Del opp begge tallene. Tiere for seg, enere for seg.',
      visual:workedEx([['34 + 25 = ?','',false],['30 + 20 = 50','(tierne)',true],['4 + 5 = 9','(enerne)',true],['50 + 9 = 59 ✓','',false]])},
     {icon:'🎯',title:'Over tieren',text:'Blir enerne mer enn 10? Da får du en ny tier!',
-     visual:workedEx([['47 + 6 = ?','',false],['7 + 6 = 13','(enerne)',true],['40 + 13 = 53 ✓','',false]])}
+     visual:workedEx([['47 + 6 = ?','',false],['7 + 6 = 13','(enerne)',true],['40 + 13 = 53 ✓','',false]])},
+    {icon:'🎯',title:'Din tur!',text:'Ta tierne for seg og enerne for seg.',ask:{q:'23 + 14 = ?',ans:37},
+     visual:workedEx([['23 + 14 = ?','',false],['20 + 10 = 30','(tierne)',true],['3 + 4 = 7','(enerne)',true],['30 + 7 = 37 ✓','',false]])}
   ],
   sub100:[
     {icon:'🐸',title:'Ta tierne først',text:'Hopp ned tierne først. Hopp så ned enerne.',
      visual:workedEx([['52 - 17 = ?','',false],['52 - 10 = 42','(tierne)',true],['42 - 7 = 35','(enerne)',true],['52 - 17 = 35 ✓','',false]])},
     {icon:'🔄',title:'Hopp via tieren',text:'Gå ned til nærmeste tier først. Ta så resten.',
-     visual:workedEx([['42 - 7 = ?','',false],['42 - 2 = 40','(ned til tieren)',true],['40 - 5 = 35','(resten)',true],['= 35 ✓','',false]])}
+     visual:workedEx([['42 - 7 = ?','',false],['42 - 2 = 40','(ned til tieren)',true],['40 - 5 = 35','(resten)',true],['= 35 ✓','',false]])},
+    {icon:'🎯',title:'Din tur!',text:'Ta tierne først. Ta så enerne.',ask:{q:'47 - 12 = ?',ans:35},
+     visual:workedEx([['47 - 12 = ?','',false],['47 - 10 = 37','(tierne)',true],['37 - 2 = 35','(enerne)',true],['47 - 12 = 35 ✓','',false]])}
   ],
   miss2:[
     {icon:'🕵️',title:'Bli tall-detektiv!',text:'Spørsmålstegnet gjemmer et tall. Kan du finne det?',
@@ -105,7 +111,7 @@ const LEARN_GUIDES={
      visual:numLine(0,10,3,5)+capLine(`Fra 5 til 8 er det 3 hopp. 5 + ${grn('3')} = 8`)},
     {icon:'🔄',title:'Regn baklengs',text:'Du kan også bruke minus for å finne tallet.',
      visual:workedEx([['? + 4 = 9','',false],['9 - 4 = 5','(regn baklengs)',true],['5 + 4 = 9 ✓','(sjekk)',false]])},
-    {icon:'🍦',title:'Nå er det din tur!',text:'Du har 46 kr. En is koster 50 kr. Hvor mye mangler du?',
+    {icon:'🍦',title:'Din tur!',text:'Du har 46 kr. En is koster 50 kr. Hvor mye mangler du?',ask:{q:'46 + ? = 50',ans:4},pre:numLine(45,50,0,46),
      visual:workedEx([['46 + ? = 50','',false],['47, 48, 49, 50','(4 hopp)',true],['46 + 4 = 50 ✓','',false]])}
   ],
   dbl2:[
@@ -115,7 +121,7 @@ const LEARN_GUIDES={
      visual:`<div class="dot-groups">${dotGroup(8,'#06d6ff')} <span class="dot-eq">→</span> ${dotGroup(4,'#00ff88',200)} <span class="dot-op">|</span> ${dotGroup(4,'#00ff88',360)}</div>`+capLine(`Halvparten av 8 = ${grn('4')}`)},
     {icon:'🔁',title:'De henger sammen',text:'Dobbelt av 6 er 12. Da er halvparten av 12 lik 6!',
      visual:pills(['6 → dobbelt → 12','12 → halvparten → 6'],'#f093fb')},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Ta tierne og enerne hver for seg.',
+    {icon:'🎯',title:'Din tur!',text:'Ta tierne og enerne hver for seg.',ask:{q:'Dobbelt av 23 = ?',ans:46},
      visual:workedEx([['Dobbelt av 23','',false],['20 + 20 = 40','(tierne)',true],['3 + 3 = 6','(enerne)',true],['40 + 6 = 46 ✓','',false]])}
   ],
   mul25:[
@@ -123,7 +129,7 @@ const LEARN_GUIDES={
      visual:`<div style="display:flex;flex-direction:column;align-items:center;gap:6px">${[0,1,2].map(i=>`<div style="display:flex;gap:4px">${dots(4,['#7c3aed','#a855f7','#06d6ff'][i],i*100)}</div>`).join('')}</div>`+capLine(`3 · 4 = 4 + 4 + 4 = ${grn('12')}`)},
     {icon:'⭐',title:'2-, 5- og 10-gangen',text:'5-gangen slutter alltid på 0 eller 5. 10-gangen: bare legg til en 0!',
      visual:`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">${[2,5,10].map(t=>`<div><div style="font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--gold);margin-bottom:4px">${t}-gangen</div>${[1,2,3,4].map(n=>`<div style="font-size:.8rem;font-weight:800;color:var(--white)">${n} · ${t} = ${n*t}</div>`).join('')}</div>`).join('')}</div>`},
-    {icon:'🖐️',title:'Nå er det din tur!',text:'4 hender med 5 fingre. Hvor mange fingre?',
+    {icon:'🖐️',title:'Din tur!',text:'4 hender med 5 fingre. Hvor mange fingre?',ask:{q:'4 · 5 = ?',ans:20},pre:'<div style="font-size:2rem">🖐️🖐️🖐️🖐️</div>',
      visual:workedEx([['4 · 5 = ?','',false],['= 5 + 5 + 5 + 5','(fire 5-ere)',true],['= 10 + 10','',true],['= 20 ✓','',false]])}
   ],
   mul15:[
@@ -293,18 +299,90 @@ const LEARN_GUIDES={
 // ============================================================
 // LEARN NAVIGATION
 // ============================================================
-let learnState={grade:null,topicId:null,steps:[],idx:0};
+// Lær vises automatisk første gang et tema åpnes (startTopic). Siste steg er en ekte oppgave barnet svarer på:
+// guidens siste steg med ask:{q,ans} (pre = bilde før svaret, visual = løsningen etterpå), ellers en oppgave
+// fra topic.gen (bare valgknapper eller hele tall ≥ 0, siden tastaturet i Lær bare har sifre).
+// localStorage mh_learn_seen: ['<g>:<id>', …] = temaer der Lær er vist.
+let learnState={grade:null,topicId:null,steps:[],idx:0,auto:false};
 
-function showLearn(grade,topicId){
-  const gd=CUR[grade],topic=gd.topics.find(t=>t.id===topicId);
-  const steps=LEARN_GUIDES[topicId];
-  if(!steps||!steps.length){alert('Guide for dette temaet kommer snart!');return;}
-  learnState={grade,topicId,steps,idx:0};
+function learnSeenList(){const v=typeof mhLoad==='function'?mhLoad('mh_learn_seen',[]):[];return Array.isArray(v)?v:[];}
+function isLearnSeen(g,id){return learnSeenList().includes(g+':'+id);}
+function markLearnSeen(g,id){const l=learnSeenList(),k=g+':'+id;if(!l.includes(k)){l.push(k);if(typeof mhSave==='function')mhSave('mh_learn_seen',l);}}
+// Har barnet spilt temaet før? (stjerner, gammel mestring eller rekord)
+function topicPlayed(g,id){
+  try{if(typeof topicStars==='function'&&topicStars(g,id)>0)return true;}catch(e){}
+  try{if(typeof getMastery==='function'&&getMastery(g,id)>0)return true;}catch(e){}
+  try{if(typeof getBest==='function'&&getBest(g,id)!==null)return true;}catch(e){}
+  return false;
+}
+// Start et tema: Lær første gang (hvis temaet har en guide), ellers rett i kamp
+function startTopic(g,id){
+  const st=LEARN_GUIDES[id];
+  if(st&&st.length&&!isLearnSeen(g,id)&&!topicPlayed(g,id)){showLearn(g,id,{auto:true});return 'learn';}
+  startGame(g,id);return 'game';
+}
+
+// ---- «Gå til kamp»: neste anbefalte tema (eller bossen) i høyeste åpne klassetrinn ----
+function fightGrade(){
+  let f=1;for(let g=1;g<=10;g++)if(CUR[g]&&typeof isGradeUnlocked==='function'&&isGradeUnlocked(g))f=g;
+  const sg=typeof getSetting==='function'?+getSetting('startGrade'):1;
+  return sg>f&&CUR[sg]?sg:f;
+}
+function nextFight(g){
+  g=g||fightGrade();const ts=(CUR[g]&&CUR[g].topics)||[];
+  const open=i=>typeof isTopicUnlocked==='function'?isTopicUnlocked(g,i):i===0;
+  const passed=t=>typeof isTopicPassed==='function'&&isTopicPassed(g,t.id);
+  const mastered=t=>typeof isTopicMastered==='function'&&isTopicMastered(g,t.id);
+  const find=f=>ts.findIndex((t,i)=>open(i)&&f(t));
+  let i=find(t=>!t.optional&&!passed(t)); // første tema uten ⭐
+  if(i<0&&typeof BOSSES!=='undefined'&&BOSSES[g]&&typeof isBossUnlocked==='function'&&isBossUnlocked(g)&&!isBossDefeated(g))return{g,boss:BOSSES[g]};
+  if(i<0)i=find(t=>!passed(t)); // valgfrie temaer
+  if(i<0)i=find(t=>!mastered(t)); // mot ⭐⭐⭐
+  if(i<0&&ts.length)i=new Date().getDate()%ts.length; // alt mestret: et tema per dag
+  return i>=0&&ts[i]?{g,topic:ts[i]}:null;
+}
+function goFight(){
+  const n=nextFight();if(!n){showScreen('grades');return;}
+  try{currentGrade=n.g;}catch(e){}
+  if(n.boss&&typeof openBossIntro==='function'){openBossIntro(n.g);return;}
+  startTopic(n.g,n.topic.id);
+}
+function goFightLabel(){
+  const el=document.getElementById('go-fight-sub');if(!el)return;
+  let n=null;try{n=nextFight();}catch(e){}
+  el.textContent=n?(n.boss?`${n.boss.emoji} ${n.boss.name}`:`${n.topic.icon} ${n.topic.name}`):'';
+}
+
+// ---- Lær ----
+function showLearn(grade,topicId,opts){
+  const topic=CUR[grade]&&CUR[grade].topics.find(t=>t.id===topicId),base=LEARN_GUIDES[topicId];
+  if(!topic)return;
+  if(!base||!base.length){startGame(grade,topicId);return;} // ingen guide: rett i kamp
+  const steps=base.slice(),last=steps[steps.length-1],pr=learnPractice(grade,topicId,topic,last);
+  if(pr){if(last.ask)steps[steps.length-1]=Object.assign({},last,{practice:pr});else steps.push({icon:'🎯',title:'Din tur!',text:pr.qd.hint||'',practice:pr});}
+  learnState={grade,topicId,steps,idx:0,auto:!!(opts&&opts.auto)};
+  markLearnSeen(grade,topicId);
+  try{currentGrade=grade;}catch(e){}
   document.getElementById('learn-topic-name').textContent=topic.name;
   buildLearnDots();
   renderLearnStep();
   showScreen('learn');
 }
+// Oppgaven i siste steg
+function learnPractice(g,id,topic,last){
+  let qd=null;
+  if(last&&last.ask)qd=Object.assign({},last.ask);
+  else{
+    try{qd=topic.gen(g,id);}catch(e){qd=null;}
+    const ch=qd&&Array.isArray(qd.choices)&&qd.choices.length;
+    if(qd&&!ch&&!(Number.isInteger(qd.ans)&&qd.ans>=0&&qd.ans<10000&&(qd.ansTxt==null||/^\d+$/.test(String(qd.ansTxt)))))qd=null;
+  }
+  if(!qd||qd.q==null||qd.ans==null)return null;
+  return {qd,tries:0,done:false,res:null,val:''};
+}
+function learnPr(){const st=learnState.steps[learnState.idx];return st&&st.practice||null;}
+function learnKeyTxt(qd){return String(qd.ansTxt!=null?qd.ansTxt:(typeof nf==='function'?nf(qd.ans):qd.ans));}
+function learnEsc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 function buildLearnDots(){
   document.getElementById('learn-dots').innerHTML=learnState.steps.map((_,i)=>`<div class="learn-dot" id="ldot${i}"></div>`).join('');
@@ -319,23 +397,120 @@ function renderLearnStep(){
     document.getElementById('learn-step-lbl').textContent=`Steg ${idx+1} av ${steps.length}`;
     document.getElementById('learn-icon').textContent=step.icon;
     document.getElementById('learn-title').textContent=step.title;
-    document.getElementById('learn-text').innerHTML=step.text;
-    document.getElementById('learn-visual').innerHTML=step.visual||'';
+    document.getElementById('learn-text').innerHTML=step.text||'';
+    const vis=document.getElementById('learn-visual');
+    vis.innerHTML=step.practice?learnPracticeHTML(step):(step.visual||'');
+    vis.classList.toggle('lp-on',!!step.practice);
     steps.forEach((_,i)=>{
       const d=document.getElementById(`ldot${i}`);
-      d.className='learn-dot'+(i<idx?' done':i===idx?' active':'');
+      if(d)d.className='learn-dot'+(i<idx?' done':i===idx?' active':'');
     });
-    const nb=document.getElementById('learn-next');
-    nb.textContent=idx>=steps.length-1?'🚀 Prøv nå!':'Neste →';
-    nb.className='learn-next'+(idx>=steps.length-1?' finish':'');
-    document.getElementById('learn-prev').style.display=idx>0?'block':'none';
+    if(step.practice&&step.practice.done)learnFeedback(step.practice.res,true);
+    learnNavSync();
     body.style.transition='opacity .25s';
     body.style.opacity='1';
+    learnSay();
   },100);
 }
+function learnNavSync(){
+  const {steps,idx}=learnState,last=idx>=steps.length-1,pr=learnPr();
+  const nb=document.getElementById('learn-next');
+  nb.textContent=last?'⚔️ Til kamp!':'Neste →';
+  nb.className='learn-next'+(last&&(!pr||pr.done)?' finish':'')+(last&&pr&&pr.done?' lp-go':'');
+  document.getElementById('learn-prev').style.display=idx>0?'':'none';
+}
+// Oppgave med valgknapper eller sifre (1–5, 6–0), ⌫ og ✓
+function learnPracticeHTML(step){
+  const pr=step.practice,qd=pr.qd,ch=Array.isArray(qd.choices)&&qd.choices.length,q=String(qd.q);
+  let h=`<div class="lp-q${/[a-zæøå]{4}/i.test(q)&&q.length>20?' lp-long':''}">${learnEsc(q)}</div>`;
+  const vh=typeof renderVis==='function'?renderVis(qd.vis):'';if(vh)h+=`<div class="lp-vis">${vh}</div>`;
+  if(step.pre)h+=`<div class="lp-pre">${step.pre}</div>`;
+  const fb='<div class="lp-fb" id="lp-fb"></div>'; // tilbakemelding rett under svaret, før tastaturet
+  if(ch)h+=`<div class="q-choices lp-choices">${qd.choices.map((c,i)=>`<button type="button" class="q-choice" data-i="${i}">${learnEsc(c)}</button>`).join('')}</div>`+fb;
+  else h+=`<div class="lp-row"><button type="button" class="lp-key lp-del" data-k="del" aria-label="Slett">⌫</button><div class="lp-ans" id="lp-ans">${learnEsc(pr.val||'?')}</div><button type="button" class="lp-key lp-ok" data-k="ok" aria-label="Svar">✓</button></div>`+fb+
+    `<div class="lp-pad">${[1,2,3,4,5,6,7,8,9,0].map(n=>`<button type="button" class="lp-key" data-k="${n}">${n}</button>`).join('')}</div>`;
+  return `<div class="lp" id="lp">${h}</div>`;
+}
+// Sjekker et svar: 'ok' | 'retry' (første feil) | 'reveal' (andre feil, eller feil med bare 2 valg) | null (tomt/ugyldig)
+function learnCheck(raw){
+  const pr=learnPr();if(!pr||pr.done)return null;
+  const qd=pr.qd,ch=Array.isArray(qd.choices)&&qd.choices.length;
+  raw=String(raw==null?'':raw).trim();if(raw==='')return null;
+  let ok;
+  if(ch)ok=raw===learnKeyTxt(qd);
+  else{const v=typeof parseAns==='function'?parseAns(raw):+raw;if(v===null||isNaN(v))return null;ok=Math.abs(v-qd.ans)<0.01;}
+  pr.tries++;
+  const r=ok?'ok':(pr.tries>=2||(ch&&qd.choices.length<=2))?'reveal':'retry';
+  if(r!=='retry'){pr.done=true;pr.res=r;}
+  return r;
+}
+function learnAnswer(raw,ci){
+  const pr=learnPr();if(!pr||pr.done)return null;
+  const r=learnCheck(raw);if(!r)return null;
+  if(ci!=null&&r!=='ok'){const b=document.querySelectorAll('#learn-visual .q-choice')[ci];if(b){b.classList.add('wrong');b.disabled=true;}}
+  if(r==='retry'){pr.val='';const a=document.getElementById('lp-ans');if(a){a.textContent='?';a.classList.remove('lp-shake');void a.offsetWidth;a.classList.add('lp-shake');}}
+  learnFeedback(r);
+  return r;
+}
+function learnFeedback(r,quiet){
+  const pr=learnPr(),st=learnState.steps[learnState.idx],fb=document.getElementById('lp-fb');if(!pr||!fb)return;
+  const key=learnKeyTxt(pr.qd);let h,say;
+  if(r==='ok'){h='<div class="lp-fb-t">🎉 Riktig!</div>';say='Riktig! Bra jobba!';}
+  else if(r==='retry'){const hint=st.ask?st.text:(pr.qd.hint||'');h=`<div class="lp-fb-t">🤔 Nesten! Prøv igjen.</div>${hint?`<div class="lp-fb-h">${hint}</div>`:''}`;say='Nesten! Prøv igjen. '+(hint||'');}
+  else{h=`<div class="lp-fb-t">Svaret er ${learnEsc(key)}.</div>`;say=`Svaret er ${key}.`;}
+  if(pr.done&&st.ask&&st.visual)h+=`<div class="lp-sol">${st.visual}</div>`;
+  fb.className='lp-fb '+(r==='ok'?'ok':r==='retry'?'try':'show');fb.innerHTML=h;
+  if(pr.done){
+    const lp=document.getElementById('lp');if(lp)lp.classList.add('done');
+    const a=document.getElementById('lp-ans');if(a){a.textContent=key;a.classList.add('ok');}
+    document.querySelectorAll('#learn-visual .q-choice').forEach(b=>{b.disabled=true;if(b.textContent===key)b.classList.add('right');});
+  }
+  learnNavSync();
+  if(quiet)return;
+  if(r==='ok'){if(typeof sndOk==='function')sndOk();if(typeof launch==='function')launch(50);}
+  else if(typeof sndBad==='function')sndBad();
+  if(typeof speak==='function')speak(say,{grade:learnState.grade});
+  if(pr.done){const nb=document.getElementById('learn-next');if(nb&&nb.scrollIntoView)try{nb.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}}
+}
+function learnPadClick(e){
+  const t=e&&e.target,b=t&&t.closest?t.closest('button'):null;if(!b||b.disabled)return;
+  const pr=learnPr();if(!pr||pr.done)return;
+  if(b.dataset.i!=null){const i=+b.dataset.i;learnAnswer(String(pr.qd.choices[i]),i);return;}
+  const k=b.dataset.k;if(k==null)return;
+  if(k==='ok'){if(pr.val)learnAnswer(pr.val);return;}
+  if(k==='del')pr.val=pr.val.slice(0,-1);else if(pr.val.length<4)pr.val+=k;
+  const a=document.getElementById('lp-ans');if(a)a.textContent=pr.val||'?';
+}
+// Tastatur på PC: sifre, ⌫ og Enter
+function learnKeydown(e){
+  const sc=document.getElementById('screen-learn');if(!sc||!sc.classList.contains('active'))return;
+  const pr=learnPr();if(!pr||pr.done||(Array.isArray(pr.qd.choices)&&pr.qd.choices.length))return;
+  if(/^[0-9]$/.test(e.key)){if(pr.val.length<4)pr.val+=e.key;}
+  else if(e.key==='Backspace')pr.val=pr.val.slice(0,-1);
+  else if(e.key==='Enter'){e.preventDefault();if(pr.val)learnAnswer(pr.val);return;}
+  else return;
+  e.preventDefault();
+  const a=document.getElementById('lp-ans');if(a)a.textContent=pr.val||'?';
+}
+(function(){
+  const v=document.getElementById('learn-visual');if(v&&v.addEventListener)v.addEventListener('click',learnPadClick);
+  if(typeof document.addEventListener==='function')document.addEventListener('keydown',learnKeydown);
+})();
 
+// Les steget høyt (automatisk når opplesing er på; force = 🔊)
+function learnSay(force){
+  const st=learnState.steps[learnState.idx];if(!st||typeof speak!=='function')return '';
+  const head=st.title+(/[.!?]$/.test(st.title)?' ':'. ')+(st.text||'');
+  if(st.practice&&!st.practice.done&&typeof ttsText==='function')return speak(ttsText(head)+' '+ttsQText(st.practice.qd),{raw:true,force:!!force,grade:learnState.grade});
+  return speak(head,{force:!!force,grade:learnState.grade});
+}
 function learnNext(){
-  if(learnState.idx>=learnState.steps.length-1)startGame(learnState.grade,learnState.topicId);
+  if(learnState.idx>=learnState.steps.length-1)learnFight();
   else{learnState.idx++;renderLearnStep();}
 }
 function learnPrev(){if(learnState.idx>0){learnState.idx--;renderLearnStep();}}
+function learnFight(){if(learnState.grade==null)return;markLearnSeen(learnState.grade,learnState.topicId);startGame(learnState.grade,learnState.topicId);}
+function learnBack(){
+  if(typeof ttsStop==='function')ttsStop();
+  if(learnState.grade&&typeof selectGrade==='function')selectGrade(learnState.grade);else showScreen('grades');
+}

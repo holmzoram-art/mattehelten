@@ -29,7 +29,7 @@ const BADGES=[
   {id:'streak5',       icon:'🔥', name:'På strak arm!',   desc:'5 riktige på rad',            secret:false},
   {id:'streak10',      icon:'🌋', name:'Ustoppelig!',     desc:'10 riktige på rad i en boss-kamp', secret:true},
   {id:'perfect',       icon:'💎', name:'Perfekt runde!',  desc:'Ingen feil i en hel kamp',    secret:false},
-  {id:'ko',            icon:'💀', name:'K.O. Mester!',    desc:'Beseir fienden med combo',    secret:false},
+  {id:'ko',            icon:'💀', name:'K.O. Mester!',    desc:'Slå ut monsteret med combo',    secret:false},
   {id:'lvlup',         icon:'⭐', name:'Nivå opp!',       desc:'Nå et nytt nivå',             secret:false},
   {id:'lvl5',          icon:'🔥', name:'Mester!',         desc:'Nå nivå 5',                   secret:false},
   {id:'lvl8',          icon:'🌟', name:'Legende!',        desc:'Nå nivå 8',                   secret:true},
@@ -42,7 +42,7 @@ const BADGES=[
   {id:'world4',        icon:'🏰', name:'Borgherren',      desc:'Fullfør Algebraborgen',       secret:false},
   {id:'world5',        icon:'🌌', name:'Kosmoshersker',   desc:'Fullfør Kosmos-riket',        secret:true},
   {id:'combo5',        icon:'💫', name:'Combo x5!',       desc:'5 combo i én kamp',           secret:false},
-  {id:'sidekick',      icon:'🐾', name:'Bestevenn!',      desc:'Velg din sidekick',           secret:false},
+  {id:'sidekick',      icon:'🐾', name:'Bestevenn!',      desc:'Velg en venn',           secret:false},
 ];
 const ACHIEVEMENTS=Object.fromEntries(BADGES.map(b=>
   [b.id,{icon:b.icon,title:b.name,sub:b.desc}]
@@ -80,7 +80,7 @@ function openHeroCard(){
   document.getElementById('hc-rank-badge').style.color=rank.lvl>=8?'#fff':'var(--dark)';
   document.getElementById('hc-lvl-txt').textContent=`Nivå ${level}`;
   const xpPct=Math.round(xpInLvl()/lvlFor(level)*100);
-  document.getElementById('hc-xp-txt').textContent=`${xpInLvl()} / ${lvlFor(level)} XP`;
+  document.getElementById('hc-xp-txt').textContent=''; // ikke XP-tall for barnet, streken viser det
   document.getElementById('hc-xp-fill').style.width=xpPct+'%';
   document.getElementById('hc-coins-hc').textContent=prog.coins;
   document.getElementById('hc-badges').textContent=BADGES.filter(b=>unlockedAchievements[b.id]).length;
@@ -161,9 +161,15 @@ function sndLvl(){[523,587,659,698,784,880,1046].forEach((f,i)=>setTimeout(()=>t
 // HELPERS
 // ============================================================
 function showScreen(n){
+  const prev=document.querySelector('.screen.active');
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const el=document.getElementById('screen-'+n);el.classList.add('active');
   el.scrollTop=0;window.scrollTo(0,0);
+  // Lukk skjermtastaturet fra forrige skjerm, så første trykk på den nye skjermen treffer
+  const a=document.activeElement;if(a&&a!==document.body&&a.blur&&el.contains&&!el.contains(a))a.blur();
+  // Ny skjerm: stopp opplesing (kampen leser selv neste oppgave)
+  if(prev!==el&&n!=='game'&&typeof ttsStop==='function')ttsStop();
+  if(n==='grades'&&typeof goFightLabel==='function')goFightLabel();
   fxScreen(n,el); // BATTLE FX: screen transition
 }
 function setSpeech(txt,show=true){

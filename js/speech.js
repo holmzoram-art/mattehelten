@@ -7,7 +7,7 @@
 // ttsReady()                  finnes det en norsk stemme? Uten norsk stemme skjules alle 🔊 (CSS: html.tts-ok).
 // ttsText(s) / ttsQText(qd)   vist tekst → taletekst: «8 + 5 = ?» → «Hva er 8 pluss 5?», emoji blir ord eller fjernes.
 // ttsStop()                   stopper tale (brukes av showScreen).
-const TTS={voice:null,tok:0,act:false,u:null};
+const TTS={voice:null,tok:0,act:false,u:null,t0:Date.now(),noteT:0};
 function ttsSynth(){try{return typeof speechSynthesis!=='undefined'&&speechSynthesis&&typeof speechSynthesis.speak==='function'?speechSynthesis:null;}catch(e){return null;}}
 // Beste norske stemme: nb > no > nn; naturlige/lokale stemmer foran andre
 function ttsPickVoice(list){
@@ -85,6 +85,30 @@ function speak(text,o){
   return t;
 }
 function speakQ(qd,o){if(!qd)return '';return speak(ttsQText(qd),Object.assign({},o,{raw:true}));}
+
+// ---- Uten norsk stemme: én vennlig beskjed til voksne (klassevalget eller kartet), vises til den er lukket ----
+// localStorage mh_tts_note = '1' når beskjeden er lukket. Stemmene kommer ofte litt etter oppstart, så vi venter ca. 2,5 s.
+const TTS_NOTE_WAIT=2600;
+function ttsNoteSeen(){try{return !!localStorage.getItem('mh_tts_note');}catch(e){return true;}}
+function ttsNoteNeeded(){return !ttsReady()&&!ttsNoteSeen();}
+// Bare der en voksen sannsynligvis ser med: klassevalget eller kartet, og ikke oppå en annen stor skjerm
+function ttsNoteWhere(){
+  try{
+    const ov=document.getElementById('story-overlay'),ask=document.getElementById('story-ask'),gr=document.getElementById('screen-grades');
+    const busy=document.querySelector('.boss-overlay.show,.evo-overlay.show,.pg-lvl.show,.chest-overlay.show,.world-popup.show,.bk-overlay.show');
+    if(busy)return false;
+    if(ov&&!ov.classList.contains('hidden'))return !!(ask&&ask.classList.contains('active'));
+    return !!(gr&&gr.classList.contains('active'));
+  }catch(e){return false;}
+}
+function ttsNoteMaybe(){
+  if(!ttsNoteNeeded())return false;
+  clearTimeout(TTS.noteT);
+  TTS.noteT=setTimeout(()=>{if(!TTS.voice)ttsLoad();if(ttsNoteNeeded()&&ttsNoteWhere())ttsNoteShow();},Math.max(0,TTS_NOTE_WAIT-(Date.now()-TTS.t0)));
+  return true;
+}
+function ttsNoteShow(){const o=document.getElementById('tts-note');if(!o)return;o.classList.add('show');const b=document.getElementById('tts-note-ok');if(b&&b.focus)try{b.focus({preventScroll:true});}catch(e){}}
+function ttsNoteClose(){const o=document.getElementById('tts-note');if(o)o.classList.remove('show');try{localStorage.setItem('mh_tts_note','1');}catch(e){}}
 
 // ---- 🔊-knapper (vises bare med norsk stemme) ----
 function ttsButton(fn,label){const b=document.createElement('button');b.type='button';b.className='tts-btn';b.textContent='🔊';b.setAttribute('aria-label',label||'Les opp');b.title=label||'Les opp';b.onclick=e=>{if(e&&e.stopPropagation)e.stopPropagation();fn();};return b;}

@@ -485,38 +485,59 @@ window.EXTRA_SUBS=Object.assign(window.EXTRA_SUBS||{},{
     {icon:'🔟',title:'Ta ned til 10 først',text:'13 - 5: Ta bort 3. Da er du på 10. Ta så bort 2 til.',visual:t12Frames(13,5)+cap(`13 - 3 = 10. 10 - 2 = ${G('8')}`)},
     {icon:'🔄',title:'Tenk pluss',text:'14 - 9: Hvor mye mangler 9 for å bli 14?',visual:(typeof seqHops==='function'?seqHops([9,10,11,12,13,14],'+1',5):'')+cap(`Fra 9 til 14 er det 5 hopp. 14 - 9 = ${G('5')}`)},
     {icon:'👯',title:'Dobbelt hjelper',text:'7 + 7 = 14. Da er 14 - 7 = 7!',visual:P(['12 - 6 = 6','14 - 7 = 7','16 - 8 = 8','18 - 9 = 9'],'#f093fb')},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Ta ned til 10 først.',visual:W([['15 - 7 = ?','',false],['15 - 5 = 10','(ned til 10)',true],['10 - 2 = 8','(2 til)',true],['15 - 7 = 8 ✓','',false]])}];
+    {icon:'🎯',title:'Din tur!',text:'Ta ned til 10 først.',pre:t12Frames(15,0),
+     ask:{q:'15 - 7 = ?',ans:8,ops:{a:15,b:7,op:'-'},help:{t:'Ta bort 5. Da er du på 10. Så 2 til.',h:t12Frames(15,5)}},
+     visual:W([['15 - 7 = ?','',false],['15 - 5 = 10','(ned til 10)',true],['10 - 2 = 8','(2 til)',true],['15 - 7 = 8 ✓','',false]])}];
   LEARN_GUIDES.cmp1=[
     {icon:'🐻',title:'Hvem har flest?',text:'Pek på én og én. Den som har noen igjen, har flest.',visual:window.VIS.compare({rows:[{who:'🐻',n:6,e:'🍎'},{who:'🐰',n:4,e:'🍎'}]})+cap(`🐻 har ${G('2')} flere`)},
     {icon:'🔢',title:'Størst kommer sist',text:'Når vi teller, blir tallene større og større.',visual:(typeof seqHops==='function'?seqHops([5,6,7,8,9],'+1',4):'')+cap(`9 er størst. 5 er minst.`)},
     {icon:'🧱',title:'Se på tierne',text:'13 har en tier. 9 har ingen tier. Da er 13 størst!',visual:row(window.VIS.place({t:1,o:3,dig:true}),window.VIS.place({t:0,o:9,dig:true}))+cap(`${G('13')} er større enn 9`)},
-    {icon:'🐊',title:'Nå er det din tur!',text:'Krokodillen vil ha det største tallet. 12 eller 15?',visual:W([['12 eller 15?','',false],['Begge har 1 tier','',true],['5 enere er mer enn 2','',true],['15 er størst ✓','',false]])}];
+    {icon:'🐊',title:'Din tur!',text:'Krokodillen vil ha det største tallet.',
+     ask:{q:'Hvilket tall er størst?',ans:15,choices:[12,9,15],say:'Hvilket tall er størst? 12, 9 eller 15?',
+       help:{t:'Tell fra 8. Det største kommer sist.',v:{kind:'line',from:8,to:16,start:8,hl:[9,12,15]}},why:{'9':'9 har ingen tier. Se på tierne!'}},
+     visual:W([['12, 9 eller 15?','',false],['9 har ingen tier','',true],['15 har flere enere enn 12','',true],['15 er størst ✓','',false]])}];
   LEARN_GUIDES.eq1=[
     {icon:'⚖️',title:'= betyr «like mye»',text:'Det skal være like mye på hver side. Da står vekta rett.',visual:window.VIS.scale({l:'3 + 2',r:'5'})},
     {icon:'🔁',title:'Svaret kan stå først',text:'7 = 4 + 3 er også riktig. Begge sider er 7.',visual:window.VIS.scale({l:'7',r:'4 + 3'})},
     {icon:'🧮',title:'Regnestykke på begge sider',text:'4 + 3 er 7. 5 + 2 er også 7. Da er de like!',visual:window.VIS.scale({l:'4 + 3',r:'5 + 2'})},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Hvilket tall mangler?',visual:window.VIS.scale({l:'4 + 3',r:'5 + ?'})+W([['4 + 3 = 7','(venstre side)',true],['5 + 2 = 7','(høyre side)',true],['? = 2 ✓','',false]])}];
+    {icon:'🎯',title:'Din tur!',text:'Hvilket tall mangler?',
+     ask:{q:'4 + 3 = 5 + ?',eq:'5 + ? = 7',ans:2,ops:{a:5,b:2,op:'+',unk:'b'},vis:{kind:'scale',l:'4 + 3',r:'5 + ?'},say:'4 pluss 3 er lik 5 pluss hva?',
+       help:{t:'4 + 3 er 7. Tell fra 5 til 7.',v:{kind:'line',from:4,to:8,start:5,hops:[1,1],top:'?'}},why:{'7':'7 er venstre side. 5 + hva blir 7?'}},
+     visual:W([['4 + 3 = 7','(venstre side)',true],['5 + 2 = 7','(høyre side)',true],['? = 2 ✓','',false]])}];
   LEARN_GUIDES.clock1=[
     {icon:'🕒',title:'To visere',text:'Den korte røde viseren viser timen. Den lange blå viseren viser minuttene.',visual:window.VIS.clock({h:2,m:0})},
     {icon:'🔝',title:'Hel time',text:'Peker den lange viseren rett opp på 12? Da er det hel time.',visual:window.VIS.clock({h:3,m:0})+cap(`Kort viser på 3: ${G('Klokka 3')}`)},
     {icon:'🌗',title:'Halv',text:'Peker den lange viseren ned på 6? Da er det halv. Den korte er på vei til 4. Vi sier halv 4!',visual:window.VIS.clock({h:3,m:30})+cap(G('Halv 4'))},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Hva er klokka nå?',visual:window.VIS.clock({h:7,m:30})+W([['Lang viser på 6','(halv)',true],['Kort viser på vei til 8','',true],['Halv 8 ✓','',false]])}];
+    {icon:'🎯',title:'Din tur!',text:'Se på begge viserne.',
+     ask:{q:'Hva er klokka?',ans:'Halv 8',choices:['Klokka 7','Halv 8','Halv 7'],vis:{kind:'clock',h:7,m:30},say:'Se på klokka. Hva er klokka? Klokka 7, halv 8 eller halv 7?',
+       help:{t:'Lang viser ned: halv. Se på den korte!',h:`<div class="lp-blink-h">${window.VIS.clock({h:7,m:30,size:130})}</div>`},
+       why:{'Halv 7':'Den korte er forbi 7. Halv betyr halvveis til neste.','Klokka 7':'Den lange peker ned på 6. Da er det halv.'}},
+     visual:W([['Lang viser på 6','(halv)',true],['Kort viser på vei til 8','',true],['Halv 8 ✓','',false]])}];
   LEARN_GUIDES.place2=[
     {icon:'🧱',title:'10 enere = 1 tier',text:'Ti små klosser blir en stav. En stav er en tier.',visual:row(window.VIS.place({t:0,o:10}),'<span class="dot-eq">=</span>',window.VIS.place({t:1,o:0}))},
     {icon:'🔢',title:'Tiere og enere',text:'Tell stavene først. Tell så de små klossene.',visual:window.VIS.place({t:3,o:4})+cap(`3 tiere og 4 enere = ${G('34')}`)},
     {icon:'📍',title:'Sifrene har en plass',text:'I 34 står 3 for tiere og 4 for enere.',visual:window.VIS.place({t:3,o:4,dig:true})},
     {icon:'⬆️',title:'10 mer',text:'Legg til en stav. Da blir det 10 mer!',visual:window.VIS.place({t:4,o:4})+cap(`34 + 10 = ${G('44')}`)},
-    {icon:'🎯',title:'Nå er det din tur!',text:'5 tiere og 2 enere. Hvilket tall er det?',visual:W([['5 tiere = 50','',true],['2 enere = 2','',true],['50 + 2 = 52 ✓','',false]])}];
+    {icon:'🎯',title:'Din tur!',text:'Tell stavene først. Tell så de små klossene.',
+     ask:{q:'Hvilket tall er dette?',ans:52,vis:{kind:'place',t:5,o:2},say:'Se på tierne og enerne. Hvilket tall er det?',
+       help:{t:'Stavene er tiere: 10, 20, 30 … Så enerne.',v:{kind:'place',t:5,o:2,dig:true}},why:{'25':'Tierne skrives først!','7':'En stav er 10, ikke 1.'}},
+     visual:W([['5 tiere = 50','',true],['2 enere = 2','',true],['50 + 2 = 52 ✓','',false]])}];
   LEARN_GUIDES.even2=[
     {icon:'🧦',title:'Partall',text:'Får alle sokkene en makker? Da er det et partall.',visual:window.VIS.pairs({n:6,e:'🧦',num:true})},
     {icon:'🙋',title:'Oddetall',text:'Blir én sokk alene? Da er det et oddetall.',visual:window.VIS.pairs({n:7,e:'🧦',num:true,gap:true})},
     {icon:'🔍',title:'Se på enerne',text:'Partall slutter på 0, 2, 4, 6 eller 8. Oddetall slutter på 1, 3, 5, 7 eller 9.',visual:P(['0','2','4','6','8'],'#00ff88')+'<div style="height:8px"></div>'+P(['1','3','5','7','9'],'#ff6b35')},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Er 46 et partall?',visual:W([['46 slutter på 6','',true],['6 er et partall','',true],['46 er et partall ✓','',false]])}];
+    {icon:'🎯',title:'Din tur!',text:'Se på enerne.',
+     ask:{q:'Hvilket tall er et partall?',ans:46,choices:[37,46,51],say:'Hvilket tall er et partall? 37, 46 eller 51?',
+       help:{t:'Partall slutter på 0, 2, 4, 6 eller 8.',h:P(['0','2','4','6','8'],'#00ff88')},why:{'37':'37 slutter på 7. Det er et oddetall.','51':'51 slutter på 1. Det er et oddetall.'}},
+     visual:W([['46 slutter på 6','',true],['6 er et partall','',true],['46 er et partall ✓','',false]])}];
   LEARN_GUIDES.money2=[
     {icon:'🪙',title:'Norske mynter',text:'Vi har mynter på 1, 5, 10 og 20 kroner. Tallet viser hvor mye mynten er verdt.',visual:window.VIS.coins({c:[1,5,10,20]})},
     {icon:'🔢',title:'Tell de store først',text:'Start med den største mynten. Tell videre.',visual:window.VIS.coins({c:[20,10,5,1]})+cap(`20, 30, 35, ${G('36')} kr`)},
     {icon:'🍦',title:'Hvor mye får du igjen?',text:'Du betaler 20 kr. Isen koster 15 kr. Tell fra 15 opp til 20.',visual:window.VIS.coins({c:[20]})+cap(`16, 17, 18, 19, 20: ${G('5')} kr igjen`)},
-    {icon:'🎯',title:'Nå er det din tur!',text:'Hvor mange kroner er dette?',visual:window.VIS.coins({c:[10,10,5]})+W([['10, 20','(tierne)',true],['20 + 5 = 25','',true],['25 kr ✓','',false]])}];
+    {icon:'🎯',title:'Din tur!',text:'Tell de store myntene først.',
+     ask:{q:'Hvor mange kroner?',ans:25,vis:{kind:'coins',c:[10,10,5]},say:'Hvor mange kroner er det til sammen?',
+       help:{t:'Tell: 10, 20 … Så 5 til.',v:{kind:'line',from:0,to:30,step:5,start:0,hops:[10,10,5],hopLab:['+10','+10','+5'],endLab:'?'}},why:{'3':'Se på tallet på hver mynt!'}},
+     visual:W([['10, 20','(tierne)',true],['20 + 5 = 25','',true],['25 kr ✓','',false]])}];
 })();
 
 // Temakartet: bygg på nytt når skjermen blir så smal/bred at antall kolonner endres (se getTopicPositions i maps.js)

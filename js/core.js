@@ -100,6 +100,7 @@ function storyShow(i){
   panels.forEach((p,j)=>p.classList.toggle('active',j===i));
   const ov=document.getElementById('story-overlay'),ask=panels[i]&&panels[i].id==='story-ask';
   if(ov)ov.classList.toggle('ask',!!ask); // ingen «Hopp over» på spørsmålet om klasse
+  if(ask&&typeof ttsNoteMaybe==='function')ttsNoteMaybe(); // ingen norsk stemme: beskjed til den voksne (speech.js)
   storySay();
 }
 // Les panelet høyt (når opplesing er på); force = 🔊-knappen

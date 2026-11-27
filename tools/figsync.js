@@ -43,6 +43,8 @@ if(heroes&&fs.existsSync(path.join(heroes,'parts'))){
     const f={kind:'hero',key:p.key||id.split('-')[1],rank:+(p.rank||0),size:p.size||192,anims};
     if(p.poster&&p.poster.file&&copy(path.join(heroes,'out',p.poster.file),`${id}-poster.webp`))f.poster=true;
     if(p.head)f.head=p.head;if(p.top)f.top=p.top;
+    // Plakaten har egen, tettere ramme (A: out/manifest.json figs[id].poster.top) – hatten plasseres etter den på plakater
+    if(f.poster){try{const M=rd(path.join(heroes,'out','manifest.json')),P=(M.figs||M)[id]&&(M.figs||M)[id].poster;if(P&&P.top)f.ptop=P.top;}catch(e){}}
     man.figs[id]=f;log.push('helt '+id);}
   const ha=path.join(heroes,'out','h-atlas.json'); // valgfritt plakat-atlas fra A: {file,cell,items:{key:[x,y]}}
   if(fs.existsSync(ha)){const a=rd(ha);if(copy(path.join(heroes,'out',a.file),'h-atlas.webp')){man.atlas.h={file:'h-atlas.webp',cell:a.cell||128,items:a.items||{}};log.push('helteplakater (atlas)');}}

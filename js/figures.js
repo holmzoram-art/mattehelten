@@ -119,7 +119,8 @@ function figPaint(el){
   const t=layer?figLayer(el):el,key=src+'|'+cls.join(' ');
   if(!layer){el.classList.add('fig');el.dataset.figAnim=a;}
   if(layer&&f.rank!=null)el.setAttribute('data-fig-r',String(f.rank));
-  if(layer&&f.top){el.style.setProperty('--fig-hx',f.top.x);el.style.setProperty('--fig-hy',f.top.y);} // hatt og krone på hodet (figures.css)
+  const hd=a==='poster'&&f.ptop?f.ptop:f.top; // plakaten har egen, tettere ramme
+  if(layer&&hd){el.style.setProperty('--fig-hx',hd.x);el.style.setProperty('--fig-hy',hd.y);} // hatt og krone på hodet (figures.css)
   const once=cls.includes('fig-once');
   if(el._figSrc!==key||(once&&s.fresh)){ // ny stripe, eller en «én gang»-animasjon som er bedt om på nytt
     figStyle(t,src,x.n,x.ms,cls);t.classList.toggle('fig-alt',!t.classList.contains('fig-alt')); // nytt keyframes-navn: animasjonen starter på nytt

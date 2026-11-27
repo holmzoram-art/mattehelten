@@ -399,10 +399,10 @@ function bossExit(to){
   document.getElementById('boss-result').classList.remove('show');
   bossCleanup();
   bossRestore(); // ends a ?boss= test session (no-op otherwise)
-  if(evo&&!pendingEvolution)pendingEvolution=evo; // testmodus: vis «sterkere»-skjermen likevel (lagringen er rullet tilbake)
   if(!localStorage.getItem('mh_player')){showScreen('chars');return;}
   buildGradeMap();
   if(to==='topics')selectGrade(g);else showScreen('grades');
+  if(evo&&!pendingEvolution)pendingEvolution=evo; // testmodus: vis «sterkere»-skjermen likevel (lagringen er rullet tilbake)
   if(pendingEvolution)showEvolution();
 }
 

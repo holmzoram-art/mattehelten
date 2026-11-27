@@ -89,6 +89,7 @@ function pgStreakTick(){
   prog.days=(+prog.days||0)+1;prog.lastDay=t;
   const bonus=prog.days>=7?15:prog.days>=3?10:5; // som før, men på spilledager: en pause koster ingenting
   prog.coins+=bonus;saveProg();renderHUD();
+  if(typeof funCheckBadges==='function')funCheckBadges(); // vekstmerke for spilledager (fun.js)
   const h=document.querySelector('.hud-streak');if(h&&!pgRM()){h.classList.remove('pg-bump');void h.offsetWidth;h.classList.add('pg-bump');}
   return{n:prog.days,bonus};
 }

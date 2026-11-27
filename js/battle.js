@@ -215,7 +215,7 @@ function loopRetry(qd,given,misc){
   if(isChoiceQ(qd)&&S.choiceBtn){S.choiceBtn.classList.add('wrong');S.choiceBtn.disabled=true;}
   if(el){const vh=renderVis(h.v);el.innerHTML=`<div class="loop-help-t">💡 ${loopNb(h.t)}</div>${vh?`<div class="loop-vis">${vh}</div>`:''}`;el.className='loop-help show';}
   const fb=document.getElementById('fb-box');fb.className='fb-box';fb.innerHTML='';
-  const B=S.boss&&typeof BOSSES==='object'&&BOSSES[S.grade];
+  const B=S.boss&&(S.bossB||(typeof BOSSES==='object'&&BOSSES[S.grade])); // trollet har egne replikker
   setSpeech(B&&B.miss?`${S.bossEmoji||B.emoji} ${pick(B.miss)}`:pick(['Prøv igjen! 💪','Du klarer det! 💡','Én gang til! 💪']));
   if(typeof fxTry==='function')fxTry();else tone(440,.12,'triangle',.08);
   if(typeof speak==='function')try{speak(h.t);}catch(e){}
@@ -225,7 +225,7 @@ function loopRetry(qd,given,misc){
   if(loopFocusOK())inp.focus({preventScroll:true});
 }
 
-function handleNext(){if(!S.answered)return;loopDisarm();if(S.boss)return bossNext();if(S.idx>=loopMaxQ()||S.enemyDefeated)showChest();else loadQuestion();}
+function handleNext(){if(!S.answered||S.chestDone)return;loopDisarm();if(S.boss)return bossNext();if(S.idx>=loopMaxQ()||S.enemyDefeated)showChest();else loadQuestion();}
 
 // ============================================================
 // CHEST + RESULTS
@@ -243,6 +243,8 @@ function mstRoundHead(pct,perfect){
   return{emoji:'💪',title:'God trening!',sub:'Se hvordan, og prøv igjen!'};
 }
 function showChest(){
+  if(S.chestDone)return;S.chestDone=true; // én runde = én lagring (Enter/mellomrom på Neste-knappen under kista)
+  const nb=document.getElementById('next-btn');if(nb){nb.style.display='none';nb.blur();}
   const {n,c,s10,pct,perfect}=roundScore(),g=S.grade,tid=S.topicId;
   const res=recordRound(g,tid,c,n); // mestring v2 (mh_learn): {from,to}
   const newStars=Math.max(0,res.to-res.from);

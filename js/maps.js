@@ -199,11 +199,12 @@ function buildTopicMap(gradeNum){
     // Also keep "📖 Lær"-link below map if guide exists
     const hasGuide=!!(LEARN_GUIDES[t.id]&&LEARN_GUIDES[t.id].length);
     if(hasGuide&&list){
-      const lnk=document.createElement('button');
+      const lnk=document.createElement('div');lnk.setAttribute('role','button');lnk.tabIndex=0; // ikke <button> rundt «Lær»-knappen (ugyldig HTML)
       lnk.className='topic-btn';lnk.style.marginBottom='6px';
       const st=isTopicUnlocked(gradeNum,i)?topicStars(gradeNum,t.id):-1;
-      lnk.innerHTML=`<div class="tb-icon" style="background:${t.bg||'rgba(124,58,237,.3)'}">${t.icon}</div><div><div class="tb-name">${t.name}${st>=0?` <span class="mst-list-stars">${mstStarsHTML(st,null,hasCrown(gradeNum,t.id))}</span>`:' 🔒'}</div><div class="tb-desc">${t.desc}</div></div><button class="topic-learn-btn" onclick="event.stopPropagation();showLearn(${gradeNum},'${t.id}')">📖 Lær</button>`;
-      lnk.onclick=()=>(typeof startTopic==='function'?startTopic:startGame)(gradeNum,t.id);
+      lnk.innerHTML=`<div class="tb-icon" style="background:${t.bg||'rgba(124,58,237,.3)'}">${t.icon}</div><div><div class="tb-name">${t.name}${st>=0?` <span class="mst-list-stars">${mstStarsHTML(st,null,hasCrown(gradeNum,t.id))}</span>`:' 🔒'}</div><div class="tb-desc">${t.desc}</div></div>${st>=0?`<button class="topic-learn-btn" onclick="event.stopPropagation();showLearn(${gradeNum},'${t.id}')">📖 Lær</button>`:''}`;
+      lnk.onclick=st>=0?()=>(typeof startTopic==='function'?startTopic:startGame)(gradeNum,t.id):node.onclick; // låst: samme «Låst!»-melding som på kartet
+      lnk.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();lnk.onclick();}};
       list.appendChild(lnk);
     }
   });

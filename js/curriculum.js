@@ -25,9 +25,9 @@ function famWeak(g,tid,strat){const s=famHist(g,tid,strat);return s.length>=2&&f
 function famPick(g,tid,W){const all=mhLoad('mh_fam',{}),ks=Object.keys(W),ws=ks.map(k=>W[k]*(1+2*famErr(g,tid,k,all)));let r=Math.random()*ws.reduce((a,b)=>a+b,0);for(let i=0;i<ks.length;i++)if((r-=ws[i])<0)return ks[i];return ks[ks.length-1];}
 // Vektet trekning med desimalvekter
 function wPick(items,wFn){const ws=items.map(it=>Math.max(0,wFn(it))),T=ws.reduce((a,b)=>a+b,0);let r=Math.random()*T;for(let i=0;i<items.length;i++)if((r-=ws[i])<0)return items[i];return items[items.length-1];}
-function getBest(g,id){const s=JSON.parse(localStorage.getItem(`hs_${g}_${id}`)||'[]');return s.length?s[0].score:null;}
+function getBest(g,id){const s=mhLoad(`hs_${g}_${id}`,[]);return Array.isArray(s)&&s[0]&&typeof s[0]==='object'?s[0].score:null;}
 function checkWeak(g,id){
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(`adapt_${g}_${id}_`)){const v=JSON.parse(localStorage.getItem(k));if(v.a>=3&&v.e/v.a>.3)return true;}}return false;
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(`adapt_${g}_${id}_`)){const v=mhLoad(k,null);if(v&&v.a>=3&&v.e/v.a>.3)return true;}}return false;
 }
 function weightedPick(items,wFn){
   const pool=[];

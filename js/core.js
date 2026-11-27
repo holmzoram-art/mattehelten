@@ -83,7 +83,8 @@ function toggleScratch(){
   scratchVisible=!scratchVisible;
   col.classList.toggle('mobile-hidden',!scratchVisible);
   document.getElementById('scratch-toggle').textContent=scratchVisible?'✖️':'✏️';
-  if(scratchVisible)setTimeout(()=>resizeCanvas(),50);
+  document.querySelectorAll('.scratch-top-btn').forEach(b=>b.textContent=scratchVisible?'✖️':'✏️');
+  if(scratchVisible)setTimeout(()=>{resizeCanvas();if(window.innerWidth<=920)col.scrollIntoView({behavior:'smooth',block:'start'});},50); // mobil: kladdeboka ligger under spillet
 }
 window.addEventListener('resize',resizeCanvas);
 setTimeout(()=>resizeCanvas(),200);

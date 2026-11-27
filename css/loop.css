@@ -77,3 +77,8 @@
   .lv-line .lv-tip{animation:none;opacity:1;}
   .next-btn.loop-auto::after{animation:none;transform:scaleX(1);opacity:.5;}
 }
+
+/* Kladdebok i kamp på mobil/nettbrett: knapp i topplinja (den faste ✏️ nede til høyre dekket ⌫ og ⚔️) */
+.scratch-top-btn{display:none;}
+@media(max-width:920px){.scratch-top-btn{display:flex;}body:has(#screen-game.active) #scratch-toggle{display:none!important;}}
+@media(max-width:400px){#score-label{display:none;}} /* smal skjerm: plass til ✏️ i topplinja */

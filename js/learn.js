@@ -504,11 +504,14 @@ function learnSay(force){
   if(st.practice&&!st.practice.done&&typeof ttsText==='function')return speak(ttsText(head)+' '+ttsQText(st.practice.qd),{raw:true,force:!!force,grade:learnState.grade});
   return speak(head,{force:!!force,grade:learnState.grade});
 }
+// Sperre mot dobbeltklikk: ett steg per 350 ms (ellers hopper barnet over steg eller øveoppgaven)
+function learnTap(){const n=Date.now();if(n-(learnState.tapT||0)<350)return false;learnState.tapT=n;return true;}
 function learnNext(){
+  if(!learnTap())return;
   if(learnState.idx>=learnState.steps.length-1)learnFight();
   else{learnState.idx++;renderLearnStep();}
 }
-function learnPrev(){if(learnState.idx>0){learnState.idx--;renderLearnStep();}}
+function learnPrev(){if(!learnTap())return;if(learnState.idx>0){learnState.idx--;renderLearnStep();}}
 function learnFight(){if(learnState.grade==null)return;markLearnSeen(learnState.grade,learnState.topicId);startGame(learnState.grade,learnState.topicId);}
 function learnBack(){
   if(typeof ttsStop==='function')ttsStop();

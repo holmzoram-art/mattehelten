@@ -4,7 +4,11 @@
 // ============================================================
 // XP + PROGRESSION
 // ============================================================
-let prog=JSON.parse(localStorage.getItem('mh_prog3')||'{"xp":0,"coins":0,"streak":0,"lastDay":""}');
+// Lagring som tåler ødelagte eller delvise verdier (gir standardverdier i stedet for krasj)
+function mhObj(v){return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}
+function mhProg(){const p=Object.assign({xp:0,coins:0,streak:0,lastDay:''},mhObj(mhLoad('mh_prog3',{})));['xp','coins','streak'].forEach(k=>{p[k]=isFinite(+p[k])&&p[k]!==null?+p[k]:0;});return p;}
+function mhAch(){return mhObj(mhLoad('mh_ach',{}));}
+let prog=mhProg();
 function saveProg(){localStorage.setItem('mh_prog3',JSON.stringify(prog));}
 function lvlFor(l){return l*80;}
 function curLvl(){let l=1,x=prog.xp;while(x>=lvlFor(l)){x-=lvlFor(l);l++;}return l;}
@@ -19,7 +23,7 @@ function renderHUD(){
   if(localStorage.getItem('mh_player'))updatePlayerEmoji(); // keep evolved emoji + rank badge
   pgHud(); // PROGRESSION: XP goal, smooth fill, shop items on the hero
 }
-function getPlayer(){return JSON.parse(localStorage.getItem('mh_player')||'{"emoji":"🦸","name":"Helt"}');}
+function getPlayer(){return Object.assign({emoji:'🦸',name:'Helt'},mhObj(mhLoad('mh_player',{})));}
 
 // ============================================================
 // BADGES / ACHIEVEMENTS
@@ -57,7 +61,7 @@ const BADGES=[
 const ACHIEVEMENTS=Object.fromEntries(BADGES.map(b=>
   [b.id,{icon:b.icon,title:b.name,sub:b.desc}]
 ));
-let unlockedAchievements=JSON.parse(localStorage.getItem('mh_ach')||'{}');
+let unlockedAchievements=mhAch();
 
 function unlockAchievement(id){
   if(unlockedAchievements[id]||BADGES.some(b=>b.id===id&&b.legacy))return;

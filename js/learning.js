@@ -34,7 +34,7 @@ function loopNext(){
   if(ri>=0){const r=st.rev.splice(ri,1)[0];S.topicId=r.tid;if(S.boss&&r.bt)S.bossTopic=r.bt;return Object.assign(loopClean(r.qd),{revenge:true});}
   const seen=new Set(S.questions.map(e=>e.k||loopKey(e))),zero=S.questions.some(e=>!e.revenge&&e.z),weak=S.questions.filter(e=>!e.revenge&&e.w).length,cap=Math.max(1,Math.round(mx*.4));
   let best=null,bp=9,tid=null,real=null;
-  for(let i=0;i<40&&bp>0;i++){ // beste kandidat: ingen gjentakelse; straff for 0-oppgave nr. 2 og for svak over taket
+  for(let i=0;i<120&&bp>0;i++){ // beste kandidat (120: små temaer som tiervenner har få ulike fakta): ingen gjentakelse; straff for 0-oppgave nr. 2 og for svak over taket
     let c;try{c=i&&real?real.gen(g,real.id):S.topic.gen(g,S.topicId);}catch(e){c=null;}
     if(!i){tid=S.topicId;real=S.topic&&S.topic.id!==tid?loopTopic(g,tid):null;} // sammensatt tema (boss): prøv igjen i samme tema
     if(!c||seen.has(loopKey(c)))continue;

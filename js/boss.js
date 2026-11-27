@@ -103,8 +103,8 @@ function bossRestore(){
   const now=[];for(let i=0;i<localStorage.length;i++)now.push(localStorage.key(i));
   now.forEach(k=>{if(!Object.prototype.hasOwnProperty.call(snap,k))localStorage.removeItem(k);});
   Object.keys(snap).forEach(k=>{if(localStorage.getItem(k)!==snap[k])localStorage.setItem(k,snap[k]);});
-  prog=JSON.parse(localStorage.getItem('mh_prog3')||'{"xp":0,"coins":0,"streak":0,"lastDay":""}');
-  unlockedAchievements=JSON.parse(localStorage.getItem('mh_ach')||'{}');
+  prog=mhProg();
+  unlockedAchievements=mhAch();
   pendingEvolution=null;
   renderHUD();
   if(localStorage.getItem('mh_player'))updatePlayerEmoji();
@@ -181,7 +181,7 @@ function bossFight(){
 
 // ---- The fight ----
 function startBoss(g){
-  const gd=CUR[g],b=BOSSES[g],topics=mstCore(g);
+  const gd=CUR[g],b=BOSSES[g],core=mstCore(g),open=core.filter(t=>isTopicUnlocked(g,gd?gd.topics.indexOf(t):-1)),topics=open.length?open:core; // gamle lagringer: bare åpne temaer
   if(!gd||!b||!topics.length)return;
   bossBegin(g,topics,b,{q:BOSS_MAXQ,tag:'👑 '});
 }
@@ -204,7 +204,7 @@ function bossBegin(g,topics,b,o){
   // Any other topic property loadQuestion/submitAnswer may read comes from the current real topic
   const topic=new Proxy(base,{get(ob,k){return k in ob?ob[k]:(S.bossTopic||topics[0])[k];}});
   const need=o.need||Math.ceil(o.q*BOSS_WIN-1e-9);
-  S={grade:g,topicId:topics[0].id,topic,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false,
+  S={grade:g,topicId:topics[0].id,topic,maxQ:o.q,questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false,
      boss:true,troll:!!o.troll,bossB:b,bossQ:o.q,bossNeed:need,bossTag:o.tag||'👑 ',bossTopics:topics,
      bossPts:need*10,bossMax:need*10,bossPhase:0,bossEmoji:b.emoji,bossFled:false,bossOver:false,bossTopic:null,bossStats:{},bossAt:{},bossLog:[]};
   document.getElementById('player-avatar').textContent=bossHero();
@@ -384,7 +384,8 @@ function bossPractice(id){
   bossRestore(); // ends a ?boss= test session (no-op otherwise)
   if(!localStorage.getItem('mh_player')){showScreen('chars');return;}
   buildGradeMap();
-  if(!CUR[g]?.topics.some(t=>t.id===id))return selectGrade(g);
+  const ti=CUR[g]?CUR[g].topics.findIndex(t=>t.id===id):-1;
+  if(ti<0||!isTopicUnlocked(g,ti))return selectGrade(g); // låst tema: vis kartet i stedet
   (typeof startTopic==='function'?startTopic:startGame)(g,id);
 }
 
@@ -403,6 +404,8 @@ function bossExit(to){
   buildGradeMap();
   if(to==='topics')selectGrade(g);else showScreen('grades');
   if(evo&&!pendingEvolution)pendingEvolution=evo; // testmodus: vis «sterkere»-skjermen likevel (lagringen er rullet tilbake)
+  // Samme rekkefølge som etter kista: NIVÅ OPP først, så «sterkere» (pgLvlClose viser den holdte evolusjonen)
+  if(typeof pgLevelUp==='function'&&curLvl()>pgLvlSeen){pgEvoHeld=pendingEvolution||pgEvoHeld;pendingEvolution=null;pgLevelUp();return;}
   if(pendingEvolution)showEvolution();
 }
 

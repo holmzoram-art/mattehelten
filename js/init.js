@@ -10,9 +10,9 @@ if(prog.streak&&prog.lastDay!==pgDay(0)&&prog.lastDay!==pgDay(-1)){prog.streak=0
 
 buildCharGrid();
 buildSidekickGrid();
-const savedPlayer=localStorage.getItem('mh_player');
-if(savedPlayer){
-  applyPlayer(JSON.parse(savedPlayer));
+const savedPlayer=mhLoad('mh_player',null); // ødelagt lagring = ingen spiller (ikke krasj)
+if(savedPlayer&&typeof savedPlayer==='object'){
+  applyPlayer(savedPlayer);
   updatePlayerEmoji();
   updateSidekick();
   buildAdventureMap();

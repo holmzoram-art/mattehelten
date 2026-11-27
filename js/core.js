@@ -18,65 +18,8 @@
 // ============================================================
 // SCRATCH PAD
 // ============================================================
-let scratchTool='pen',scratchSize=2,scratchColor='#ffffff',drawing=false,lastX=0,lastY=0;
-const cvs=document.getElementById('scratch-canvas');
-const ctx2=cvs.getContext('2d',{willReadFrequently:true}); // resizeCanvas leser bildet (getImageData)
-
-function resizeCanvas(){
-  const w=cvs.parentElement.clientWidth||290;
-  const img=ctx2.getImageData(0,0,cvs.width,cvs.height);
-  cvs.width=w; cvs.height=Math.max(360,window.innerHeight*.52);
-  ctx2.putImageData(img,0,0);
-}
-function getPos(e){
-  const r=cvs.getBoundingClientRect(),src=e.touches?e.touches[0]:e;
-  return{x:(src.clientX-r.left)*(cvs.width/r.width),y:(src.clientY-r.top)*(cvs.height/r.height)};
-}
-function startDraw(e){e.preventDefault();drawing=true;const p=getPos(e);lastX=p.x;lastY=p.y;}
-function doDraw(e){
-  if(!drawing)return;e.preventDefault();
-  const p=getPos(e);
-  ctx2.beginPath();ctx2.lineCap='round';ctx2.lineJoin='round';
-  if(scratchTool==='erase'){ctx2.globalCompositeOperation='destination-out';ctx2.lineWidth=scratchSize*4;}
-  else{ctx2.globalCompositeOperation='source-over';ctx2.strokeStyle=scratchColor;ctx2.lineWidth=scratchSize;}
-  ctx2.moveTo(lastX,lastY);ctx2.lineTo(p.x,p.y);ctx2.stroke();
-  lastX=p.x;lastY=p.y;
-}
-function endDraw(){drawing=false;ctx2.globalCompositeOperation='source-over';}
-cvs.addEventListener('mousedown',startDraw);cvs.addEventListener('mousemove',doDraw);
-cvs.addEventListener('mouseup',endDraw);cvs.addEventListener('mouseleave',endDraw);
-cvs.addEventListener('touchstart',startDraw,{passive:false});cvs.addEventListener('touchmove',doDraw,{passive:false});
-cvs.addEventListener('touchend',endDraw);
-
-function setTool(t){
-  scratchTool=t;
-  document.getElementById('tool-pen').classList.toggle('active',t==='pen');
-  document.getElementById('tool-erase').classList.toggle('active',t==='erase');
-  cvs.className='scratch-canvas'+(t==='erase'?' erase':'');
-}
-function setSize(s,id){
-  scratchSize=s;
-  ['sz-s','sz-m','sz-l'].forEach(i=>document.getElementById(i).classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function setColor(c,id){
-  scratchColor=c;scratchTool='pen';setTool('pen');
-  ['col-w','col-c','col-g','col-r','col-gold'].forEach(i=>document.getElementById(i).classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function clearScratch(){
-  if(scratchMode==='draw')ctx2.clearRect(0,0,cvs.width,cvs.height);
-  else document.getElementById('scratch-text').value='';
-}
-let scratchMode='draw';
-function switchTab(mode){
-  scratchMode=mode;
-  document.getElementById('tab-draw').classList.toggle('active',mode==='draw');
-  document.getElementById('tab-write').classList.toggle('active',mode==='write');
-  document.getElementById('scratch-draw').style.display=mode==='draw'?'block':'none';
-  document.getElementById('scratch-write').classList.toggle('active',mode==='write');
-  if(mode==='draw')resizeCanvas();
-}
+// Kladdeboka er bare et skrivefelt (tegning er fjernet etter ønske fra forelder)
+function clearScratch(){const tx=document.getElementById('scratch-text');if(tx)tx.value='';}
 let scratchVisible=false;
 function toggleScratch(){
   const col=document.getElementById('scratch-col');
@@ -84,10 +27,8 @@ function toggleScratch(){
   col.classList.toggle('mobile-hidden',!scratchVisible);
   document.getElementById('scratch-toggle').textContent=scratchVisible?'✖️':'✏️';
   document.querySelectorAll('.scratch-top-btn').forEach(b=>b.textContent=scratchVisible?'✖️':'✏️');
-  if(scratchVisible)setTimeout(()=>{resizeCanvas();if(window.innerWidth<=920)col.scrollIntoView({behavior:'smooth',block:'start'});},50); // mobil: kladdeboka ligger under spillet
+  if(scratchVisible)setTimeout(()=>{if(window.innerWidth<=920)col.scrollIntoView({behavior:'smooth',block:'start'});},50); // mobil: kladdeboka ligger under spillet
 }
-window.addEventListener('resize',resizeCanvas);
-setTimeout(()=>resizeCanvas(),200);
 
 // ============================================================
 // STORY

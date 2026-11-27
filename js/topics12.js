@@ -40,7 +40,10 @@ function t12Choices(ans,cands,n){
 }
 // Gjeldende oppgave (fb får bare q-teksten; strukturert info ligger i S.current)
 function t12Q(q,qd){if(qd&&typeof qd==='object')return qd;const c=typeof S!=='undefined'&&S&&S.current;return c&&c.q===q?c:null;}
-function t12Warm(g,c){const n=+g;return typeof c==='number'&&g!==''&&isFinite(n)&&Math.abs(n-c)<=1?'Nesten! 🤏':t12P(['Godt forsøk! 💪','Godt prøvd!','Du er på god vei!']);}
+// 1.–2. klasse: ingen oppvarmingsfrase (tilbakemeldingen skal være kort, som kidFb i curriculum.js)
+function t12Warm(g,c){if(typeof S!=='undefined'&&S&&S.grade>=1&&S.grade<=2)return '';const n=+g;return typeof c==='number'&&g!==''&&isFinite(n)&&Math.abs(n-c)<=1?'Nesten! 🤏':t12P(['Godt forsøk! 💪','Godt prøvd!','Du er på god vei!']);}
+// Setter sammen tilbakemelding uten doble mellomrom når en del er tom
+function t12J(...p){return p.filter(Boolean).join(' ');}
 function t12Plain(g,c){return `Svaret er <strong>${typeof nf==='function'?nf(c):c}</strong>.`;}
 function t12Say(e){return String(e).replace(/ \+ /g,' pluss ').replace(/ - /g,' minus ').replace(/ · /g,' ganger ').replace(/ : /g,' delt på ');}
 function t12Story(o,q,say){o.eq=o.q;o.q=q;o.say=say;return o;}
@@ -61,21 +64,23 @@ const T12_TAGS=['🔴','🔵','🟢'];
 // ============================================================
 window.VIS=window.VIS||{};
 function t12Num(x){return Math.round(x*10)/10;}
-// Analog urskive: kort rød timeviser, lang blå minuttviser
-function t12ClockSvg(h,m,px){
+// Analog urskive: kort rød timeviser, lang blå minuttviser. hl='h'|'m': viseren hintet peker på, blinker (rolig glød ved redusert bevegelse)
+function t12ClockSvg(h,m,px,hl){
   m=+m||0;h=+h||12;const ha=((h%12)*30+m*.5)%360,ma=(m*6)%360;
+  const calm=typeof visCalm==='function'&&visCalm(),glow=(len,w,a)=>`<line x1="100" y1="100" x2="100" y2="${len}" stroke="#ffd93d" stroke-width="${w}" stroke-linecap="round" opacity=".55" transform="rotate(${t12Num(a)} 100 100)">${calm?'':'<animate attributeName="opacity" values=".7;.1;.7" dur="1.1s" repeatCount="indefinite"/>'}</line>`;
   let s=`<svg class="t12-clock" viewBox="0 0 200 200" width="${px}" height="${px}" role="img" aria-label="Klokke" data-h="${h}" data-m="${m}">`;
   s+='<circle cx="100" cy="100" r="95" fill="#fffaf0" stroke="#6c4ee3" stroke-width="8"/>';
   for(let i=0;i<60;i++){const a=i*Math.PI/30,big=i%5===0,r1=big?80:85,r2=89;s+=`<line x1="${t12Num(100+r1*Math.sin(a))}" y1="${t12Num(100-r1*Math.cos(a))}" x2="${t12Num(100+r2*Math.sin(a))}" y2="${t12Num(100-r2*Math.cos(a))}" stroke="${big?'#3a3166':'#c9c2e6'}" stroke-width="${big?3.5:1.5}" stroke-linecap="round"/>`;}
   for(let i=1;i<=12;i++){const a=i*Math.PI/6;s+=`<text x="${t12Num(100+68*Math.sin(a))}" y="${t12Num(100-68*Math.cos(a))}" class="t12-cl-n">${i}</text>`;}
+  if(hl==='h')s+=glow(56,24,ha);else if(hl==='m')s+=glow(39,19,ma);
   s+=`<line class="t12-hand-h" x1="100" y1="100" x2="100" y2="62" stroke="#e23b54" stroke-width="12" stroke-linecap="round" transform="rotate(${t12Num(ha)} 100 100)"/>`;
   s+=`<line class="t12-hand-m" x1="100" y1="100" x2="100" y2="45" stroke="#2b6cff" stroke-width="7" stroke-linecap="round" transform="rotate(${t12Num(ma)} 100 100)"/>`;
   return s+'<circle cx="100" cy="100" r="8" fill="#1d1840"/></svg>';
 }
 // {h,m} = én klokke; {list:[{h,m,tag}]} = flere små klokker med merke under
 window.VIS.clock=v=>{
-  if(v&&Array.isArray(v.list))return `<div class="t12-clocks">${v.list.map(c=>`<div class="t12-clk-item">${t12ClockSvg(c.h,c.m,104)}${c.tag?`<div class="t12-clk-tag">${c.tag}</div>`:''}</div>`).join('')}</div>`;
-  return `<div class="t12-clock-wrap">${t12ClockSvg(v.h,v.m,v.size||170)}</div>`;
+  if(v&&Array.isArray(v.list))return `<div class="t12-clocks">${v.list.map(c=>`<div class="t12-clk-item">${t12ClockSvg(c.h,c.m,104,c.hl)}${c.tag?`<div class="t12-clk-tag">${c.tag}</div>`:''}</div>`).join('')}</div>`;
+  return `<div class="t12-clock-wrap">${t12ClockSvg(v.h,v.m,v.size||170,v.hl)}</div>`;
 };
 // Norske mynter: 1 og 5 kr er sølvfarget med hull, 10 og 20 kr gullfarget (5 kr er større enn 10 kr, som ekte)
 function t12CoinSvg(kr){
@@ -103,7 +108,9 @@ window.VIS.pairs=v=>{
   return `<div class="t12-pairs" role="img" aria-label="${n}">${h}</div>${v.num?`<div class="t12-cap">${n}</div>`:''}`;
 };
 // To rader med ting, én og én under hverandre (lett å se hvem som har flest)
-window.VIS.compare=v=>`<div class="t12-cmp">${(v.rows||[]).map(r=>`<div class="t12-cmp-row"><span class="t12-cmp-who">${r.who}</span><span class="t12-cmp-items">${`<span class="t12-it">${r.e}</span>`.repeat(r.n|0)}</span></div>`).join('')}</div>`;
+// Mer enn 10 i en rad: mindre ting, 10 per linje (radene står fortsatt én og én under hverandre, også på 375 px)
+window.VIS.compare=v=>{const R=v.rows||[],big=Math.max(0,...R.map(r=>r.n|0))>10,box=big?' style="flex-wrap:wrap;width:200px"':'',it=big?' style="width:20px;font-size:1.02rem"':'';
+  return `<div class="t12-cmp">${R.map(r=>`<div class="t12-cmp-row"><span class="t12-cmp-who">${r.who}</span><span class="t12-cmp-items"${box}>${`<span class="t12-it"${it}>${r.e}</span>`.repeat(r.n|0)}</span></div>`).join('')}</div>`;};
 // Vekt i balanse: venstre = høyre
 window.VIS.scale=v=>{
   const tx=s=>String(s).replace(/\?/g,'<tspan class="t12-q">?</tspan>');
@@ -128,23 +135,26 @@ function t12GenSub20(g,id){
   else{b=t12R(6,9);a=2*b;strat='dobbel';hint='Tenk dobbelt';}
   const o={q:`${a} - ${b} = ?`,ans:a-b,type:'Minus',sub:t,hint,ops:{a,b,op:'-'},strat};
   if(Math.random()<.35){const [E,,nn]=t12P(T12_FOOD),v=t12R(0,2);
-    if(v===0)return t12Story(o,`Du har ${a} ${E}. Du spiser ${b}. Hvor mange er igjen?`,`Du har ${a} ${nn}. Du spiser ${b}. Hvor mange er igjen?`);
-    if(v===1)return t12Story(o,`Du har ${a} 🎈. ${b} flyr bort. Hvor mange er igjen?`,`Du har ${a} ballonger. ${b} flyr bort. Hvor mange er igjen?`);
-    return t12Story(o,`Du har ${a} ${E}. Vennen din har ${b}. Hvor mange flere har du?`,`Du har ${a} ${nn}. Vennen din har ${b}. Hvor mange flere har du?`);}
+    // Bilde til historien, så den kan forstås uten å lese: tingene med de som forsvinner strøket over, eller to rader å sammenligne
+    if(v===0){t12Story(o,`Du har ${a} ${E}. Du spiser ${b}. Hvor mange er igjen?`,`Du har ${a} ${nn}. Du spiser ${b}. Hvor mange er igjen?`);o.vis={kind:'dots',g:[a],cross:b,emoji:E};return o;}
+    if(v===1){t12Story(o,`Du har ${a} 🎈. ${b} flyr bort. Hvor mange er igjen?`,`Du har ${a} ballonger. ${b} flyr bort. Hvor mange er igjen?`);o.vis={kind:'dots',g:[a],cross:b,emoji:'🎈'};return o;}
+    t12Story(o,`Du har ${a} ${E}. Vennen din har ${b}. Hvor mange flere har du?`,`Du har ${a} ${nn}. Vennen din har ${b}. Hvor mange flere har du?`);
+    o.vis={kind:'compare',rows:[{who:'🙋',n:a,e:E},{who:'🧒',n:b,e:E}]};return o;}
   return o;
 }
+// Kort som fbSub: «13 - 5 = 8.» + én konkret regel (≤ 12 ord)
 function t12FbSub20(q,g,c,qd){
   const d=t12Q(q,qd),e=d&&d.ops;if(!e)return t12Plain(g,c);
-  const a=e.a,b=e.b,o=a%10;let tip;
-  if(b===10)tip=`Ta bort 1 tier: ${a} - 10 = ${c}.`;
-  else if(a===20)tip=`10 - ${b} = ${10-b}. Så 10 + ${10-b} = ${c}.`;
-  else if(b===o)tip='Ta bort enerne. Da er det 10 igjen.';
-  else if(b<o)tip=`Enerne: ${o} - ${b} = ${o-b}. Så 10 + ${o-b} = ${c}.`;
+  const a=e.a,b=e.b,o=a%10,res=`${a} - ${b} = <strong>${c}</strong>.`;
+  if(+g===a+b)return `Oi, du la sammen! ${res} Minus er å ta bort.`;
+  let tip;
+  if(b===10)tip='Ta bort tieren.';
+  else if(a===20)tip=`${b} fra én tier: 10 - ${b} = ${10-b}.`;
+  else if(b<=o)tip='Ta bort enerne.';
   else if(2*b===a)tip=`Dobbelt: ${b} + ${b} = ${a}.`;
   else if(b>=8)tip=`Tenk pluss: ${b} + ${c} = ${a}.`;
-  else tip=`${a} - ${o} = 10. Så 10 - ${b-o} = ${c}.`;
-  const head=+g===a+b?'Oi, du la sammen! Minus er å ta bort.':t12Warm(g,c);
-  return `${head} ${a} - ${b} = <strong>${c}</strong>. 💡 ${tip}`;
+  else tip=`Ned til 10 først: ${a} - ${o} - ${b-o}.`;
+  return `${res} 💡 ${tip}`;
 }
 
 // ============================================================
@@ -155,22 +165,23 @@ function t12GenCmp1(g,id){
   const L=t12Lvl(g,id),t=t12Pick(g,id,{c1m:[4,1,0],c1n:[3,2,1],c1t:[0,3,4],c1s:[1,2,2],c1j:[0,2,2],c1d:[2,2,3]},L),T='Størst og minst';
   if(t==='c1m'){
     const [A,B]=t12Sh(T12_ANIMALS.slice()),[E,,nn]=t12P(T12_THINGS),mx=L?10:8;let n1=t12R(2,mx),n2=Math.random()<.15?n1:t12R(2,mx);
-    const ans=n1>n2?A[0]:n2>n1?B[0]:'Like mange';
+    const ans=n1>n2?A[0]:n2>n1?B[0]:'Like mange',why={};
+    [A[0],B[0],'Like mange'].forEach(c=>{if(c!==ans)why[c]=c==='Like mange'?'Pek på én og én. Blir noen til overs?':ans==='Like mange'?'Pek på én og én. Får alle en makker?':'Pek på én og én. Hvem har noen igjen?';});
     return {q:'Hvem har flest?',ans,choices:[A[0],B[0],'Like mange'],type:T,sub:t,hint:'Pek på én og én',strat:'sammenlign',
-      vis:{kind:'compare',rows:[{who:A[0],n:n1,e:E},{who:B[0],n:n2,e:E}]},say:`Hvem har flest ${nn}, ${A[1]} eller ${B[1]}? Eller har de like mange?`,x:{n1,n2,A:A[0],B:B[0]}};
+      vis:{kind:'compare',rows:[{who:A[0],n:n1,e:E},{who:B[0],n:n2,e:E}]},say:`Hvem har flest ${nn}, ${A[1]} eller ${B[1]}? Eller har de like mange?`,why,x:{n1,n2,A:A[0],B:B[0]}};
   }
   if(t==='c1d'){
     const a=t12R([3,6,10][L],[10,15,20][L]),b=t12R(Math.max(1,a-(L?9:4)),a-1),[A,B]=t12Sh(T12_ANIMALS.slice()),[E,,nn]=t12P(T12_THINGS);
     const o={q:`${a} - ${b} = ?`,ans:a-b,type:T,sub:t,hint:'Tell de som blir til overs',ops:{a,b,op:'-'},strat:'sammenlign'};
     t12Story(o,`${A[0]} har ${a} ${E}. ${B[0]} har ${b} ${E}. Hvor mange flere har ${A[0]}?`,`${t12Cap(A[1])} har ${a} ${nn}. ${t12Cap(B[1])} har ${b}. Hvor mange flere har ${A[1]}?`);
-    if(a<=12)o.vis={kind:'compare',rows:[{who:A[0],n:a,e:E},{who:B[0],n:b,e:E}]};
+    o.vis={kind:'compare',rows:[{who:A[0],n:a,e:E},{who:B[0],n:b,e:E}]};
     return o;
   }
   if(t==='c1j'){
     let [a,b]=t12Distinct(2,1,L>1?20:12);const big=Math.random()<.5,truth=Math.random()<.5;
     if((big?a>b:a<b)!==truth)[a,b]=[b,a];
     const q=`Er ${a} ${big?'større':'mindre'} enn ${b}?`;
-    return {q,ans:truth?'Ja':'Nei',choices:['Ja','Nei'],type:T,sub:t,hint:'Hvilket tall kommer sist når du teller?',say:q,strat:'sammenlign',x:{a,b,big}};
+    return {q,ans:truth?'Ja':'Nei',choices:['Ja','Nei'],type:T,sub:t,hint:'Hvilket tall kommer sist når du teller?',say:q,strat:'sammenlign',vis:{kind:'cue',w:big?'større':'mindre'},x:{a,b,big}};
   }
   // c1n, c1t, c1s: velg tallet som er størst/minst
   const min=t==='c1s'||(t==='c1t'&&Math.random()<.25);let ns;
@@ -181,13 +192,20 @@ function t12GenCmp1(g,id){
     else ns=t12Distinct(L>1?3:2,10,20);
   }
   const ans=min?Math.min(...ns):Math.max(...ns),q=`Hvilket tall er ${min?'minst':'størst'}?`,ch=t12Sh(ns.slice());
+  // Hint for hvert feil valg (why), feiltype «plass» når barnet bare så på enerne (9 mot 13), og en tallinje med tallene
+  const why={},whyM={},whyV={},hi=Math.max(...ns),line=d=>hi<=10?{kind:'line',from:0,to:10,start:d,hl:ns}:{kind:'line',from:0,to:20,start:d,hl:ns};
+  ns.forEach(d=>{if(d===ans)return;const k=String(d);whyV[k]=line(d);
+    if(!min&&d<10&&ans>=10){why[k]=`${d} har ingen tier. Tall med tier er større.`;whyM[k]='plass';}
+    else if(min&&d>=10&&ans<10){why[k]=`${d} har en tier. Tall uten tier er mindre.`;whyM[k]='plass';}
+    else if(d>=10&&ans>=10){if(Math.floor(d/10)===Math.floor(ans/10))why[k]='Tierne er like. Se på enerne!';else{why[k]=`${d} har ${min?'flere':'færre'} tiere. Se på tierne!`;whyM[k]='plass';}}
+    else why[k]=min?`Tell ned fra ${d}. Kommer det et mindre?`:`Tell videre fra ${d}. Kommer det et større?`;});
   return {q,ans,choices:ch,type:T,sub:t,hint:ns.some(n=>n>=10)&&ns.some(n=>n<10)?'Se på tierne først':min?'Hvilket kommer først når du teller?':'Hvilket kommer sist når du teller?',
-    say:`${q} ${ch.slice(0,-1).join(', ')} eller ${ch[ch.length-1]}?`,strat:'sammenlign',x:{ns,min}};
+    say:`${q} ${ch.slice(0,-1).join(', ')} eller ${ch[ch.length-1]}?`,strat:'sammenlign',vis:{kind:'cue',w:min?'minst':'størst'},why,whyM,whyV,x:{ns,min}};
 }
 function t12FbCmp1(q,g,c,qd){
   const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
   if(d.sub==='c1m'){if(c==='Like mange')return `<strong>Like mange</strong>: begge har ${x.n1}. 💡 Alle har en makker.`;const big=Math.max(x.n1,x.n2),sm=Math.min(x.n1,x.n2);return `<strong>${c}</strong> har flest: ${big} mot ${sm}. 💡 Pek på én og én.`;}
-  if(d.sub==='c1d'){const e=d.ops;return `${+g===e.a+e.b?'Oi, du la sammen!':t12Warm(g,c)} ${e.a} - ${e.b} = <strong>${c}</strong>. 💡 Pek på én og én. ${c} blir til overs.`;}
+  if(d.sub==='c1d'){const e=d.ops,res=`${e.a} - ${e.b} = <strong>${c}</strong>.`;return +g===e.a+e.b?`Oi, du la sammen! ${res} 💡 Pek på én og én.`:`${res} 💡 Pek på én og én. ${c} blir til overs.`;}
   if(d.sub==='c1j'){const a=x.a,b=x.b,rel=a>b?'større':'mindre';return `<strong>${c}</strong>. ${a} er ${rel} enn ${b}. 💡 ${Math.max(a,b)} kommer sist når du teller.`;}
   const ns=x.ns||[],tip=ns.some(n=>n>=10)&&ns.some(n=>n<10)?`${x.min?'Det uten tier er minst.':'Tall med en tier er større.'}`:x.min?'Det kommer først når du teller.':'Det kommer sist når du teller.';
   return `<strong>${c}</strong> er ${x.min?'minst':'størst'}. 💡 ${tip}`;
@@ -197,7 +215,8 @@ function t12FbCmp1(q,g,c,qd){
 // TEMA: ER DET LIKT? (eq1) – likhetstegnet som «like mye som»
 // ============================================================
 function t12GenEq1(g,id){
-  const L=t12Lvl(g,id),t=t12Pick(g,id,{e1s:[4,2,2],e1v:[2,2,1],e1l:[3,2,2],e1b:[1,3,3],e1k:[0,2,1],e1m:[0,0,2]},L),M=[10,12,20][L],T='Er det likt?';
+  // Færre Ja/Nei (gjettbare): «8 = 5 + ?» og «4 + 3 = 5 + ?» er hovedsaken; e1b er tall-oppgave fra nivå 1
+  const L=t12Lvl(g,id),t=t12Pick(g,id,{e1s:[2,1,1],e1v:[2,2,1],e1l:[3,2,2],e1b:[2,4,4],e1k:[0,1,1],e1m:[0,0,2]},L),M=[10,12,20][L],T='Er det likt?';
   const tf=(q,say,l,lv,r,rv)=>({q,ans:lv===rv?'Ja':'Nei',choices:['Ja','Nei'],type:T,sub:t,hint:'Regn ut begge sider',say,strat:'likhet',x:{l,lv,r,rv}});
   const wrong=v=>{const d=t12P([1,1,-1,-1,2]);return v+d>=0?v+d:v-d;};
   if(t==='e1s'){
@@ -207,26 +226,29 @@ function t12GenEq1(g,id){
     return tf(`${l} = ${sh}. Stemmer det?`,`Stemmer det? ${t12Say(l)} er ${sh}.`,l,v,String(sh),sh);
   }
   if(t==='e1v'){const s=t12R(3,M),a=t12R(1,s-1),b=s-a,sh=Math.random()<.65?s:wrong(s),r=`${a} + ${b}`;
-    return Object.assign(tf(`${sh} = ${r}. Stemmer det?`,`Stemmer det? ${sh} er lik ${a} pluss ${b}.`,String(sh),sh,r,s),{hint:'Svaret kan stå først'});}
+    return Object.assign(tf(`${sh} = ${r}. Stemmer det?`,`Stemmer det? ${sh} er lik ${a} pluss ${b}.`,String(sh),sh,r,s),{hint:'Svaret kan stå først'},sh===s?{whyM:{Nei:'likhet'}}:{});}
   if(t==='e1k'){const a=t12R(1,9);let b;do{b=t12R(1,9);}while(b===a);const ok=Math.random()<.5,b2=ok?b:b+t12P([1,-1].filter(d=>b+d>0)),l=`${a} + ${b}`,r=`${ok?b:b2} + ${a}`;
     return Object.assign(tf(`${l} = ${r}. Stemmer det?`,`Stemmer det? ${t12Say(l)} er lik ${t12Say(r)}.`,l,a+b,r,(ok?b:b2)+a),{hint:'Er det de samme tallene?'});}
-  if(t==='e1l'){const s=t12R(3,M),a=t12R(1,s-1),first=Math.random()<.7;
-    const o={q:first?`${s} = ${a} + ?`:`${s} = ? + ${a}`,ans:s-a,type:T,sub:t,hint:`Tell fra ${a} til ${s}`,ops:{a,b:s-a,op:'+'},strat:'likhet'};
-    o.eq=first?`${a} + ? = ${s}`:`? + ${a} = ${s}`;o.say=first?`${s} er lik ${a} pluss hva?`:`${s} er lik hva pluss ${a}?`;o.x={s,a};return o;}
+  // «8 = 5 + ?»: q er selve regnestykket (eq = q, så rekkefølgen beholdes også i resultatlisten), med vekt
+  if(t==='e1l'){const s=t12R(3,M),a=t12R(1,s-1),first=Math.random()<.7,r=first?`${a} + ?`:`? + ${a}`;
+    const o={q:`${s} = ${r}`,ans:s-a,type:T,sub:t,hint:`Tell fra ${a} til ${s}`,ops:first?{a,b:s-a,op:'+',unk:'b'}:{a:s-a,b:a,op:'+',unk:'a'},strat:'likhet'};
+    o.eq=o.q;o.say=first?`${s} er lik ${a} pluss hva?`:`${s} er lik hva pluss ${a}?`;o.vis={kind:'scale',l:String(s),r};o.x={s,a};return o;}
   // e1b / e1m: like mye på begge sider, med vekt
   let a,b,lv,l,c;
   if(t==='e1m'){a=t12R(8,20);b=t12R(1,Math.min(9,a-3));lv=a-b;l=`${a} - ${b}`;}
   else if(L===2&&Math.random()<.35){a=t12R(6,9);b=t12R(11-a,9);if(Math.random()<.5)[a,b]=[b,a];lv=a+b;l=`${a} + ${b}`;c=10;} // 8 + 5 = 10 + ?
   else{lv=t12R(4,M);a=t12R(1,lv-1);b=lv-a;l=`${a} + ${b}`;}
   if(c==null){do{c=t12R(1,lv-1);}while(t==='e1b'&&(c===a||c===b)&&lv>3);}
-  const ans=lv-c,r=`${c} + ?`;
-  return {q:`${l} = ${r}`,ans,choices:t12Choices(ans,[lv,lv+c],3),type:T,sub:t,hint:'Begge sider skal bli like mye',say:`${t12Say(l)} er lik ${c} pluss hva?`,
-    vis:{kind:'scale',l,r},strat:'likhet',x:{l,lv,c}};
+  const ans=lv-c,r=`${c} + ?`,base={q:`${l} = ${r}`,ans,type:T,sub:t,hint:'Begge sider skal bli like mye',say:`${t12Say(l)} er lik ${c} pluss hva?`,vis:{kind:'scale',l,r},strat:'likhet',x:{l,lv,c}};
+  if(t==='e1b'&&L>=1)return Object.assign(base,{ops:{a:c,b:ans,op:'+',unk:'b'}}); // tall-oppgave (ikke gjettbar)
+  // Valg: venstre side (7) og alt lagt sammen (12) er de typiske feilene med likhetstegnet
+  const why={},whyM={};why[lv]=`${lv} er venstre side. ${c} + hva blir ${lv}?`;why[lv+c]=`Ikke legg sammen alt. Regn ut ${l} først.`;whyM[lv]=whyM[lv+c]='likhet';
+  return Object.assign(base,{choices:t12Choices(ans,[lv,lv+c],3),why,whyM});
 }
 function t12FbEq1(q,g,c,qd){
   const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
-  if(d.sub==='e1l')return `${t12Warm(g,c)} ${x.s} = ${x.a} + <strong>${c}</strong>. 💡 ${c<=5?`Tell fra ${x.a}: ${t12Cnt(x.a,1,c)}. ${c} hopp!`:`Tenk minus: ${x.s} - ${x.a} = ${c}.`}`;
-  if(d.sub==='e1b'||d.sub==='e1m')return `${String(g)===String(x.lv)?'= betyr «like mye». ':''}Svaret er <strong>${c}</strong>. ${x.l} = ${x.lv}, og ${x.c} + ${c} = ${x.lv}. 💡 Begge sider er like mye.`;
+  if(d.sub==='e1l')return t12J(t12Warm(g,c),`${x.s} = ${x.a} + <strong>${c}</strong>. 💡 ${c<=3?`Tell fra ${x.a}: ${t12Cnt(x.a,1,c)}.`:`Tenk: ${x.s} - ${x.a} = ${c}.`}`);
+  if(d.sub==='e1b'||d.sub==='e1m')return `${String(g)===String(x.lv)?'= betyr «like mye». ':''}${x.l} = ${x.lv}. Og ${x.c} + <strong>${c}</strong> = ${x.lv}. 💡 Likt!`;
   const num=s=>/^\d+$/.test(s);
   if(c==='Ja')return `<strong>Ja</strong>, det stemmer. Begge sider er ${x.lv}.${d.sub==='e1v'?' 💡 Svaret kan stå først.':''}`;
   const side=(e,v)=>num(e)?null:`${e} er ${v}`,p=[side(x.l,x.lv),side(x.r,x.rv)].filter(Boolean),n=num(x.l)?x.l:num(x.r)?x.r:null;
@@ -242,35 +264,57 @@ function t12Digi(h,m){return `${t12H(h)}:${String(m).padStart(2,'0')}`;}
 function t12GenClock1(g,id){
   const L=t12Lvl(g,id),t=t12Pick(g,id,{k1h:[5,2,1],k1t:[0,4,4],k1v:[2,2,2],k1d:[0,0,1],k1r:[1,2,2]},L),T='Klokka';
   const base={type:T,sub:t};
-  if(t==='k1h'){const h=t12R(1,12),ans=t12ClockTxt(h,0);
-    return {...base,q:'Hva er klokka?',ans,choices:t12Choices(ans,[h===12?6:12,12-h||12,h+1,h-1].map(x=>t12ClockTxt(x,0)),3),hint:'Se på den korte viseren',say:'Se på klokka. Hva er klokka?',vis:{kind:'clock',h,m:0},strat:'hel-time',x:{h,m:0}};}
-  if(t==='k1t'){const h=t12R(1,12),ans=t12ClockTxt(h,30);
-    return {...base,q:'Hva er klokka?',ans,choices:t12Choices(ans,[t12ClockTxt(h-1,30),t12ClockTxt(h,0),t12ClockTxt(h+1,0)],3),hint:'Se på den lange viseren',say:'Se på klokka. Hva er klokka?',vis:{kind:'clock',h,m:30},strat:'halv-time',x:{h,m:30}};}
+  // why: hint for hvert feil valg, whyM: feiltype, whyV: klokka med viseren hintet peker på (blinker)
+  const W=(o,c,txt,mis,v)=>{const k=String(c);if(k===String(o.ans)||o.why[k])return;o.why[k]=txt;if(mis)o.whyM[k]=mis;if(v)o.whyV[k]=v;};
+  if(t==='k1h'){const h=t12R(1,12),ans=t12ClockTxt(h,0),cl=hl=>({kind:'clock',h,m:0,size:130,hl});
+    const o={...base,q:'Hva er klokka?',ans,choices:t12Choices(ans,[h===12?6:12,12-h||12,h+1,h-1].map(x=>t12ClockTxt(x,0)),3),hint:'Se på den korte viseren',say:'Se på klokka. Hva er klokka?',vis:{kind:'clock',h,m:0},strat:'hel-time',x:{h,m:0},why:{},whyM:{},whyV:{}};
+    o.choices.forEach(c=>{if(c==='Klokka 12'&&h!==12)W(o,c,'Den lange viseren står på 12. Se på den korte!','visere',cl('h'));
+      else if(h===12)W(o,c,'Begge viserne peker rett opp. Hvilket tall er det?',null,cl('h'));
+      else W(o,c,'Følg den korte viseren helt ut til tallet.',null,cl('h'));});
+    return o;}
+  if(t==='k1t'){const h=t12R(1,12),ans=t12ClockTxt(h,30),cl=hl=>({kind:'clock',h,m:30,size:130,hl});
+    const o={...base,q:'Hva er klokka?',ans,choices:t12Choices(ans,[t12ClockTxt(h-1,30),t12ClockTxt(h,0),t12ClockTxt(h+1,0)],3),hint:'Kort viser er halvveis til neste time',say:'Se på klokka. Hva er klokka?',vis:{kind:'clock',h,m:30},strat:'halv-time',x:{h,m:30},why:{},whyM:{},whyV:{}};
+    W(o,t12ClockTxt(h-1,30),`Kort viser er forbi ${t12H(h)}. Halv: halvveis til neste time.`,'halvtime',cl('h')); // «halv 3» for 3.30
+    W(o,t12ClockTxt(h,0),'Lang viser på 6: da er det halv.','visere',cl('m'));
+    W(o,t12ClockTxt(h+1,0),'Lang viser på 6: da er det halv.','visere',cl('m'));
+    return o;}
   if(t==='k1v'){
     const h=t12R(1,12),m=L&&Math.random()<.6?30:0,lbl=t12ClockTxt(h,m);
-    const ds=m?[[h-1,30],[h+1,0],[h,0]]:L?[[h+1,0],[h,30],h===12?[h-1,0]:[12,h*5]]:[[h+1,0],[h-1,0],[12-h===h||h===12?h+3:12-h,0]],pos=t12R(0,2),others=t12Sh(ds.slice()).slice(0,2),list=[];
+    // halv: også den typiske feilen (halv 4 = 4.30); hel: også byttede visere (12 og h*5)
+    const ds=m?[[h+1,30],[h+1,0],[h,0]]:L?[[h+1,0],[h,30],h===12?[h-1,0]:[12,h*5]]:[[h+1,0],[h-1,0],[12-h===h||h===12?h+3:12-h,0]],pos=t12R(0,2),others=t12Sh(ds.slice()).slice(0,2),list=[];
     for(let i=0,k=0;i<3;i++){const [hh,mm]=i===pos?[h,m]:others[k++];list.push({h:t12H(hh),m:mm,tag:T12_TAGS[i]});}
-    const q=`Hvilken klokke viser ${lbl.toLowerCase()}?`;
-    return {...base,q,ans:T12_TAGS[pos],choices:T12_TAGS.slice(),hint:'Se på begge viserne',say:q,vis:{kind:'clock',list},strat:m?'halv-time':'hel-time',x:{h,m,lbl}};
+    const q=`Hvilken klokke viser ${lbl.toLowerCase()}?`,o={...base,q,ans:T12_TAGS[pos],choices:T12_TAGS.slice(),hint:'Se på begge viserne',say:q,vis:{kind:'clock',list},strat:m?'halv-time':'hel-time',x:{h,m,lbl},why:{},whyM:{},whyV:{}};
+    list.forEach((c,i)=>{if(i===pos)return;const sw=m===0&&c.h===12&&c.m!==0,v=hl=>({kind:'clock',h:c.h,m:c.m,size:130,hl});
+      if(m===30&&c.m===30)W(o,c.tag,`Halv ${t12H(h+1)} kommer før klokka ${t12H(h+1)}.`,'halvtime',v('h'));
+      else if(m===30)W(o,c.tag,'Lang viser på 12 er hel time. Halv: på 6.','visere',v('m'));
+      else if(sw)W(o,c.tag,'Her er viserne byttet om. Kort viser timen.','visere',v('h'));
+      else if(c.m===30)W(o,c.tag,'Lang viser på 6 er halv. Hel time: på 12.','visere',v('m'));
+      else W(o,c.tag,`Kort viser skal peke på ${t12H(h)}.`,null,v('h'));});
+    return o;
   }
-  if(t==='k1d'){const h=t12R(1,12),m=Math.random()<.5?30:0,ans=t12Digi(h,m),ds=m?[t12Digi(h+1,30),t12Digi(h,0),`6:${String(h*5%60).padStart(2,'0')}`]:[t12Digi(h,30),t12Digi(h+1,0),`12:${String(h*5%60).padStart(2,'0')}`];
-    return {...base,q:'Hva står på en digital klokke?',ans,choices:t12Choices(ans,ds,3),hint:'Timen først, så minuttene',say:'Se på klokka. Hva står på en digital klokke nå?',vis:{kind:'clock',h,m},strat:'digital',x:{h,m}};}
-  // k1r: timer etter (tall-tastatur)
+  if(t==='k1d'){const h=t12R(1,12),m=Math.random()<.5?30:0,ans=t12Digi(h,m),sw=`${m?6:12}:${String(h*5%60).padStart(2,'0')}`,ds=m?[t12Digi(h+1,30),t12Digi(h,0),sw]:[t12Digi(h,30),t12Digi(h+1,0),sw],cl=hl=>({kind:'clock',h,m,size:130,hl});
+    const o={...base,q:'Hva står på en digital klokke?',ans,choices:t12Choices(ans,ds,3),hint:'Timen først, så minuttene',say:'Se på klokka. Hva står på en digital klokke nå?',vis:{kind:'clock',h,m},strat:'digital',x:{h,m},why:{},whyM:{},whyV:{}};
+    if(m){W(o,ds[0],`Kort viser har ikke nådd ${t12H(h+1)} ennå.`,'halvtime',cl('h'));W(o,ds[1],'Lang viser på 6 betyr 30 minutter.','visere',cl('m'));}
+    else{W(o,ds[0],'Lang viser på 12 betyr 00 minutter.','visere',cl('m'));W(o,ds[1],'Følg den korte viseren helt ut til tallet.',null,cl('h'));}
+    W(o,sw,'Kort viser viser timen. Lang viser minuttene.','visere',cl('h'));
+    return o;}
+  // k1r: timer etter (tall-tastatur). Bilde av klokka i alle historiene.
   const k=t12R(1,[1,2,3][L]),h=t12R(1,12-k),v=L===2?t12R(0,2):t12R(0,1);
   const o={q:`${h} + ${k} = ?`,ans:h+k,...base,hint:'Tell timene fremover',ops:{a:h,b:k,op:'+'},strat:'klokke-tid',x:{h,k}};
   if(v===0){t12Story(o,`Klokka er ${h}. Hva er klokka om ${t12Time(k)}?`,`Klokka er ${h}. Hva er klokka om ${t12Time(k)}?`);o.vis={kind:'clock',h,m:0};return o;}
-  if(v===1)return t12Story(o,`Filmen starter klokka ${h}. Den varer i ${t12Time(k)}. Når er den ferdig?`,`Filmen starter klokka ${h}. Den varer i ${t12Time(k)}. Når er den ferdig?`);
+  if(v===1){t12Story(o,`Filmen starter klokka ${h}. Den varer i ${t12Time(k)}. Når er den ferdig?`,`Filmen starter klokka ${h}. Den varer i ${t12Time(k)}. Når er den ferdig?`);o.vis={kind:'clock',h,m:0};return o;}
   const p={q:`${h+k} - ${h} = ?`,ans:k,...base,hint:`Tell fra ${h} til ${h+k}`,ops:{a:h+k,b:h,op:'-'},strat:'klokke-tid',x:{h,k,from:true}};
-  return t12Story(p,`Fra klokka ${h} til klokka ${h+k}. Hvor mange timer er det?`,`Fra klokka ${h} til klokka ${h+k}. Hvor mange timer er det?`);
+  t12Story(p,`Fra klokka ${h} til klokka ${h+k}. Hvor mange timer er det?`,`Fra klokka ${h} til klokka ${h+k}. Hvor mange timer er det?`);
+  p.vis={kind:'clock',list:[{h,m:0,tag:'▶️'},{h:h+k,m:0,tag:'🏁'}]};return p;
 }
 function t12FbClock1(q,g,c,qd){
   const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
-  const how=(h,m)=>m===30?`💡 Lang viser på 6: halv. Kort viser er på vei til ${t12H(h+1)}.`:`💡 Lang viser på 12: hel time. Kort viser på ${t12H(h)}.`;
+  const how=(h,m)=>m===30?`💡 Lang viser på 6. Kort viser halvveis til ${t12H(h+1)}.`:`💡 Lang viser på 12. Kort viser på ${t12H(h)}.`;
   if(d.sub==='k1h'||d.sub==='k1t')return `<strong>${c}</strong>! ${how(x.h,x.m)}`;
   if(d.sub==='k1v')return `<strong>${c}</strong> viser ${x.lbl.toLowerCase()}. ${how(x.h,x.m)}`;
   if(d.sub==='k1d')return `<strong>${c}</strong>. 💡 ${x.m?`Halv ${t12H(x.h+1)} er 30 minutter over ${t12H(x.h)}.`:`Hel time: 00 minutter.`}`;
-  if(x.from)return `${t12Warm(g,c)} Det er <strong>${c}</strong> ${c===1?'time':'timer'}. 💡 Tell fra ${x.h}: ${t12Cnt(x.h,1,c)}.`;
-  return `${t12Warm(g,c)} Klokka blir <strong>${c}</strong>. 💡 Fra klokka ${x.h}, tell ${x.k}: ${t12Cnt(x.h,1,x.k)}.`;
+  if(x.from)return t12J(t12Warm(g,c),`Det er <strong>${c}</strong> ${c===1?'time':'timer'}. 💡 Tell fra ${x.h}: ${t12Cnt(x.h,1,c)}.`);
+  return t12J(t12Warm(g,c),`Klokka blir <strong>${c}</strong>. 💡 Fra klokka ${x.h}, tell ${x.k}: ${t12Cnt(x.h,1,x.k)}.`);
 }
 
 // ============================================================
@@ -279,10 +323,13 @@ function t12FbClock1(q,g,c,qd){
 function t12GenPlace2(g,id){
   const L=t12Lvl(g,id),t=t12Pick(g,id,{p2b:[4,2,1],p2e:[3,2,1],p2m:[2,3,3],p2d:[0,3,3],p2t:[1,2,2],p2v:[0,1,2],p2x:[0,1,2]},L),T='Tiere og enere',base={type:T,sub:t,strat:'tier-ener'};
   const tt=t12R(1,L?9:5);let oo=t12R(L?0:1,9);const n=10*tt+oo;
-  if(t==='p2b'){
-    return {...base,q:'Hvilket tall er dette?',ans:n,choices:t12Choices(n,[oo&&oo!==tt?10*oo+tt:null,tt+oo,n+10<100?n+10:null,n-10>0?n-10:null,n+1,n-1],3),hint:'En stav er 10',say:'Se på tierne og enerne. Hvilket tall er det?',vis:{kind:'place',t:tt,o:oo},x:{t:tt,o:oo}};}
+  // why/whyM for hvert feil valg: snudde sifre, «en stav er 1», tellefeil på stavene eller klossene
+  const WY=(o,list)=>{o.why={};o.whyM={};list.forEach(([v,txt,mis])=>{const k=String(v);if(v==null||k===String(o.ans)||o.why[k])return;o.why[k]=txt;if(mis)o.whyM[k]=mis;});return o;};
+  if(t==='p2b'){const o={...base,q:'Hvilket tall er dette?',ans:n,choices:t12Choices(n,[oo&&oo!==tt?10*oo+tt:null,tt+oo,n+10<100?n+10:null,n-10>0?n-10:null,n+1,n-1],3),hint:'En stav er 10',say:'Se på tierne og enerne. Hvilket tall er det?',vis:{kind:'place',t:tt,o:oo},x:{t:tt,o:oo}};
+    return WY(o,[[oo&&oo!==tt?10*oo+tt:null,'Stavene er tiere. Tierne skrives først.','snudd'],[tt+oo,'En stav er en hel tier, ikke 1.','plass'],[n+10,'Tell stavene en gang til.','ti'],[n-10,'Tell stavene en gang til.','ti'],[n+1,'Tell de små klossene en gang til.','en'],[n-1,'Tell de små klossene en gang til.','en']]);}
   if(t==='p2x'){const t2=t12R(1,6),o2=t12R(10,15),m=10*t2+o2;
-    return {...base,q:'Hvilket tall er dette?',ans:m,choices:t12Choices(m,[m-10,t2+o2,m+10],3),hint:'10 enere blir 1 tier',say:`Det er ${t12Tier(t2)} og ${o2} enere. Hvilket tall er det?`,vis:{kind:'place',t:t2,o:o2},x:{t:t2,o:o2}};}
+    const o={...base,q:'Hvilket tall er dette?',ans:m,choices:t12Choices(m,[m-10,t2+o2,m+10],3),hint:'10 enere blir 1 tier',say:`Det er ${t12Tier(t2)} og ${o2} enere. Hvilket tall er det?`,vis:{kind:'place',t:t2,o:o2},x:{t:t2,o:o2}};
+    return WY(o,[[m-10,'10 små klosser blir en tier til. Tell igjen!','plass'],[t2+o2,'En stav er en hel tier, ikke 1.','plass'],[m+10,'Tell stavene en gang til.','ti']]);}
   if(t==='p2e'){if(!oo)oo=t12R(1,9);const m=10*tt+oo,sw=L>0&&Math.random()<.3,o={...base,q:sw?`${oo} + ${10*tt} = ?`:`${10*tt} + ${oo} = ?`,ans:m,hint:'Tiere først, så enere',ops:sw?{a:oo,b:10*tt,op:'+'}:{a:10*tt,b:oo,op:'+'},x:{t:tt,o:oo}};
     o.say=sw?`Hva er ${oo} pluss ${10*tt}?`:`Hva er ${10*tt} pluss ${oo}?`;if(L<2)o.vis={kind:'place',t:tt,o:oo};return o;}
   if(t==='p2m'){
@@ -291,25 +338,27 @@ function t12GenPlace2(g,id){
     op=k[0];q=`Hva er ${b} ${op==='+'?'mer':'mindre'} enn ${m}?`;eq=`${m} ${op} ${b} = ?`;
     const o={...base,q,eq,ans,hint:b===10?(op==='+'?'Én tier til':'Én tier mindre'):(op==='+'?'Én ener til':'Én ener mindre'),say:q,ops:{a:m,b,op},x:{m,k}};
     if(L===0)o.vis={kind:'place',t:Math.floor(m/10),o:m%10};return o;}
-  if(t==='p2d'){if(!oo)oo=t12R(1,9);const m=10*tt+oo,first=Math.random()<.55;
-    return {...base,q:first?`${m} = ${10*tt} + ?`:`${m} = ? + ${oo}`,eq:first?`${10*tt} + ? = ${m}`:`? + ${oo} = ${m}`,ans:first?oo:10*tt,hint:'Del i tiere og enere',
-      say:first?`${m} er lik ${10*tt} pluss hva?`:`${m} er lik hva pluss ${oo}?`,ops:{a:10*tt,b:oo,op:'+'},x:{t:tt,o:oo,m}};}
+  // «65 = 60 + ?»: q er selve regnestykket (eq = q, så rekkefølgen beholdes i resultatlisten); unk = leddet som mangler
+  if(t==='p2d'){if(!oo)oo=t12R(1,9);const m=10*tt+oo,first=Math.random()<.55,q=first?`${m} = ${10*tt} + ?`:`${m} = ? + ${oo}`;
+    return {...base,q,eq:q,ans:first?oo:10*tt,hint:'Del i tiere og enere',
+      say:first?`${m} er lik ${10*tt} pluss hva?`:`${m} er lik hva pluss ${oo}?`,ops:{a:10*tt,b:oo,op:'+',unk:first?'b':'a'},x:{t:tt,o:oo,m}};}
   // p2t / p2v: sifrenes plass
   let t3=t12R(2,9),o3;do{o3=t12R(1,9);}while(o3===t3);const m=10*t3+o3;
   if(t==='p2t'){const tens=Math.random()<.6,q=`Hvor mange ${tens?'tiere':'enere'} er det i ${m}?`;
-    return {...base,q,ans:tens?t3:o3,choices:t12Choices(tens?t3:o3,tens?[o3,10*t3]:[t3],tens?3:2),hint:tens?'Tierne står først':'Enerne står sist',say:q,x:{t:t3,o:o3,m,tens}};}
+    const o={...base,q,ans:tens?t3:o3,choices:t12Choices(tens?t3:o3,tens?[o3,10*t3]:[t3],tens?3:2),hint:tens?'Tierne står først':'Enerne står sist',say:q,x:{t:t3,o:o3,m,tens}};
+    return WY(o,tens?[[o3,'Tierne står først i tallet.','plass'],[10*t3,`Hvor mange tiere er ${10*t3}?`,'plass']]:[[t3,'Enerne står sist i tallet.','plass']]);}
   const tens=Math.random()<.5,dd=tens?t3:o3,q=`Hva betyr ${dd}-tallet i ${m}?`,A=t12Tier(dd),B=t12Ener(dd);
-  return {...base,q,ans:tens?A:B,choices:[A,B],hint:'Første siffer er tiere',say:q,x:{t:t3,o:o3,m,tens}};
+  return {...base,q,ans:tens?A:B,choices:[A,B],hint:'Første siffer er tiere',say:q,whyM:{[tens?B:A]:'plass'},x:{t:t3,o:o3,m,tens}};
 }
 function t12FbPlace2(q,g,c,qd){
   const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{},gs=String(g);
   if(d.sub==='p2b'||d.sub==='p2x'){const rv=x.o<10?String(10*x.o+x.t):'';
-    const tip=d.sub==='p2x'?`10 enere blir 1 tier: ${t12Tier(x.t+1)} og ${t12Ener(x.o-10)}.`:gs===rv?'Tierne skrives først.':+g===x.t+x.o?'En stav er 10, ikke 1.':`${t12Tier(x.t)} og ${t12Ener(x.o)}.`;
+    const tip=d.sub==='p2x'?'10 enere blir 1 tier til.':gs===rv?'Tierne skrives først.':+g===x.t+x.o?'En stav er 10, ikke 1.':`${t12Tier(x.t)} og ${t12Ener(x.o)}.`;
     return `Det er <strong>${c}</strong>. 💡 ${tip}`;}
-  if(d.sub==='p2e')return `${t12Warm(g,c)} ${d.ops.a} + ${d.ops.b} = <strong>${c}</strong>. 💡 ${gs===String(10*x.o+x.t)?'Tierne skrives først! ':''}${t12Tier(x.t)} og ${t12Ener(x.o)}.`;
+  if(d.sub==='p2e')return t12J(t12Warm(g,c),`${d.ops.a} + ${d.ops.b} = <strong>${c}</strong>. 💡 ${gs===String(10*x.o+x.t)?'Tierne skrives først! ':''}${t12Tier(x.t)} og ${t12Ener(x.o)}.`);
   if(d.sub==='p2m'){const tn=Math.floor(x.m/10),tip=x.k==='+10'?`Én tier til: ${tn} blir ${tn+1}.`:x.k==='-10'?`Én tier mindre: ${tn} blir ${tn-1}.`:x.k==='+1'?'10 enere blir en ny tier.':`Tell ned én: ${x.m}, ${c}.`;
-    return `${t12Warm(g,c)} ${x.k.length>2?'10':'1'} ${x.k[0]==='+'?'mer':'mindre'} enn ${x.m} er <strong>${c}</strong>. 💡 ${tip}`;}
-  if(d.sub==='p2d')return `${t12Warm(g,c)} ${x.m} = ${10*x.t} + ${x.o}. Svaret er <strong>${c}</strong>. 💡 ${t12Tier(x.t)} og ${t12Ener(x.o)}.`;
+    return t12J(t12Warm(g,c),`${x.k.length>2?'10':'1'} ${x.k[0]==='+'?'mer':'mindre'} enn ${x.m} er <strong>${c}</strong>. 💡 ${tip}`);}
+  if(d.sub==='p2d')return t12J(t12Warm(g,c),`${x.m} = ${c===x.o?`${10*x.t} + <strong>${c}</strong>`:`<strong>${c}</strong> + ${x.o}`}. 💡 ${t12Tier(x.t)} og ${t12Ener(x.o)}.`);
   if(d.sub==='p2t')return `Det er <strong>${c}</strong> ${x.tens?(c===1?'tier':'tiere'):(c===1?'ener':'enere')}. 💡 ${x.m} er ${t12Tier(x.t)} og ${t12Ener(x.o)}.`;
   return `<strong>${c}</strong>. 💡 I ${x.m} er ${x.t}-tallet tiere og ${x.o}-tallet enere.`;
 }
@@ -319,17 +368,21 @@ function t12FbPlace2(q,g,c,qd){
 // ============================================================
 function t12Par(n){return n%2?'Oddetall':'Partall';}
 function t12GenEven2(g,id){
-  const L=t12Lvl(g,id),t=t12Pick(g,id,{o2b:[5,2,1],o2n:[2,3,2],o2f:[1,2,2],o2s:[0,2,4],o2r:[2,2,2],o2d:[1,1,1]},L),T='Partall og oddetall',base={type:T,sub:t,strat:'partall'},PO=['Partall','Oddetall'];
+  // Færre tovalgsoppgaver (gjettbare): o2f har tre valg, o2r er tall-oppgave, o2s bare på nivå 2
+  const L=t12Lvl(g,id),t=t12Pick(g,id,{o2b:[5,2,1],o2n:[1,1,0],o2f:[2,3,3],o2s:[0,0,4],o2r:[3,3,3],o2d:[1,1,1]},L),T='Partall og oddetall',base={type:T,sub:t,strat:'partall'},PO=['Partall','Oddetall'];
   if(t==='o2b'){const n=t12R(2,L?12:10);return {...base,q:'Partall eller oddetall?',ans:t12Par(n),choices:PO.slice(),hint:'Får alle sokkene en makker?',say:'Er det et partall eller et oddetall? Se om alle sokkene får en makker.',vis:{kind:'pairs',n,e:'🧦'},x:{n}};}
   if(t==='o2n'){const n=t12R(1,L?20:10),q=`Er ${n} et partall eller et oddetall?`;return {...base,q,ans:t12Par(n),choices:PO.slice(),hint:'Kan du dele likt i to?',say:q,x:{n}};}
   if(t==='o2f'){const ev=Math.random()<.5,mx=L>1?99:20,pk=want=>{let n;do{n=t12R(1,mx);}while(n%2!==(want?0:1));return n;};
     const ans=pk(ev),s=new Set([ans]);while(s.size<3)s.add(pk(!ev));const w=ev?'partall':'oddetall',q=`Hvilket tall er et ${w}?`,ch=t12Sh([...s]);
-    return {...base,q,ans,choices:ch,hint:'Se på enerne',say:`${q} ${ch[0]}, ${ch[1]} eller ${ch[2]}?`,x:{w}};}
+    // why: sjekk tallet barnet valgte (siste siffer, eller sokker i par for små tall)
+    const why={},whyV={};ch.forEach(d=>{if(d===ans)return;why[d]=d<10?`Kan ${d} deles likt i to?`:`${d} slutter på ${d%10}. Er ${d%10} et ${w}?`;if(d<=20)whyV[d]={kind:'pairs',n:d,gap:true};});
+    return {...base,q,ans,choices:ch,hint:'Se på enerne',say:`${q} ${ch[0]}, ${ch[1]} eller ${ch[2]}?`,why,whyV,x:{w}};}
   if(t==='o2s'){const ev=Math.random()<.5,truth=Math.random()<.5;let n;do{n=t12R(21,99);}while((n%2===0)!==(ev===truth));const w=ev?'partall':'oddetall',q=`Er ${n} et ${w}?`;
     return {...base,q,ans:truth?'Ja':'Nei',choices:['Ja','Nei'],hint:'Se på enerne',say:q,x:{n,w}};}
   if(t==='o2r'){const odd=Math.random()<.5,mx=[12,30,60][L];let s0=t12R(odd?1:2,mx);if(s0%2!==(odd?1:0))s0++;
     const ts=[0,1,2,3].map(i=>s0+2*i),mi=L?t12P([1,2,3,3]):3,ans=ts[mi];ts[mi]='?';const seq=ts.join(', '),w=odd?'oddetall':'partall';
-    const o={...base,q:seq,ans,hint:'Hopp 2 hver gang',x:{w,prev:mi?ans-2:ans+2,mi}};
+    const o={...base,q:seq,ans,hint:'Hopp 2 hver gang',x:{w,prev:mi?ans-2:ans+2,mi},
+      hv:{kind:'line',from:Math.max(0,s0-2),to:s0+8,step:2,start:s0,hops:[2,2,2],hopLab:['+2','+2','+2'],hide:[ans]}}; // bilde til hintet: hopp på tallinja
     return t12Story(o,`🐸 Frosken hopper på ${w}: ${seq}`,`Frosken hopper på ${w}. Hvilket tall mangler? ${seq.replace('?','hva')}?`);}
   const n=2*t12R(2,L?10:6),[E,,nn]=t12P(T12_FOOD),o={...base,q:`${n} : 2 = ?`,ans:n/2,hint:'Gi én og én',ops:{a:n,b:2,op:':'},x:{n}};
   return t12Story(o,`Del ${n} ${E} likt på 2 barn. Hvor mange får hvert barn?`,`Del ${n} ${nn} likt på 2 barn. Hvor mange får hvert barn?`);
@@ -339,10 +392,10 @@ function t12FbEven2(q,g,c,qd){
   const split=n=>n%2?`${n} = ${(n-1)/2} + ${(n+1)/2}. Det blir ikke likt.`:`${n} = ${n/2} + ${n/2}. Likt!`;
   if(d.sub==='o2b')return `<strong>${c}</strong>. 💡 ${x.n%2?'Én sokk blir alene.':'Alle sokkene har en makker.'}`;
   if(d.sub==='o2n')return `<strong>${c}</strong>. 💡 ${split(x.n)}`;
-  if(d.sub==='o2f')return `<strong>${c}</strong> er et ${x.w}. 💡 ${x.w==='partall'?'Partall slutter på 0, 2, 4, 6 eller 8.':'Oddetall slutter på 1, 3, 5, 7 eller 9.'}`;
+  if(d.sub==='o2f')return c<10?`<strong>${c}</strong> er et ${x.w}. 💡 ${split(c)}`:`<strong>${c}</strong> slutter på ${c%10}. 💡 Da er det et ${x.w}.`;
   if(d.sub==='o2s')return `<strong>${c}</strong>. ${x.n} slutter på ${x.n%10}, så ${x.n} er et ${t12Par(x.n).toLowerCase()}.`;
-  if(d.sub==='o2r')return `${t12Warm(g,c)} Svaret er <strong>${c}</strong>. 💡 ${x.mi?`${x.prev} + 2 = ${c}.`:`${c} + 2 = ${x.prev}.`}`;
-  return `${t12Warm(g,c)} Hvert barn får <strong>${c}</strong>. 💡 ${c} + ${c} = ${x.n}.`;
+  if(d.sub==='o2r')return t12J(t12Warm(g,c),`Svaret er <strong>${c}</strong>. 💡 ${x.mi?`${x.prev} + 2 = ${c}.`:`${c} + 2 = ${x.prev}.`}`);
+  return t12J(t12Warm(g,c),`Hvert barn får <strong>${c}</strong>. 💡 ${c} + ${c} = ${x.n}.`);
 }
 
 // ============================================================
@@ -362,32 +415,37 @@ function t12GenMoney2(g,id){
   const L=t12Lvl(g,id),t=t12Pick(g,id,{m2c:[5,3,2],m2n:[2,2,2],m2i:[2,3,3],m2s:[2,2,2],m2m:[0,1,2],m2f:[0,2,2]},L),T='Penger',base={type:T,sub:t,strat:'penger'};
   const [E,N]=t12P(T12_SHOP);
   if(t==='m2c'){const c=t12CoinSet(L),s=t12Sum(c),ans=`${s} kr`,mn=Math.min(...c);
-    return {...base,q:'Hvor mange kroner?',ans,choices:t12Choices(ans,[c.length!==s?`${c.length} kr`:null,`${s-mn} kr`,`${s+10} kr`,`${s+5} kr`].filter(x=>x!=='0 kr'),3),hint:'Tell de store myntene først',say:'Hvor mange kroner er det til sammen?',vis:{kind:'coins',c},x:{c,s}};}
+    const o={...base,q:'Hvor mange kroner?',ans,choices:t12Choices(ans,[c.length!==s?`${c.length} kr`:null,`${s-mn} kr`,`${s+10} kr`,`${s+5} kr`].filter(x=>x!=='0 kr'),3),hint:'Tell de store myntene først',say:'Hvor mange kroner er det til sammen?',vis:{kind:'coins',c},x:{c,s},why:{},whyM:{}};
+    // why: talte mynter (ikke verdi), glemte en mynt, eller talte feil
+    [[`${c.length} kr`,'Se på tallet på hver mynt.','mynt'],[`${s-mn} kr`,'Har du med alle myntene? Pek på hver.'],[`${s+10} kr`,'Start med den største mynten. Tell videre.'],[`${s+5} kr`,'Start med den største mynten. Tell videre.']]
+      .forEach(([k,txt,mis])=>{if(k===ans||o.why[k]||!o.choices.includes(k))return;o.why[k]=txt;if(mis)o.whyM[k]=mis;});
+    return o;}
   if(t==='m2n'){const c=t12CoinSet(L),s=t12Sum(c),truth=Math.random()<.5,p=truth?t12R(Math.max(2,s-5),s):t12R(s+1,s+5);
     return {...base,q:`${E} koster ${p} kr. Har du nok?`,ans:truth?'Ja':'Nei',choices:['Ja','Nei'],hint:'Tell pengene dine først',say:`${t12Cap(N)} koster ${t12Kr(p)}. Har du nok penger?`,vis:{kind:'coins',c},x:{s,p}};}
   if(t==='m2f'){
     const den=[20,10,5,1],mk=()=>t12CoinMix(L>1?50:30,den,3),ok=mk(),A=t12Sum(ok),seen=new Set([ok.join(' + ')]),ds=[];
     for(let n=0;n<40&&ds.length<2;n++){const w=ok.slice(),i=t12R(0,w.length-1);w[i]=t12P(den.filter(v=>v!==w[i]));w.sort((a,b)=>b-a);const s=w.join(' + ');if(t12Sum(w)!==A&&!seen.has(s)){seen.add(s);ds.push(s);}}
     for(const w of [[...ok,1],ok.slice(1),[...ok,5]]){if(ds.length>=2)break;w.sort((a,b)=>b-a);const s=w.join(' + ');if(w.length>=1&&t12Sum(w)!==A&&!seen.has(s)){seen.add(s);ds.push(s);}}
-    const ans=ok.join(' + ');
-    return {...base,q:`Hvilke mynter blir ${A} kr?`,ans,choices:t12Sh([ans,...ds.slice(0,2)]),hint:'Legg sammen myntene',say:`Hvilke mynter blir ${t12Kr(A)} til sammen?`,x:{A}};}
+    const ans=ok.join(' + '),why={},whyV={};
+    ds.slice(0,2).forEach(s=>{const cs=s.split(' + ').map(Number);why[s]=`${s} blir ${t12Sum(cs)} kr. Vi trenger ${A}.`;whyV[s]={kind:'coins',c:cs};});
+    return {...base,q:`Hvilke mynter blir ${A} kr?`,ans,choices:t12Sh([ans,...ds.slice(0,2)]),hint:'Legg sammen myntene',say:`Hvilke mynter blir ${t12Kr(A)} til sammen?`,why,whyV,x:{A}};}
   if(t==='m2i'){const pc=[[10],[20],t12P([[20,10],[20,20,10]])][L],pay=t12Sum(pc),p=t12R(L?Math.max(3,pay-19):2,pay-1);
     const o={...base,q:`${pay} - ${p} = ?`,ans:pay-p,hint:`Tell fra ${p} opp til ${pay}`,ops:{a:pay,b:p,op:'-'},x:{pay,p}};
     t12Story(o,`Du betaler ${pay} kr. ${E} koster ${p} kr. Hvor mye får du igjen?`,`Du betaler ${t12Kr(pay)}. ${t12Cap(N)} koster ${t12Kr(p)}. Hvor mye får du igjen?`);o.vis={kind:'coins',c:pc};return o;}
   if(t==='m2s'){const mx=[20,50,99][L],p1=t12R(2,mx-2),p2=t12R(2,Math.max(2,Math.min(mx-p1,L?40:10)));let [E2,N2]=t12P(T12_SHOP);while(E2===E)[E2,N2]=t12P(T12_SHOP);
     const o={...base,q:`${p1} + ${p2} = ?`,ans:p1+p2,hint:'Legg sammen prisene',ops:{a:p1,b:p2,op:'+'},x:{p1,p2}};
     return t12Story(o,`${E} koster ${p1} kr. ${E2} koster ${p2} kr. Hvor mye til sammen?`,`${t12Cap(N)} koster ${t12Kr(p1)}. ${t12Cap(N2)} koster ${t12Kr(p2)}. Hvor mye koster de til sammen?`);}
-  const p=t12R(L>1?20:8,L>1?99:50),h=t12R(Math.max(2,p-(L>1?40:15)),p-1),o={...base,q:`${h} + ? = ${p}`,ans:p-h,hint:`Tell fra ${h} opp til ${p}`,ops:{a:h,b:p-h,op:'+'},x:{h,p}};
+  const p=t12R(L>1?20:8,L>1?99:50),h=t12R(Math.max(2,p-(L>1?40:15)),p-1),o={...base,q:`${h} + ? = ${p}`,ans:p-h,hint:`Tell fra ${h} opp til ${p}`,ops:{a:h,b:p-h,op:'+',unk:'b'},x:{h,p}};
   return t12Story(o,`Du har ${h} kr. ${E} koster ${p} kr. Hvor mye mangler du?`,`Du har ${t12Kr(h)}. ${t12Cap(N)} koster ${t12Kr(p)}. Hvor mye mangler du?`);
 }
 function t12FbMoney2(q,g,c,qd){
   const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
-  if(d.sub==='m2c'){let r=0;const run=x.c.map(v=>r+=v);return `${String(g)===`${x.c.length} kr`?'Se på tallet på myntene! ':''}Det er <strong>${c}</strong>. 💡 Tell: ${run.join(', ')}.`;}
+  if(d.sub==='m2c'){let r=0;const run=x.c.map(v=>r+=v);return String(g)===`${x.c.length} kr`?`Det er <strong>${c}</strong>. 💡 Se på tallet på hver mynt!`:`Det er <strong>${c}</strong>. 💡 Tell: ${run.join(', ')}.`;}
   if(d.sub==='m2n')return c==='Ja'?`<strong>Ja</strong>! Du har ${x.s} kr. Det holder til ${x.p} kr.`:`<strong>Nei</strong>. Du har ${x.s} kr, men trenger ${x.p} kr.`;
   if(d.sub==='m2f')return `<strong>${c}</strong> blir ${x.A} kr.`;
-  if(d.sub==='m2i')return `${t12Warm(g,c)} Du får <strong>${c}</strong> kr igjen. 💡 Fra ${x.p} til ${x.pay} er ${c}.`;
-  if(d.sub==='m2s')return `${t12Warm(g,c)} ${x.p1} + ${x.p2} = <strong>${c}</strong> kr. 💡 ${x.p1>=10&&x.p2>=10?'Tiere først, så enere.':`Tell videre fra ${Math.max(x.p1,x.p2)}.`}`;
-  return `${t12Warm(g,c)} Du mangler <strong>${c}</strong> kr. 💡 ${x.h} + ${c} = ${x.p}.`;
+  if(d.sub==='m2i')return t12J(t12Warm(g,c),`Du får <strong>${c}</strong> kr igjen. 💡 Fra ${x.p} til ${x.pay} er ${c}.`);
+  if(d.sub==='m2s')return t12J(t12Warm(g,c),`${x.p1} + ${x.p2} = <strong>${c}</strong> kr. 💡 ${x.p1>=10&&x.p2>=10?'Tiere først, så enere.':`Tell videre fra ${Math.max(x.p1,x.p2)}.`}`);
+  return t12J(t12Warm(g,c),`Du mangler <strong>${c}</strong> kr. 💡 ${x.h} + ${c} = ${x.p}.`);
 }
 
 // ============================================================
@@ -432,7 +490,7 @@ function mhMiniFb(qd,given){
   const m=qd&&qd.mini;if(!m||typeof m!=='object')return '';
   if(m.kind==='tf')return m.truth?`<strong>Ja</strong>, det stemmer: ${m.e} ${m.is} ${m.v}.`:`<strong>Nei</strong>. ${m.e} ${m.is} ${m.v}, ikke ${m.sh}.`;
   const big=m.a.v>m.b.v?m.a:m.b,sm=big===m.a?m.b:m.a,val=x=>x.e===String(x.v)?x.e:`${x.e} ${/av/.test(x.e)?'er':'='} ${x.v}`;
-  return `<strong>${big.e}</strong> er størst. ${val(big)}, og ${val(sm)}. 💡 ${big.v} er mer enn ${sm.v}.`;
+  return `${val(big)} og ${val(sm)}. 💡 <strong>${big.e}</strong> er størst.`; // ≤ 12 ord
 }
 
 // ============================================================

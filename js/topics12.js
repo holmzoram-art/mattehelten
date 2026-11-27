@@ -508,6 +508,11 @@ const T12_TOPICS={
      {id:'money2',icon:'🪙',bg:'rgba(255,217,61,.2)',name:'Penger',desc:'Mynter, priser og penger igjen',gen:t12Keyed(t12GenMoney2),fb:t12FbMoney2}],
 };
 const T12_ORDER={1:['add10','sub10','ten1','cmp1','seq1','eq1','add20','sub20','clock1'],2:['place2','add100','sub100','miss2','even2','money2','dbl2','mul25']};
+// Bølge 3 (C2): Mønster (valgfritt), Tallinja (teller for bossen) og Tell til 100 (valgfritt). Generatorene står nederst i fila.
+T12_TOPICS[1].push({id:'pat1',icon:'🧩',bg:'rgba(255,159,67,.2)',name:'Mønster',desc:'Hva kommer nå?',optional:true,gen:t12Keyed(t12GenPat1),fb:t12FbPat1});
+T12_TOPICS[2].push({id:'line2',icon:'📏',bg:'rgba(6,214,255,.2)',name:'Tallinja',desc:'Hvor peker pilen?',gen:t12Keyed(t12GenLine2),fb:t12FbLine2},
+  {id:'count2',icon:'💯',bg:'rgba(0,255,136,.2)',name:'Tell til 100',desc:'Tell forbi tierne, fram og tilbake',optional:true,gen:t12Keyed(t12GenCount2),fb:t12FbCount2});
+T12_ORDER[1].splice(T12_ORDER[1].indexOf('cmp1')+1,0,'pat1');T12_ORDER[2].splice(T12_ORDER[2].indexOf('place2')+1,0,'line2','count2');
 window.EXTRA_SUBS=Object.assign(window.EXTRA_SUBS||{},{
   s20t:'Minus via hel tier (17 − 7)',s20n:'Minus uten tierovergang (17 − 4)',s20o:'Minus med tierovergang (13 − 5)',s20d:'Minus med dobling (14 − 7)',
   c1m:'Hvem har flest?',c1n:'Størst av tall til 10',c1t:'Størst av tall til 20',c1s:'Minst av tallene',c1j:'Større enn og mindre enn',c1d:'Hvor mange flere?',
@@ -609,4 +614,253 @@ window.EXTRA_SUBS=Object.assign(window.EXTRA_SUBS||{},{
   },later=()=>{clearTimeout(tm);tm=setTimeout(check,200);};
   window.addEventListener('resize',later);
   const w=typeof ResizeObserver==='function'&&document.getElementById('topic-map-wrap');if(w)new ResizeObserver(later).observe(w); // også når bare kartets bredde endres
+})();
+
+// ============================================================
+// BØLGE 3 (C2): MØNSTER (pat1, 1. kl.), TALLINJA (line2, 2. kl.), TELL TIL 100 (count2, 2. kl.) – LK20 etter 2. trinn
+// Globale navn: t12Gen*/t12Fb* (Pat1, Line2, Count2), t12Opts, t12PatGrow, t12PatWords, t12Near, t12Rev, t12NlX, T12_PAT_SETS,
+// window.VIS.{pattern,grow,nline,hop,board}. Valgoppgaver har qd.why = {'<valg>':'<kort hint for akkurat den feilen>'}.
+// ============================================================
+// Fasit + distraktorer med hint. cands = [[verdi, hint], …] i prioritert rekkefølge (null hoppes over)
+// cands = [[verdi, hint, feiltype?], …]; feiltypen (navn i MISC_NAMES) havner i whyM til statistikken
+function t12Opts(ans,cands,n){
+  const ch=t12Choices(ans,cands.map(c=>c[0]),n),why={},whyM={};
+  ch.forEach(c=>{if(String(c)===String(ans))return;const f=cands.find(x=>x[0]!=null&&String(x[0])===String(c));if(f){why[String(c)]=f[1];if(f[2])whyM[String(c)]=f[2];}});
+  return {choices:ch,why,whyM};
+}
+// Samme bilde til alle why-hint (whyV)
+function t12WhyV(why,v){const o={};Object.keys(why).forEach(k=>o[k]=v);return o;}
+function t12Nb(s){return String(s).replace(/ /g,' ');} // tallrekka brytes ikke midt i (etter «Frosken hopper:»)
+function t12Near(lab,n){return lab.reduce((a,b)=>Math.abs(b-n)<Math.abs(a-n)?b:a);}
+function t12Rev(n){const t=Math.floor(n/10),o=n%10;return n>=10&&n<100&&o&&t!==o?10*o+t:null;} // snudde sifre (34 → 43)
+// Tell fra et merket tall til n: «Fra 40: 41, 42, 43.»
+function t12CntFrom(lb,n){const k=Math.abs(n-lb);return `Fra ${lb}: ${t12Cnt(lb,n>lb?1:-1,k)}.`;}
+
+// ---- Bilder ----
+// Mønster: {items:[emoji | null = ?], g: lengde på biten (farger annenhver bit, brukes i Lær)}
+window.VIS.pattern=v=>`<div class="t12-pat" role="img" aria-label="Mønster">${(v.items||[]).map((e,i)=>e?`<span class="t12-pat-it${v.g&&Math.floor(i/v.g)%2?' alt':''}" style="--d:${i*60}ms">${e}</span>`:'<span class="t12-pat-it t12-pat-q">?</span>').join('')}</div>`;
+// Voksende mønster: tårn med n klosser i rader på w, nederst først. {n:[…], w, c:'b'|'o'|'g', q:true = tomt tårn med ?}
+window.VIS.grow=v=>{
+  const w=Math.max(1,v.w|0),fig=n=>{let h='';for(let r=0;r*w<n;r++)h+=`<span class="t12-gr-row">${'<i></i>'.repeat(Math.min(w,n-r*w))}</span>`;return h;};
+  return `<div class="t12-grow t12-g-${v.c||'b'}" role="img" aria-label="Tårn som vokser">${(v.n||[]).map(n=>`<div class="t12-gr-fig"><div class="t12-gr-st">${fig(n|0)}</div><div class="t12-gr-n">${n|0}</div></div>`).join('')}${v.q?'<div class="t12-gr-fig"><div class="t12-gr-st t12-gr-q">?</div><div class="t12-gr-n">?</div></div>':''}</div>`;
+};
+// Tallinje til å lese av: {from, to, step, lab:[tall som står], mid (lang strek hver mid), arrow:tall, marks:[{n,tag}], empty:true = tom tallinje}
+function t12NlX(from,to,n){return t12Num(24+(n-from)/(to-from)*292);}
+window.VIS.nline=v=>{
+  const from=+v.from||0,to=+v.to||10,st=+v.step||1,X=n=>t12NlX(from,to,n),lab=(v.lab||[from,to]).map(Number);
+  // merker som står tett, settes annenhver høyere (to etasjer)
+  const ms=(v.marks||[]).map(m=>({n:+m.n,tag:m.tag})).sort((a,b)=>a.n-b.n);let px=-1e9,lv=0;ms.forEach(m=>{const x=X(m.n);lv=x-px<34?1-lv:0;px=x;m.lv=lv;});
+  const Y=ms.some(m=>m.lv)?102:v.marks?78:64,H=Y+42;
+  let s=`<svg class="t12-nl" viewBox="0 0 340 ${H}" role="img" aria-label="Tallinje fra ${from} til ${to}"><line class="t12-nl-ax" x1="8" y1="${Y}" x2="328" y2="${Y}"/><path class="t12-nl-end" d="M327 ${Y-7} L338 ${Y} L327 ${Y+7} Z"/>`;
+  const tk=v.empty?lab.slice():Array.from({length:Math.round((to-from)/st)+1},(_,i)=>from+i*st);
+  tk.forEach(n=>{const big=lab.includes(n)||(v.mid&&(n-from)%v.mid===0),h=big?13:8;s+=`<line class="t12-nl-tk${big?' big':''}" x1="${X(n)}" y1="${Y-h}" x2="${X(n)}" y2="${Y+h}"/>`;});
+  lab.forEach(n=>{s+=`<text class="t12-nl-n" x="${X(n)}" y="${Y+30}">${n}</text>`;});
+  ms.forEach(m=>{const up=m.lv*26;s+=`<g class="t12-nl-mk" transform="translate(${X(m.n)} 0)"><line x1="0" y1="${Y-30-up}" x2="0" y2="${Y-3}"/><text class="t12-nl-tag" x="0" y="${Y-46-up}">${m.tag}</text></g>`;});
+  if(v.arrow!=null)s+=`<g class="t12-nl-ar" transform="translate(${X(+v.arrow)} 0)"><path d="M-6 ${Y-52} h12 v24 h9 L0 ${Y-8} L-15 ${Y-28} h9 Z"/></g>`;
+  return `<div class="t12-nl-wrap">${s}</svg></div>`;
+};
+// Hopp på tom tallinje i oppgaven: VIS.line (vis.js) i en egen ramme, så den blir stor nok i oppgavekortet
+window.VIS.hop=v=>{const f=window.VIS.line;return typeof f==='function'?`<div class="t12-hop">${f(Object.assign({},v,{kind:'line'}))}</div>`:'';};
+// Utsnitt av hundrebrettet: {r0 (første tierrad, 0 = 1–10), c0 (første kolonne 1–10), rows, cols, hide: tall som vises som ?, hl:[tall som utheves]}
+window.VIS.board=v=>{
+  const r0=v.r0|0,c0=v.c0|0||1,R=v.rows||3,C=v.cols||5,hl=v.hl||[];let h='';
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++){const n=10*(r0+r)+c0+c;h+=n===v.hide?'<span class="t12-bd-c t12-bd-q">?</span>':`<span class="t12-bd-c${hl.includes(n)?' hl':''}">${n}</span>`;}
+  return `<div class="t12-bd" style="--cols:${C}" role="img" aria-label="Hundrebrett">${h}</div>`;
+};
+
+// ============================================================
+// TEMA: MØNSTER (pat1) – gjentakende mønstre (AB, ABB, AAB, ABC, AABB) og voksende mønstre
+// ============================================================
+// Ting i mønstrene: [emoji, ord i opplesing, bestemt form («etter katten», «Katten er ikke med»)]
+const T12_PAT_SETS=[
+  [['🔴','rød','rød'],['🔵','blå','blå'],['🟢','grønn','grønn'],['🟡','gul','gul']],
+  [['🐶','hund','hunden'],['🐱','katt','katten'],['🐰','kanin','kaninen'],['🐸','frosk','frosken']],
+  [['🍎','eple','eplet'],['🍌','banan','bananen'],['🍇','drue','druen'],['🍓','jordbær','jordbæret']],
+  [['💛','gul','det gule hjertet'],['💙','blå','det blå hjertet'],['💚','grønn','det grønne hjertet'],['💜','lilla','det lilla hjertet']],
+];
+function t12PatWords(items){return items.map(x=>x[1]).join(', ');}
+// Tårn som vokser like mye hver gang (tall-tastatur). [start, økning] per nivå – startene gir tallinje-hint med riktige streker.
+function t12PatGrow(L,base){
+  const [s0,d]=t12P([[[1,1],[2,1]],[[1,1],[3,1],[2,2]],[[2,2],[3,2],[3,3],[4,3]]][L]),ns=[0,1,2].map(i=>s0+i*d),seq=`${ns.join(', ')}, ?`,[E,c]=t12P([['🟦','b'],['🟧','o'],['🟩','g']]);
+  const o={...base,q:seq,ans:s0+3*d,hint:'Hvor mange flere hver gang?',ops:{op:'seq',a:s0,b:d,i:3},vis:{kind:'grow',n:ns,w:d,c,q:true},x:{last:ns[2],d}};
+  return t12Story(o,`${E} Tårnene vokser: ${t12Nb(seq)}`,`Tårnene vokser: ${ns.join(', ')}. Hvor mange klosser blir det i neste tårn?`);
+}
+function t12GenPat1(g,id){
+  const L=t12Lvl(g,id),t=t12Pick(g,id,{m1a:[4,2,1],m1b:[1,3,3],m1m:[1,2,2],m1t:[0,1,2],m1k:[0,0,2],m1v:[3,2,2]},L),base={type:'Mønster',sub:t,strat:t==='m1v'?'voksende':'gjenta'};
+  if(t==='m1v')return t12PatGrow(L,base);
+  const set=t12Sh(t12P(T12_PAT_SETS).slice()),kinds={m1a:['AB'],m1b:L>1?['ABB','AAB','ABC','AABB']:['ABB','AAB','ABC'],m1m:L>1?['AB','ABB','AAB','ABC','AABB']:L?['AB','ABB','ABC']:['AB'],m1t:['AB','ABB','AAB','ABC'],m1k:['ABB','AAB','ABC']}[t];
+  const kind=t12P(kinds),core=kind.split('').map(c=>set['ABC'.indexOf(c)]),p=core.length,nd=new Set(kind).size,uniq=nd===p,extra=set[nd],E=x=>x[0],at=i=>core[i%p];
+  const list=items=>items.map(x=>x?x[1]:'hva').join(', '),x={cw:t12PatWords(core)};
+  if(t==='m1k'){ // hvilken bit gjentar seg? To hele runder vises
+    const items=Array.from({length:2*p},(_,i)=>at(i)),ans=core.map(E).join(''),A=core[0],B=core[1],C=core[2];
+    const {choices,why}=t12Opts(ans,t12Sh([[E(A)+E(B),'Prøv biten bortover. Passer den hele veien?'],[ans+E(A),'Se etter hvor mønsteret starter på nytt.'],
+      uniq?[E(A)+E(C)+E(B),'Se på rekkefølgen i mønsteret.']:[kind==='ABB'?E(A)+E(A)+E(C):E(A)+E(C)+E(C),'Tell hvor mange like som står etter hverandre.']]),3);
+    return {...base,q:'Hvilken bit gjentar seg?',ans,choices,why,hint:'Hva kommer igjen og igjen?',say:`Se på mønsteret: ${list(items)}. Hvilken bit gjentar seg?`,vis:{kind:'pattern',items:items.map(E)},key:`${t}|${ans}`,x:{...x,aw:x.cw}};
+  }
+  // hva kommer nå (m1a, m1b), hva mangler (m1m), hvilke to kommer nå (m1t)
+  const len=t==='m1a'?(L?t12R(6,8):6):t==='m1t'?7:8,gaps=t==='m1m'?[t12R(2,len-2)]:t==='m1t'?[len-2,len-1]:[len-1];
+  const items=Array.from({length:len},(_,i)=>gaps.includes(i)?null:at(i)),ai=gaps.map(at),ans=ai.map(E).join(''),prev=at(gaps[0]-1);
+  const wIn=uniq?`Hva kommer etter ${prev[2]} hver gang?`:'Tell hvor mange like som står etter hverandre.',wNew=`${t12Cap(extra[2])} er ikke med i mønsteret.`;
+  const cands=t==='m1t'?[[E(ai[1])+E(ai[0]),'Se på rekkefølgen: hva kommer først?'],[E(core[0])+E(core[1]),'Mønsteret fortsetter der det slapp.'],[E(prev)+E(prev),wIn],[E(ai[0])+E(extra),wNew]]
+    :[...t12Sh(core.filter(c=>c!==ai[0]).map(c=>[E(c),wIn])),[E(extra),wNew]];
+  const {choices,why}=t12Opts(ans,cands,3),q=t==='m1m'?'Hva mangler?':t==='m1t'?'Hvilke to kommer nå?':'Hva kommer nå?',pv={kind:'pattern',items:items.map(c=>c&&E(c))};
+  const known=t==='m1m'?items:items.filter(Boolean);
+  return {...base,q,ans,choices,why,hint:t==='m1m'?'Se på det som står rundt':'Si mønsteret høyt',say:`Se på mønsteret: ${list(known)}. ${q}`,vis:pv,whyV:t12WhyV(why,{...pv,g:p}),key:`${t}|${items.map(c=>c?E(c):'?').join('')}`,x:{...x,aw:t12PatWords(ai)}};
+}
+function t12FbPat1(q,g,c,qd){
+  const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
+  if(d.sub==='m1v')return `${x.last} + ${x.d} = <strong>${c}</strong>. 💡 ${x.d===1?'1 kloss':`${x.d} klosser`} til hver gang.`;
+  if(d.sub==='m1k')return `Biten er <strong>${c}</strong>: ${x.cw}. 💡 Den kommer igjen og igjen.`;
+  return `Det er <strong>${c}</strong> ${x.aw}. 💡 ${t12Cap(x.cw)} gjentar seg.`;
+}
+
+// ============================================================
+// TEMA: TALLINJA (line2) – les av tallinja 0–100, finn tallet, tom tallinje og hopp
+// ============================================================
+function t12GenLine2(g,id){
+  const L=t12Lvl(g,id),t=t12Pick(g,id,{n2b:[4,1,0],n2a:[2,3,1],n2c:[0,3,3],n2p:[1,2,3],n2t:[0,1,3],n2h:[2,2,2]},L);
+  const base={type:'Tallinja',sub:t,strat:t==='n2t'||t==='n2h'?'tom-tallinje':'tallinje'},Q='Hvilket tall peker pilen på?',SAY='Se på tallinja. Hvilket tall peker pilen på?';
+  const W1='Tell strekene én og én fra et tall.',WR='Tallene blir større mot høyre.',WT='Tierne skrives først.',W10='Tell tiere: ti, tjue, tretti …',d1=Math.random()<.5?1:-1;
+  // Tall som står skrevet på linja er ingen ekte felle, så de tas ikke med som valg
+  const read=(n,cands,vis,hint,tip)=>{const {choices,why,whyM}=t12Opts(n,cands.filter(c=>!vis.lab.includes(c[0])),L>1?4:3),st=vis.step||1,nb=t12Near(vis.lab,n),k=Math.abs(n-nb)/st,dr=n>nb?st:-st;
+    const help=Object.assign({kind:'nline'},vis,{arrow:n,lab:vis.lab.concat(Array.from({length:Math.max(0,k-2)},(_,j)=>nb+dr*(j+1)))}); // tall på strekene fram mot pilen, men ikke helt
+    return {...base,q:Q,ans:n,choices,why,whyM,whyV:t12WhyV(why,help),hint,say:SAY,vis:Object.assign({kind:'nline'},vis,{arrow:n}),key:`${t}|${vis.from}-${vis.to}|${vis.lab}|${n}`,x:{tip}};};
+  if(t==='n2b'){ // 0–20 med en strek for hvert tall
+    const lab=L?[0,10,20]:[0,5,10,15,20];let n;do{n=t12R(1,19);}while(lab.includes(n));
+    return read(n,[[n+d1,W1,'en'],[n<10?n+10:n-10,n<10?'Se om pilen er før eller etter ti.':'Husk tieren! Pilen er forbi ti.','ti'],[n-d1,W1,'en'],[20-n,WR]],{from:0,to:20,step:1,lab,mid:5},'Tell strekene fra et tall',t12CntFrom(t12Near(lab,n),n));
+  }
+  if(t==='n2a'){ // 0–100 med en strek for hver tier
+    const lab=[[0,20,40,60,80,100],[0,50,100],[0,100]][L];let n;do{n=10*t12R(1,9);}while(lab.includes(n));
+    const nb=t12Near(lab,n),k=Math.abs(n-nb)/10;
+    return read(n,[[n/10,'Hver strek er ti, ikke én.','plass'],[n+10*d1,W10,'ti'],[100-n,WR],[n-10*d1,W10,'ti'],[n+20*d1,W10],[n-20*d1,W10]],{from:0,to:100,step:10,lab},'Tell tierne fra et tall',k<=3?`Fra ${nb}: ${t12Cnt(nb,n>nb?10:-10,k)}.`:'Hver strek er 10.');
+  }
+  if(t==='n2c'){ // mellom to tiere: 40–50
+    const a0=10*t12R(1,L>1?9:8);let k;do{k=t12R(1,9);}while(L<2&&k===5);const n=a0+k,lab=L>1?[a0,a0+10]:[a0,a0+5,a0+10];
+    return read(n,[[k,'Du glemte tierne. Se på tallet til venstre.','plass'],[n+d1,W1,'en'],[a0+10-k,WR],[t12Rev(n),WT,'snudd'],[n-d1,W1,'en']],{from:a0,to:a0+10,step:1,lab,mid:5},'Tell strekene fra et tall',t12CntFrom(t12Near(lab,n),n));
+  }
+  if(t==='n2t'){ // tom tallinje: omtrent hvor?
+    const n=L<2?50:t12P([10,25,50,75,90]),cs=L<2?t12P([[10,90],[20,80]]):{10:[50,90],25:[75,50],50:[25,75],75:[25,50],90:[50,10]}[n],WE='Er pilen nær starten, midt på eller nær slutten?';
+    const {choices,why}=t12Opts(n,cs.map(c=>[c,c===100-n?WR:WE]),3),whyV=t12WhyV(why,{kind:'nline',from:0,to:100,lab:n===50?[0,25,75,100]:[0,50,100],empty:true,arrow:n});
+    const tip=n===50?'Midt mellom 0 og 100.':n===25?'Midt mellom 0 og 50.':n===75?'Midt mellom 50 og 100.':n<50?'Like etter 0.':'Like før 100.';
+    return {...base,q:'Omtrent hvilket tall peker pilen på?',ans:n,choices,why,whyV,hint:'Er den nær starten eller slutten?',say:'Tallinja går fra 0 til 100. Omtrent hvilket tall peker pilen på?',vis:{kind:'nline',from:0,to:100,lab:[0,100],empty:true,arrow:n},key:`n2t|${n}`,x:{tip}};
+  }
+  if(t==='n2p'){ // hvor er tallet? Tre merker – velg riktig farge
+    let n,v,ds,gap=1;
+    if(L===0){do{n=t12R(1,9);}while(n===5);v={from:0,to:10,step:1,lab:[0,5,10],mid:5};ds=[[n+d1,'tell'],[n-d1,'tell'],[10-n,'mir']];}
+    else if(L===1){const a0=10*t12R(1,8);let k;do{k=t12R(1,9);}while(k===5);n=a0+k;v={from:a0,to:a0+10,step:1,lab:[a0,a0+5,a0+10],mid:5};ds=[[n+d1,'tell'],[a0+10-k,'mir'],[n-d1,'tell']];}
+    else{do{n=5*t12R(1,19);}while(n===50);v={from:0,to:100,step:10,lab:[0,50,100]};ds=[[t12Rev(n),'rev'],...t12Sh([[n+10,'ti'],[n-10,'ti'],[n%10?null:n/10,'en'],[100-n,'mir']])];gap=9;}
+    const pos=[n],kind={};
+    for(const [p,k] of ds){if(pos.length>=3)break;if(p==null||p<v.from||p>v.to||v.lab.includes(p)||pos.some(q=>Math.abs(q-p)<gap))continue;pos.push(p);kind[p]=k;}
+    const ps=t12Sh(pos.slice()),marks=ps.map((p,i)=>({n:p,tag:T12_TAGS[i]})),CW=['rød','blå','grønn'],ai=ps.indexOf(n),ans=T12_TAGS[ai],why={},whyM={},whyV={},MM={tell:'en',ti:'ti',rev:'snudd',en:'plass'};
+    const W={tell:'Tell strekene en gang til.',mir:'Tallene blir større mot høyre.',rev:'Se på tierne først.',ti:'Se på tierne først.',en:'Hver strek er ti.'};
+    marks.forEach(m=>{if(m.n===n)return;why[m.tag]=`Den står på ${m.n}. ${W[kind[m.n]]}`;if(MM[kind[m.n]])whyM[m.tag]=MM[kind[m.n]];
+      whyV[m.tag]=Object.assign({kind:'nline',marks},v,{lab:v.lab.concat([m.n]).sort((a,b)=>a-b)});}); // tallet der barnets merke står
+    const tip=L<2?t12CntFrom(t12Near(v.lab,n),n):n%10?`${n} er midt mellom ${n-5} og ${n+5}.`:'Hver strek er 10.';
+    return {...base,q:`Hvor er ${n}?`,ans,choices:T12_TAGS.slice(),why,whyM,whyV,hint:L<2?'Tell strekene fra et tall':'Se på tierne først',say:`Hvor er ${n} på tallinja? Rød, blå eller grønn?`,vis:Object.assign({kind:'nline',marks},v),key:`n2p|${n}`,x:{n,cw:CW[ai],tip}};
+  }
+  // n2h: hopp på tom tallinje (tall-tastatur)
+  const up=Math.random()<.5,B=[[10],[10,20,1],[20,30,5,2]][L],b=B[t12R(0,B.length-1)];let a;
+  if(b%10===0)a=up?t12R(11,99-b):t12R(b+1,99);
+  else if(b===1)a=up?10*t12R(1,8)+9:10*t12R(2,9);
+  else{do{a=up?t12R(12,98-b):t12R(21,99);}while(up?a%10+b<10:a%10>=b||a%10===0);} // går forbi en tier
+  const c=up?a+b:a-b,op=up?'+':'-',bd=up?c-c%10:a-a%10,dir=up?'fram':'tilbake';
+  const tip=b%10===0?'Bare tierne endres.':b===1?(up?'En ny tier!':'Tieren blir én mindre.'):c%10===0?'Rett på tieren!':`Først ${up?'':'ned '}til ${bd}, så ${Math.abs(c-bd)} til.`;
+  const o={...base,q:`${a} ${op} ${b} = ?`,ans:c,hint:b%10===0?'Bare tierne endres':b===1?`Hva kommer ${up?'etter':'før'}?`:up?'Hopp til neste tier først':'Hopp ned til tieren først',ops:{a,b,op},
+    vis:{kind:'hop',from:Math.min(a,c)-8,to:Math.max(a,c)+8,start:a,hops:[up?b:-b],hopLab:[(up?'+':'−')+b],endLab:'?'},x:{a,b,op,tip}};
+  return t12Story(o,`🦘 Kenguruen står på ${a}. Den hopper ${b} ${dir}. Hvor lander den?`,`Kenguruen står på ${a}. Den hopper ${b} ${dir}. Hvor lander den?`);
+}
+function t12FbLine2(q,g,c,qd){
+  const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
+  if(d.sub==='n2h')return `${x.a} ${x.op} ${x.b} = <strong>${c}</strong>. 💡 ${x.tip}`;
+  if(d.sub==='n2t')return `Omtrent <strong>${c}</strong>. 💡 ${x.tip}`;
+  if(d.sub==='n2p')return `<strong>${c}</strong> ${x.cw} står på ${x.n}. 💡 ${x.tip}`;
+  return `Pilen peker på <strong>${c}</strong>. 💡 ${x.tip}`;
+}
+
+// ============================================================
+// TEMA: TELL TIL 100 (count2) – forlengs og baklengs med 1, 2, 5 og 10 over tierskifter, før/etter, hundrebrettet
+// ============================================================
+function t12GenCount2(g,id){
+  const L=t12Lvl(g,id),t=t12Pick(g,id,{t2f:[5,2,1],t2b:[1,4,3],t2t:[2,3,3],t2s:[0,2,4],t2n:[2,2,2],t2h:[0,2,2]},L),base={type:'Tell til 100',sub:t};
+  if(t==='t2n'){ // hva kommer etter 69 / før 60? (valg)
+    const after=L===0||Math.random()<.5,n=after?10*t12R(1,L?9:8)+9:10*t12R(2,9);
+    const cands=after?[[n-9,'Etter ni enere kommer en ny tier.','ti'],[n+10<=100?n+10:null,'Du gikk en tier fram. Bare ett steg!'],[n-1,'Det kommer før. Etter er ett mer.']]
+      :[[n+9,'Tieren blir én mindre når du teller ned.','ti'],[n-10,'Du gikk en hel tier ned. Bare ett steg!'],[n+1,'Det kommer etter. Før er ett mindre.']];
+    const ans=after?n+1:n-1,{choices,why,whyM}=t12Opts(ans,L<2?[cands[0],...t12Sh(cands.slice(1))]:cands,L>1?4:3),q=`Hva kommer ${after?'etter':'før'} ${n}?`;
+    const whyV=t12WhyV(why,after?{kind:'line',from:n-3,to:n+1,start:n-3,hide:[n+1]}:{kind:'line',from:n-1,to:n+3,start:n+3,hide:[n-1]});
+    return {...base,strat:after?'tierskifte':'tierskifte-bak',q,ans,choices,why,whyM,whyV,hint:after?'Tell ett steg fram':'Tell ett steg bakover',say:q,key:`t2n|${q}`,x:{n,after,tip:after?`${n} + 1 = ${ans}: en ny tier!`:`${n} - 1 = ${ans}: tieren blir én mindre.`}};
+  }
+  if(t==='t2h'){ // hundrebrettet: hvilket tall skjuler seg?
+    const r0=t12R(0,7),c0=t12R(1,6),c=L>1?t12R(c0,c0+4):t12R(c0+1,c0+3),v=10*(r0+1)+c,ud=Math.random()<.5?10:-10,lr=Math.random()<.5?1:-1;
+    const WU='Ett steg ned er en tier mer.',WL='Bortover er det én mer for hvert steg.';
+    const {choices,why,whyM}=t12Opts(v,[[v+ud,WU,'ti'],[v+lr,WL,'en'],[t12Rev(v),'Tierne skrives først.','snudd'],[v-ud,WU,'ti'],[v-lr,WL,'en']],L>1?4:3);
+    const whyV=t12WhyV(why,{kind:'board',r0,c0,rows:3,cols:5,hide:v,hl:[v-10].concat(c>c0?[v-1]:[])}); // naboene over og til venstre
+    return {...base,strat:'hundrebrett',q:'Hvilket tall skjuler seg?',ans:v,choices,why,whyM,whyV,hint:'Se på tallene rundt',say:'Se på hundrebrettet. Hvilket tall skjuler seg bak spørsmålstegnet?',vis:{kind:'board',r0,c0,rows:3,cols:5,hide:v},key:`t2h|${v}`};
+  }
+  // tallrekker med fire tall (tall-tastatur)
+  let s0,b,mi,strat;
+  if(t==='t2f'){const D=10*t12R(2,L?10:9);mi=L===0||D===100?3:t12P(L===1?[3,3,2,1]:[3,2,1,0]);s0=mi?D-mi:D-1;b=1;strat='tierskifte';} // hullet står på tieren (eller rett før den)
+  else if(t==='t2b'){const D=10*t12R(L?2:1,9);mi=L===0?3:t12P([3,3,2,1]);s0=D-1+mi;b=-1;strat='tierskifte-bak';}
+  else if(t==='t2t'){const up=L===0||Math.random()<(L===1?.5:.35),o=t12R(1,9);b=up?10:-10;s0=up?10*t12R(L?0:1,6)+o:10*t12R(3,9)+o;mi=L===0?3:t12P([3,3,2,1,0]);strat='hop10';}
+  else{const five=Math.random()<.5,up=L<2||Math.random()<.5,st=five?5:2,odd=L>1&&Math.random()<.5;b=up?st:-st;
+    if(five)s0=up?5*t12R(2,17):5*t12R(5,20); // svaret er minst 10 (så «hopp 5» ikke er svaret)
+    else do{s0=up?t12R(10,94):t12R(16,100);}while(s0%2!==(odd?1:0)||Math.floor(s0/10)===Math.floor((s0+3*b)/10));
+    mi=L<2?t12P([3,3,2]):t12P([3,2,1,0]);strat=five?'hop5':'hop2';}
+  const ts=[0,1,2,3].map(i=>s0+i*b),ans=ts[mi],nb=mi?ts[mi-1]:ts[1],sb=Math.abs(b),sg=(mi?b>0:b<0)?'+':'-';ts[mi]='?';
+  const seq=ts.join(', '),say=mi===3?`${ts.slice(0,3).join(', ')}. Hvilket tall kommer så?`:`${ts.map(x=>x==='?'?'hva':x).join(', ')}. Hvilket tall mangler?`;
+  const tip=t==='t2f'?(mi?`${ans-1} + 1 = ${ans}: en ny tier!`:`${ans} + 1 = ${ans+1}: en ny tier!`):t==='t2b'?`${ans+1} - 1 = ${ans}: tieren blir én mindre.`:`${nb} ${sg} ${sb} = ${ans}.${sb===10?' Bare tieren endres.':''}`;
+  const hint=sb===1?`Tell én og én ${b>0?'fremover':'bakover'}`:`Hopp ${sb} ${b>0?'fremover':'bakover'}`;
+  const o={...base,strat,q:seq,ans,hint,ops:{op:'seq',a:s0,b,i:mi},say,x:{tip}};
+  if(Math.random()<.35){const [E,lb]=b===-1?['🚀','Nedtelling']:b===1?['🦉','Ugla teller']:['🐸',b>0?'Frosken hopper':'Frosken hopper bakover'];return t12Story(o,`${E} ${lb}: ${t12Nb(seq)}`,`${lb}: ${say}`);}
+  return o;
+}
+function t12FbCount2(q,g,c,qd){
+  const d=t12Q(q,qd);if(!d)return t12Plain(g,c);const x=d.x||{};
+  if(d.sub==='t2n')return `<strong>${c}</strong> kommer ${x.after?'etter':'før'} ${x.n}. 💡 ${x.tip}`;
+  if(d.sub==='t2h')return `Det er <strong>${c}</strong>. 💡 Ned er 10 mer. Bortover er 1 mer.`;
+  return `Svaret er <strong>${c}</strong>. 💡 ${x.tip||''}`.trim();
+}
+
+// ---- Navn på deloppgaver, ingen minioppgaver i de nye temaene, Lær ----
+Object.assign(window.EXTRA_SUBS,{
+  m1a:'Mønster: hva kommer nå?',m1b:'Mønster med tre ting (ABB, ABC)',m1m:'Hva mangler i mønsteret?',m1t:'De to neste i mønsteret',m1k:'Finn biten som gjentar seg',m1v:'Voksende mønster (1, 2, 3)',
+  n2a:'Tallinje med tiere (0–100)',n2b:'Tallinje 0–20',n2c:'Tallinje mellom to tiere (40–50)',n2p:'Finn tallet på tallinja',n2t:'Tom tallinje: omtrent hvor?',n2h:'Hopp på tom tallinje',
+  t2f:'Telle forbi en tier (69, 70)',t2b:'Telle bakover forbi en tier (51, 50, 49)',t2t:'Telle med 10 (23, 33, 43)',t2s:'Telle med 2 og 5',t2n:'Tallet før og etter',t2h:'Hundrebrettet',
+});
+['pat1','line2','count2'].forEach(id=>T12_NOMINI.add(id));
+(function(){
+  if(typeof LEARN_GUIDES!=='object')return;
+  const V=window.VIS,cap=t=>typeof capLine==='function'?capLine(t):`<div class="t12-cap">${t}</div>`,G=t=>typeof grn==='function'?grn(t):t;
+  const W=s=>typeof workedEx==='function'?workedEx(s):s.map(x=>`<div>${x[0]}</div>`).join(''),P=(a,c)=>typeof pills==='function'?pills(a,c):a.join(' · ');
+  const hops=(ts,l,h)=>typeof seqHops==='function'?seqHops(ts,l,h):P(ts.map(String),'#ffd93d');
+  LEARN_GUIDES.pat1=[
+    {icon:'🔁',title:'Et mønster gjentar seg',text:'Rød, blå, rød, blå … Den samme biten kommer igjen og igjen.',visual:V.pattern({items:['🔴','🔵','🔴','🔵','🔴','🔵'],g:2})+cap('Biten er 🔴🔵')},
+    {icon:'🐶',title:'Finn biten',text:'Hund, katt, katt. Hund, katt, katt. Biten har tre ting.',visual:V.pattern({items:['🐶','🐱','🐱','🐶','🐱','🐱'],g:3})+cap(`Biten er ${G('🐶🐱🐱')}`)},
+    {icon:'📣',title:'Si det høyt',text:'Si mønsteret høyt. Da hører du hva som kommer nå.',visual:V.pattern({items:['🍎','🍌','🍇','🍎','🍌','🍇','🍎',null]})+cap(`Eple, banan, drue, eple … ${G('banan!')}`)},
+    {icon:'🧱',title:'Mønster som vokser',text:'Tårnene blir én kloss høyere hver gang.',visual:V.grow({n:[1,2,3,4],w:1,c:'b'})+cap(`1, 2, 3, ${G('4')} – én til hver gang`)},
+    {icon:'🎯',title:'Din tur!',text:'Tårnene vokser like mye hver gang.',
+     ask:{q:'2, 4, 6, ?',ans:8,ops:{op:'seq',a:2,b:2,i:3},vis:{kind:'grow',n:[2,4,6],w:2,c:'b',q:true},say:'Tårnene vokser: 2, 4, 6. Hvor mange klosser blir det i neste tårn?',
+       help:{t:'Hvor mange flere klosser kommer hver gang?',v:{kind:'line',from:0,to:8,step:2,start:2,hops:[2,2,2],hopLab:['+2','+2','+2'],hide:[8]}},
+       why:{'7':'Tårnene vokser med to hver gang.','9':'Tell klossene i hvert tårn. Hvor mange til?','10':'Bare én rad til hver gang.'}},
+     visual:W([['2, 4, 6 …','',false],['2 flere hver gang','',true],['6 + 2 = 8 ✓','',false]])}];
+  LEARN_GUIDES.line2=[
+    {icon:'📏',title:'Tallinja',text:'Tallene står på rad. De blir større og større mot høyre.',visual:V.nline({from:0,to:10,step:1,lab:[0,1,2,3,4,5,6,7,8,9,10]})},
+    {icon:'👆',title:'Tell strekene',text:'Start på et tall du ser. Tell én og én strek bort til pilen.',visual:V.nline({from:40,to:50,step:1,lab:[40,50],mid:5,arrow:43})+cap(`40 … 41, 42, ${G('43')}`)},
+    {icon:'🔟',title:'Hver strek kan være 10',text:'Her er det 10 fra strek til strek. Tell tiere.',visual:V.nline({from:0,to:100,step:10,lab:[0,50,100],arrow:30})+cap(`10, 20, ${G('30')}`)},
+    {icon:'🦘',title:'Hopp på tallinja',text:'34 + 10: Hopp én tier fram. Da lander du på 44.',visual:(V.line?V.line({from:24,to:54,start:34,hops:[10],hopLab:['+10']}):'')+cap(`34 + 10 = ${G('44')}`)},
+    {icon:'🎯',title:'Din tur!',text:'Start på 60. Tell strekene.',
+     ask:{q:'Hvilket tall peker pilen på?',eq:'60 + 7 = ?',ans:67,vis:{kind:'nline',from:60,to:70,step:1,lab:[60,70],mid:5,arrow:67},say:'Se på tallinja. Hvilket tall peker pilen på?',
+       help:{t:'Start på 60. Tell én og én strek til pilen.',v:{kind:'nline',from:60,to:70,step:1,lab:[60,61,62,63,64,65,70],mid:5,arrow:67}},
+       why:{'7':'Husk tierne! Pilen står etter 60.','66':'Tell strekene én og én fra 60.','68':'Tell strekene én og én fra 60.'}},
+     visual:W([['Start på 60','',true],['61, 62, 63, 64, 65, 66, 67','',true],['67 ✓','',false]])}];
+  LEARN_GUIDES.count2=[
+    {icon:'🔢',title:'Forbi tieren',text:'Etter 9 enere kommer en ny tier: 67, 68, 69, 70!',visual:hops([67,68,69,70],'+1',3)},
+    {icon:'🚀',title:'Tell bakover',text:'52, 51, 50 … så 49. Tieren blir én mindre.',visual:hops([52,51,50,49],'−1',3)},
+    {icon:'🔟',title:'Hopp med 10',text:'Ett steg ned på hundrebrettet er 10 mer. Bare tieren endres.',visual:V.board({r0:1,c0:1,rows:3,cols:5,hl:[13,23,33]})+cap(`13, 23, ${G('33')}`)},
+    {icon:'🐸',title:'Hopp med 5 og 2',text:'Med 5: 35, 40, 45, 50. Med 2: 46, 48, 50, 52.',visual:P(['35','40','45','50'],'#ffd93d')+'<div style="height:8px"></div>'+P(['46','48','50','52'],'#00ff88')},
+    {icon:'🎯',title:'Din tur!',text:'Etter 9 enere kommer en ny tier.',
+     ask:{q:'77, 78, 79, ?',ans:80,ops:{op:'seq',a:77,b:1,i:3},say:'77, 78, 79. Hvilket tall kommer så?',
+       help:{t:'Tell videre ett steg. Hva skjer med tieren?',v:{kind:'line',from:76,to:80,start:77,hops:[1,1,1],hopLab:['+1','+1','+1'],hide:[80]}},
+       why:{'70':'Etter 79 må tieren bli én mer.','81':'Bare ett steg fram fra 79.','710':'Sju tiere og én til blir åtte tiere.'}},
+     visual:W([['77, 78, 79, ?','',false],['Etter 9 kommer en ny tier','',true],['80 ✓','',false]])}];
 })();

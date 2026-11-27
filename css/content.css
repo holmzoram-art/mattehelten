@@ -77,3 +77,61 @@
 }
 @keyframes t12Pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 @media (prefers-reduced-motion:reduce){#topic-map-wrap{transition:none;}}
+
+/* ---- Bølge 3 (C2): mønster, voksende tårn, tallinje og hundrebrett ---- */
+/* Mønster: én rad med ruter, ? er en stiplet gul rute */
+.t12-pat{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:100%;margin:2px auto;}
+.t12-pat-it{display:flex;align-items:center;justify-content:center;width:46px;height:50px;font-size:2rem;line-height:1;border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);box-sizing:border-box;}
+.t12-pat-it.alt{background:rgba(255,217,61,.16);border-color:rgba(255,217,61,.45);}
+.t12-pat-q{font-family:'Fredoka One',cursive;font-size:1.7rem;color:var(--gold);border:2px dashed var(--gold);background:rgba(255,217,61,.12);}
+@media(max-width:440px){.t12-pat{gap:4px;}.t12-pat-it{width:35px;height:42px;font-size:1.45rem;border-radius:9px;}.t12-pat-q{font-size:1.3rem;}}
+@media(max-width:340px){.t12-pat{gap:3px;}.t12-pat-it{width:31px;height:38px;font-size:1.25rem;}}
+
+/* Voksende mønster: tårn av klosser, tallet under */
+.t12-grow{display:flex;align-items:flex-end;justify-content:center;gap:16px;flex-wrap:wrap;margin:2px auto;}
+.t12-gr-fig{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.t12-gr-st{display:flex;flex-direction:column-reverse;align-items:flex-start;gap:3px;}
+.t12-gr-row{display:flex;gap:3px;}
+.t12-gr-row i{display:block;width:19px;height:19px;border-radius:4px;background:#4facfe;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);}
+.t12-g-o .t12-gr-row i{background:#ff9f43;}
+.t12-g-g .t12-gr-row i{background:#22c55e;}
+.t12-gr-st.t12-gr-q{width:46px;height:46px;display:flex;align-items:center;justify-content:center;border:2px dashed var(--gold);border-radius:10px;background:rgba(255,217,61,.12);font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--gold);box-sizing:border-box;}
+.t12-gr-n{font-family:'Fredoka One',cursive;font-size:1.25rem;line-height:1;color:var(--white);}
+@media(max-width:380px){.t12-grow{gap:10px;}.t12-gr-row i{width:16px;height:16px;}}
+
+/* Tallinje til å lese av: tydelige streker, store tall, gul pil */
+.t12-nl-wrap{display:flex;justify-content:center;width:100%;}
+.t12-nl{display:block;width:100%;max-width:440px;height:auto;overflow:visible;}
+.t12-nl-ax{stroke:#ece8ff;stroke-width:3;stroke-linecap:round;}
+.t12-nl-end{fill:#ece8ff;}
+.t12-nl-tk{stroke:rgba(236,232,255,.7);stroke-width:2;stroke-linecap:round;}
+.t12-nl-tk.big{stroke:#fff;stroke-width:3;}
+.t12-nl-n{font-family:'Fredoka One',cursive;font-size:19px;fill:#fff;text-anchor:middle;dominant-baseline:central;}
+.t12-nl-ar path{fill:var(--gold,#ffd93d);stroke:#8a5d00;stroke-width:1.5;stroke-linejoin:round;}
+.t12-nl-mk line{stroke:rgba(255,255,255,.75);stroke-width:2;stroke-linecap:round;}
+.t12-nl-tag{font-size:24px;text-anchor:middle;dominant-baseline:central;}
+.loop-help .t12-nl{max-width:340px;}
+/* Hopp på tom tallinje (VIS.line i ramme): større i oppgavekortet */
+.t12-hop{width:100%;max-width:400px;margin:0 auto;}
+.t12-hop .lv-line{width:100%;max-width:none!important;}
+.t12-hop .lv-line .lv-ax{stroke:#ece8ff;stroke-width:2.5;}
+.t12-hop .lv-line .lv-hop{stroke-width:3;}
+/* Valgknapper med emoji (mønster, merker på tallinja): større tegn */
+#q-card:has(.t12-pat,.t12-nl-mk)~.q-choices .q-choice,.lp:has(.t12-pat,.t12-nl-mk) .q-choice{font-size:2.1rem;line-height:1.1;padding:6px 16px;}
+@media(max-width:440px){#q-card:has(.t12-pat,.t12-nl-mk)~.q-choices .q-choice,.lp:has(.t12-pat,.t12-nl-mk) .q-choice{font-size:1.65rem;padding:6px 10px;}}
+
+/* Hundrebrett (utsnitt) */
+.t12-bd{display:grid;grid-template-columns:repeat(var(--cols,5),46px);gap:4px;justify-content:center;margin:2px auto;}
+.t12-bd-c{display:flex;align-items:center;justify-content:center;height:40px;border-radius:8px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.16);font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;box-sizing:border-box;}
+.t12-bd-c.hl{background:rgba(0,255,136,.18);border-color:var(--green);}
+.t12-bd-q{color:var(--gold);border:2px dashed var(--gold);background:rgba(255,217,61,.12);font-size:1.4rem;}
+@media(max-width:360px){.t12-bd{grid-template-columns:repeat(var(--cols,5),40px);gap:3px;}}
+
+@media (prefers-reduced-motion:no-preference){
+  .t12-pat-it,.t12-gr-fig{animation:t12Pop .3s ease backwards;animation-delay:var(--d,0ms);}
+  .t12-gr-fig:nth-child(2){animation-delay:90ms}.t12-gr-fig:nth-child(3){animation-delay:180ms}.t12-gr-fig:nth-child(4){animation-delay:270ms}
+  .t12-pat-q,.t12-gr-q,.t12-bd-q{animation:t12Pulse 1.6s ease-in-out infinite;}
+  .t12-nl-ar path{animation:t12Bob 1.4s ease-in-out infinite;}
+}
+@keyframes t12Pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,217,61,0)}50%{box-shadow:0 0 0 4px rgba(255,217,61,.28)}}
+@keyframes t12Bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}

@@ -3,7 +3,7 @@
 // det tegnede bildet (HTML/SVG fra renderVis) og svarknappene – og regner ut svaret selv.
 module.exports=function({R,ok,CUR,ls,els,ctx,submit,submitCh,solve}){
   const NEW={1:['cmp1','eq1','sub20','clock1'],2:['place2','even2','money2']};
-  const ORDER={1:['add10','sub10','ten1','cmp1','seq1','eq1','add20','sub20','clock1'],2:['place2','add100','sub100','miss2','even2','money2','dbl2','mul25']};
+  const ORDER={1:['add10','sub10','ten1','cmp1','pat1','seq1','eq1','add20','sub20','clock1'],2:['place2','line2','count2','add100','sub100','miss2','even2','money2','dbl2','mul25']}; // bølge 3: pat1, line2, count2 (tests/content2.test.js)
   const renderVis=R('renderVis'),fmtSub=R('fmtSub'),EXTRA=R('window.EXTRA_SUBS')||{},LG=R('LEARN_GUIDES');
   const EMO=/\p{Extended_Pictographic}/u;
   const BAD=/\b(pa|Naesten|Storst|storst|storre|sma|lan|gar|fa|forste|Niva|Sporsmal|hoyre|naer|monster)\b|undefined|NaN|Infinity|\[object|\bnull\b/;
@@ -12,7 +12,7 @@ module.exports=function({R,ok,CUR,ls,els,ctx,submit,submitCh,solve}){
   // ---- rekkefølge, valgfritt tema, navn ----
   for(const g of [1,2])ok(JSON.stringify(CUR[g].topics.map(t=>t.id))===JSON.stringify(ORDER[g]),`content: grade ${g} order ${CUR[g].topics.map(t=>t.id)}`);
   ok(topic(2,'mul25')&&topic(2,'mul25').optional===true,'content: mul25 should be optional');
-  ok(CUR[1].topics.concat(CUR[2].topics).filter(t=>t.optional).length===1,'content: only mul25 is optional');
+  ok(CUR[1].topics.concat(CUR[2].topics).filter(t=>t.optional).map(t=>t.id).sort().join()==='count2,mul25,pat1','content: only mul25, pat1 and count2 are optional');
   for(const g of [1,2])for(const id of NEW[g]){const t=topic(g,id);ok(t&&t.name.length<=20&&t.desc&&t.icon,`content: ${id} name/desc/icon`);ok(!BAD.test(t.name+' '+t.desc),`content: ${id} bad name text`);}
 
   // ---- uavhengig fasitløser ----

@@ -59,9 +59,21 @@ function loadQuestion(){
   document.getElementById('fb-box').className='fb-box';
   document.getElementById('fb-box').innerHTML='';
   document.getElementById('next-btn').style.display='none';
-  document.getElementById('numpad').style.display='grid';
+  // Svarformat: valgknapper (qd.choices) i stedet for tall-tastatur; bilde i oppgaven (qd.vis, se vis.js)
+  const vis=document.getElementById('q-vis'),vh=renderVis(qd.vis);
+  if(vis){vis.innerHTML=vh;vis.style.display=vh?'':'none';}
+  const ch=document.getElementById('q-choices'),hasCh=isChoiceQ(qd);
+  if(ch){ch.innerHTML='';ch.style.display=hasCh?'':'none';
+    if(hasCh)qd.choices.forEach(c=>{const b=document.createElement('button');b.type='button';b.className='q-choice';b.textContent=String(c);b.onclick=()=>submitChoice(c,b);ch.appendChild(b);});}
+  const ar=document.querySelector('#screen-game .ans-row');if(ar)ar.style.display=hasCh?'none':'';
+  document.getElementById('numpad').style.display=hasCh?'none':'grid';
   updateBattleProg();
+  if(typeof speakQ==='function')try{speakQ(qd);}catch(e){} // opplesing (speech.js)
 }
+// Valgoppgave: qd.choices er en liste med svaralternativ (tekst/tall); riktig er String(qd.ansTxt??qd.ans)
+function isChoiceQ(qd){return !!(qd&&Array.isArray(qd.choices)&&qd.choices.length);}
+function choiceKey(qd){return String(qd.ansTxt!=null?qd.ansTxt:qd.ans);}
+function submitChoice(v,btn){if(S.answered)return;S.choiceBtn=btn||null;document.getElementById('ans-input').value=String(v);submitAnswer();}
 
 function updateBattleProg(){
   document.getElementById('prog-fill').style.width=(S.idx/TQ*100)+'%';
@@ -80,12 +92,15 @@ document.getElementById('ans-input').addEventListener('input',e=>{const v=e.targ
 function submitAnswer(){
   const raw=document.getElementById('ans-input').value.trim();
   if(raw==='')return;
-  const given=parseAns(raw),correct=S.current.ans;
+  const isCh=isChoiceQ(S.current);
+  const given=isCh?raw:parseAns(raw),correct=S.current.ans;
   const inp=document.getElementById('ans-input'),fb=document.getElementById('fb-box');
   if(given===null){inp.classList.add('wrong');setTimeout(()=>inp.classList.remove('wrong'),500);return;}
   S.answered=true;S.idx++;
   inp.disabled=true;document.getElementById('sub-btn').disabled=true;
-  const ex=S.current.ansTxt!=null?parseAns(S.current.ansTxt):correct,ok=raw.includes('/')?Math.abs(given-ex)<1e-9:Math.abs(given-correct)<0.01;S.current.givenTxt=raw;
+  const ex=S.current.ansTxt!=null&&!isCh?parseAns(S.current.ansTxt):correct;
+  const ok=isCh?raw===choiceKey(S.current):raw.includes('/')?Math.abs(given-ex)<1e-9:Math.abs(given-correct)<0.01;S.current.givenTxt=raw;
+  if(isCh){const ch=document.getElementById('q-choices');if(ch)[...ch.children].forEach(b=>{b.disabled=true;if(b.textContent===choiceKey(S.current))b.classList.add('right');});if(!ok&&S.choiceBtn)S.choiceBtn.classList.add('wrong');}
   S.questions.push({q:S.current.q,given,correct,ok,sub:S.current.sub||'?',givenTxt:raw,correctTxt:S.current.ansTxt||nf(correct),eq:S.current.eq});
   recordAttempt(S.grade,S.topicId,S.current.sub||'_',ok);
 

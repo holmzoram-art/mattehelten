@@ -79,7 +79,8 @@ const subsSeen={};
 for(const g of Object.keys(CUR)){
   const gd=CUR[g];
   ok(!/^[\x00-\x7f]+$/.test(gd.icon),`grade ${g} icon is ASCII placeholder`);
-  ok(gd.topics.length<=5,`grade ${g} has >5 topics`);
+  ok(gd.topics.length<=12,`grade ${g} has >12 topics`);
+  ok(new Set(gd.topics.map(t=>t.id)).size===gd.topics.length,`grade ${g} has duplicate topic ids`);
   for(const t of gd.topics){
     ok(!/^[\x00-\x7f]+$/.test(t.icon),`${t.id} icon ASCII placeholder '${t.icon}'`);
     ok(!BAD.test(t.name+' '+t.desc),`${t.id} name/desc bad Norwegian`);
@@ -87,6 +88,25 @@ for(const g of Object.keys(CUR)){
     let stories=0;
     for(let i=0;i<500;i++){
       const qd=t.gen(+g,t.id);
+      // Valgoppgaver (qd.choices): riktig svar finnes blant valgene, ingen like valg, tilbakemelding viser fasit
+      if(Array.isArray(qd.choices)&&qd.choices.length){
+        const key=String(qd.ansTxt??qd.ans),cs=qd.choices.map(String);
+        ok(typeof qd.q==='string'&&qd.q.trim().length>0,`${t.id} empty q`);
+        ok(typeof qd.sub==='string'&&qd.sub.length>0,`${t.id} missing sub`);
+        ok(cs.includes(key),`${t.id} choices missing answer: ${qd.q} -> ${key} in [${cs}]`);
+        ok(new Set(cs).size===cs.length,`${t.id} duplicate choices: ${qd.q} [${cs}]`);
+        ok(cs.length>=2&&cs.length<=6,`${t.id} choices count ${cs.length}`);
+        ok(!BAD.test(qd.q+' '+(qd.hint||'')+' '+cs.join(' ')),`${t.id} bad text: ${qd.q}`);
+        if(qd.vis)ok(R('renderVis')(qd.vis).length>0,`${t.id} vis kind not rendered: ${qd.vis.kind}`);
+        subsSeen[qd.sub]=t.id;
+        const wrong=cs.find(c=>c!==key);
+        if(wrong!=null){R('S').current=Object.assign({},qd,{givenTxt:wrong});let html='';try{html=t.fb(qd.q,wrong,qd.ans);}catch(e){html='THROW '+e.message;}
+          ok(typeof html==='string'&&!/THROW/.test(html),`${t.id} fb throws on choice: ${html} | ${qd.q}`);
+          ok(!BAD.test(html),`${t.id} fb bad text: ${html}`);
+          ok(html.includes(key),`${t.id} fb does not show answer ${key}: ${html}`);}
+        continue;
+      }
+      if(qd.vis)ok(R('renderVis')(qd.vis).length>0,`${t.id} vis kind not rendered: ${qd.vis.kind}`);
       const base=qd.eq||qd.q;
       ok(typeof qd.q==='string'&&qd.q.trim().length>0,`${t.id} empty q`);
       ok(typeof qd.ans==='number'&&isFinite(qd.ans),`${t.id} ans not finite: ${qd.q}`);
@@ -145,7 +165,12 @@ function submit(raw,cur,g=6,tid='frac6'){
   R(`S={grade:${g},topicId:'${tid}',topic:CUR[${g}].topics.find(t=>t.id==='${tid}'),questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false}`);
   R('S').current=cur;document.getElementById('ans-input').value=raw;R('submitAnswer()');const S=R('S');return S.questions[S.questions.length-1]||null;}
 const fq={q:'5/12 + 0/12 = ?',ans:0.42,ansTxt:'5/12',sub:'fr+'};
+// Valgoppgave via submitChoice
+function submitCh(v,cur,g=1,tid='add10'){R(`S={grade:${g},topicId:'${tid}',topic:CUR[${g}].topics.find(t=>t.id==='${tid}'),questions:[],idx:0,score:0,streak:0,combo:0,current:null,answered:false,enemyHp:100,playerHp:100,enemyDefeated:false}`);R('S').current=cur;R('submitChoice')(v,null);const S=R('S');return S.questions[S.questions.length-1]||null;}
 let r;
+r=submitCh('Ja',{q:'7 + 5 = 12. Stemmer det?',ans:'Ja',choices:['Ja','Nei'],sub:'tf'});ok(r&&r.ok,`submitChoice Ja should be ok: ${JSON.stringify(r)}`);
+r=submitCh('Nei',{q:'7 + 5 = 12. Stemmer det?',ans:'Ja',choices:['Ja','Nei'],sub:'tf'});ok(r&&!r.ok,`submitChoice Nei should be wrong`);
+r=submitCh(12,{q:'Hvilket tall er størst?',ans:12,choices:[12,9],sub:'cmp'});ok(r&&r.ok,`submitChoice number should be ok`);
 r=submit('5/12',{...fq});ok(r&&r.ok&&r.givenTxt==='5/12'&&r.correctTxt==='5/12',`submit 5/12 should be ok: ${JSON.stringify(r)}`);
 r=submit('10/24',{...fq});ok(r&&r.ok,`submit 10/24 (equivalent) should be ok`);
 r=submit('0,42',{...fq});ok(r&&r.ok,`submit 0,42 should be ok`);

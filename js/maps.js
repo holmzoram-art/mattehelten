@@ -81,7 +81,9 @@ function buildGradeMap(){
     const[yx,yy]=GRADE_POS[last];
     you.style.left=yx+'%';you.style.top=yy+'%';
     you.textContent=getCharEmoji(getCharIdx(),curLvl());
+    if(typeof figHeroPoster==='function')figHeroPoster(you); // heltens plakat (figures.js)
   }
+  if(typeof figWarmNext==='function')figWarmNext(); // hent det neste sannsynlige: egen helt i kamp + monsteret bak «Gå til kamp»
   pgGradeMap(); // PROGRESSION: unlock ceremony, next goal, shop items
 }
 
@@ -209,6 +211,7 @@ function buildTopicMap(gradeNum){
     }
   });
   bossAddTopicNode(gradeNum);
+  if(typeof figWarmNext==='function')figWarmNext();
   if(typeof trollDecorate==='function')trollDecorate('topics',gradeNum); // «Trollet er tilbake!» (review.js)
   pgTopicMap(gradeNum); // PROGRESSION: unlock ceremony, growing bars, node goals
 }

@@ -48,12 +48,14 @@ module.exports=function({R,ok,CUR,ls,els}){
   ls.set('mh_rank','4');ok(R('CHARS').every((c,i)=>R(`getCharEmoji(${i},12)`)===c.emoji),'hero: samme emoji som Mattegud');
   ok(R("typeof EVOLUTIONS")==='undefined','hero: ingen evolusjon til nye emojier');
   reset();ls.set('mh_player',JSON.stringify({emoji:'🐉',name:'Mio'}));ok(R('getCharIdx()')===6,'hero: gammel lagring uten mh_char_idx finner helten fra emojien');
+  reset();ls.set('mh_player',JSON.stringify({emoji:'⚡',name:'Ida'}));ok(R('getCharIdx()')===7&&R('CHARS[7].name')==='Lyn-dinoen','hero: gammel Lynet-lagring blir Lyn-dinoen');
+  reset();ls.set('mh_player',JSON.stringify({emoji:'🚀',name:'Ida'}));ok(R('getCharIdx()')===9&&R('CHARS[9].name')==='Rakett-astronauten','hero: gammel Raketten-lagring blir Rakett-astronauten');
   reset();ls.set('mh_rank','0');boss(1);R('checkEvolution(1,9)');
   let pe=R('pendingEvolution');ok(pe&&pe.from===0&&pe.to===1&&/^Kriger/.test(pe.rank.name)&&ls.get('mh_rank')==='1','evo: første boss gir Kriger-skjerm og lagrer rangen');
   R('pendingEvolution=null');R('checkEvolution()');ok(R('pendingEvolution')===null,'evo: samme rang vises ikke to ganger');
   R('pendingEvolution={from:0,to:1,rank:RANKS[1]}');R('showEvolution()');
   ok(els['evo-old'].textContent===els['evo-new'].textContent&&els['evo-new'].textContent===R('CHARS[getCharIdx()].emoji'),'evo: samme helt før og etter');
-  ok(/glød/.test(els['evo-rank-text'].textContent)&&R('pendingEvolution')===null,'evo: forteller hva helten fikk');
+  ok(/vinger/.test(els['evo-rank-text'].textContent)&&R('pendingEvolution')===null,'evo: forteller hva helten fikk');
   const fake=R('globalThis.__el={a:{},setAttribute(k,v){this.a[k]=String(v)},removeAttribute(k){delete this.a[k]}}');
   R('funDecor(__el,3)');ok(fake.a['data-fun-tier']==='3','decor: data-fun-tier settes');
   R('funDecor(__el,0)');ok(!('data-fun-tier' in fake.a),'decor: Lærling har ingen pynt');

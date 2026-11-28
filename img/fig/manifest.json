@@ -1,0 +1,3045 @@
+{
+ "about": "figs.<id>: {kind:\"boss\"|\"hero\"|\"mon\"|\"still\", size:<px per ramme>, anims:{<navn>:{n:<rammer>,ms:<varighet>,loop?:true}}, poster?:true (fil <id>-poster.webp), head?:{x,y} (hodet, andel av rammen), top?:{x,y} (toppen av hodet), key?/rank? (helt), tid? (temaets monster)}. Fil per animasjon: <id>-<navn>.webp (vannrett stripe med n kvadratiske rammer; n=1 er stillbilde). atlas.<s|p|h>: {file, cell:<px>, items:{<nøkkel>:[x,y]}} – s = venner (SIDEKICKS-indeks), p = pets (PG_ITEMS-id), h = helteplakater (heltens key). files fylles av tools/figsync.js: {v:<hash>, bytes}.",
+ "figs": {
+  "troll": {
+   "kind": "boss",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 16,
+     "ms": 2200,
+     "loop": true
+    },
+    "taunt": {
+     "n": 16,
+     "ms": 1600
+    },
+    "hit": {
+     "n": 12,
+     "ms": 650
+    },
+    "fall": {
+     "n": 16,
+     "ms": 1300
+    }
+   }
+  },
+  "orm": {
+   "kind": "boss",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 16,
+     "ms": 1900,
+     "loop": true
+    },
+    "taunt": {
+     "n": 16,
+     "ms": 1500
+    },
+    "hit": {
+     "n": 12,
+     "ms": 650
+    },
+    "fall": {
+     "n": 16,
+     "ms": 1300
+    }
+   }
+  },
+  "h-dragon-r0": {
+   "kind": "hero",
+   "key": "dragon",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.488,
+    "y": 0.47
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.302
+   },
+   "ptop": {
+    "x": 0.535,
+    "y": 0.203
+   }
+  },
+  "h-unicorn-r0": {
+   "kind": "hero",
+   "key": "unicorn",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.638,
+    "y": 0.359
+   },
+   "top": {
+    "x": 0.695,
+    "y": 0.18
+   },
+   "ptop": {
+    "x": 0.77,
+    "y": 0.031
+   }
+  },
+  "m-add10": {
+   "kind": "mon",
+   "tid": "add10",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-sub10": {
+   "kind": "mon",
+   "tid": "sub10",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-ten1": {
+   "kind": "mon",
+   "tid": "ten1",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-cmp1": {
+   "kind": "mon",
+   "tid": "cmp1",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-pat1": {
+   "kind": "mon",
+   "tid": "pat1",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-seq1": {
+   "kind": "mon",
+   "tid": "seq1",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-eq1": {
+   "kind": "mon",
+   "tid": "eq1",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-add20": {
+   "kind": "mon",
+   "tid": "add20",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-sub20": {
+   "kind": "mon",
+   "tid": "sub20",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-clock1": {
+   "kind": "mon",
+   "tid": "clock1",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-place2": {
+   "kind": "mon",
+   "tid": "place2",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-line2": {
+   "kind": "mon",
+   "tid": "line2",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-count2": {
+   "kind": "mon",
+   "tid": "count2",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-add100": {
+   "kind": "mon",
+   "tid": "add100",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-sub100": {
+   "kind": "mon",
+   "tid": "sub100",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-miss2": {
+   "kind": "mon",
+   "tid": "miss2",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-even2": {
+   "kind": "mon",
+   "tid": "even2",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-money2": {
+   "kind": "mon",
+   "tid": "money2",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-dbl2": {
+   "kind": "mon",
+   "tid": "dbl2",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "m-mul25": {
+   "kind": "mon",
+   "tid": "mul25",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    },
+    "au": {
+     "n": 1
+    }
+   }
+  },
+  "n-nullius": {
+   "kind": "still",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    }
+   }
+  },
+  "n-nullius-0": {
+   "kind": "still",
+   "size": 256,
+   "anims": {
+    "idle": {
+     "n": 1
+    }
+   }
+  },
+  "h-super-r0": {
+   "kind": "hero",
+   "key": "super",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.496,
+    "y": 0.499
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.306
+   },
+   "ptop": {
+    "x": 0.544,
+    "y": 0.195
+   }
+  },
+  "h-wizard-r0": {
+   "kind": "hero",
+   "key": "wizard",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.495,
+    "y": 0.564
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.36
+   },
+   "ptop": {
+    "x": 0.552,
+    "y": 0.257
+   }
+  },
+  "h-fox-r0": {
+   "kind": "hero",
+   "key": "fox",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.5,
+    "y": 0.519
+   },
+   "top": {
+    "x": 0.526,
+    "y": 0.356
+   },
+   "ptop": {
+    "x": 0.545,
+    "y": 0.269
+   }
+  },
+  "h-ninja-r0": {
+   "kind": "hero",
+   "key": "ninja",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.502,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.532,
+    "y": 0.287
+   },
+   "ptop": {
+    "x": 0.548,
+    "y": 0.178
+   }
+  },
+  "h-fairy-r0": {
+   "kind": "hero",
+   "key": "fairy",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.485,
+    "y": 0.523
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.33
+   },
+   "ptop": {
+    "x": 0.543,
+    "y": 0.205
+   }
+  },
+  "h-robot-r0": {
+   "kind": "hero",
+   "key": "robot",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.484,
+    "y": 0.527
+   },
+   "top": {
+    "x": 0.51,
+    "y": 0.321
+   },
+   "ptop": {
+    "x": 0.539,
+    "y": 0.196
+   }
+  },
+  "h-dragon-r1": {
+   "kind": "hero",
+   "key": "dragon",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.488,
+    "y": 0.47
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.302
+   },
+   "ptop": {
+    "x": 0.535,
+    "y": 0.203
+   }
+  },
+  "h-dragon-r2": {
+   "kind": "hero",
+   "key": "dragon",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.488,
+    "y": 0.47
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.302
+   },
+   "ptop": {
+    "x": 0.535,
+    "y": 0.203
+   }
+  },
+  "h-dragon-r3": {
+   "kind": "hero",
+   "key": "dragon",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.488,
+    "y": 0.47
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.302
+   },
+   "ptop": {
+    "x": 0.535,
+    "y": 0.203
+   }
+  },
+  "h-astro-r0": {
+   "kind": "hero",
+   "key": "astro",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.482,
+    "y": 0.498
+   },
+   "top": {
+    "x": 0.509,
+    "y": 0.32
+   },
+   "ptop": {
+    "x": 0.542,
+    "y": 0.187
+   }
+  },
+  "h-astro-r1": {
+   "kind": "hero",
+   "key": "astro",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.482,
+    "y": 0.498
+   },
+   "top": {
+    "x": 0.509,
+    "y": 0.32
+   },
+   "ptop": {
+    "x": 0.542,
+    "y": 0.187
+   }
+  },
+  "h-astro-r2": {
+   "kind": "hero",
+   "key": "astro",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.482,
+    "y": 0.498
+   },
+   "top": {
+    "x": 0.509,
+    "y": 0.32
+   },
+   "ptop": {
+    "x": 0.542,
+    "y": 0.187
+   }
+  },
+  "h-astro-r3": {
+   "kind": "hero",
+   "key": "astro",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.482,
+    "y": 0.498
+   },
+   "top": {
+    "x": 0.509,
+    "y": 0.32
+   },
+   "ptop": {
+    "x": 0.542,
+    "y": 0.187
+   }
+  },
+  "h-dino-r0": {
+   "kind": "hero",
+   "key": "dino",
+   "rank": 0,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.486,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.338
+   },
+   "ptop": {
+    "x": 0.533,
+    "y": 0.247
+   }
+  },
+  "h-dino-r1": {
+   "kind": "hero",
+   "key": "dino",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.486,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.338
+   },
+   "ptop": {
+    "x": 0.533,
+    "y": 0.247
+   }
+  },
+  "h-dino-r2": {
+   "kind": "hero",
+   "key": "dino",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.486,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.338
+   },
+   "ptop": {
+    "x": 0.533,
+    "y": 0.247
+   }
+  },
+  "h-dino-r3": {
+   "kind": "hero",
+   "key": "dino",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.486,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.511,
+    "y": 0.338
+   },
+   "ptop": {
+    "x": 0.533,
+    "y": 0.247
+   }
+  },
+  "h-fairy-r1": {
+   "kind": "hero",
+   "key": "fairy",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.485,
+    "y": 0.523
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.33
+   },
+   "ptop": {
+    "x": 0.543,
+    "y": 0.205
+   }
+  },
+  "h-fairy-r2": {
+   "kind": "hero",
+   "key": "fairy",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.485,
+    "y": 0.523
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.33
+   },
+   "ptop": {
+    "x": 0.543,
+    "y": 0.205
+   }
+  },
+  "h-fairy-r3": {
+   "kind": "hero",
+   "key": "fairy",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.485,
+    "y": 0.523
+   },
+   "top": {
+    "x": 0.514,
+    "y": 0.33
+   },
+   "ptop": {
+    "x": 0.543,
+    "y": 0.205
+   }
+  },
+  "h-fox-r1": {
+   "kind": "hero",
+   "key": "fox",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.5,
+    "y": 0.519
+   },
+   "top": {
+    "x": 0.526,
+    "y": 0.356
+   },
+   "ptop": {
+    "x": 0.545,
+    "y": 0.269
+   }
+  },
+  "h-fox-r2": {
+   "kind": "hero",
+   "key": "fox",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.5,
+    "y": 0.519
+   },
+   "top": {
+    "x": 0.526,
+    "y": 0.356
+   },
+   "ptop": {
+    "x": 0.545,
+    "y": 0.269
+   }
+  },
+  "h-fox-r3": {
+   "kind": "hero",
+   "key": "fox",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.5,
+    "y": 0.519
+   },
+   "top": {
+    "x": 0.526,
+    "y": 0.356
+   },
+   "ptop": {
+    "x": 0.545,
+    "y": 0.269
+   }
+  },
+  "h-ninja-r1": {
+   "kind": "hero",
+   "key": "ninja",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.502,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.532,
+    "y": 0.287
+   },
+   "ptop": {
+    "x": 0.548,
+    "y": 0.178
+   }
+  },
+  "h-ninja-r2": {
+   "kind": "hero",
+   "key": "ninja",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.502,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.532,
+    "y": 0.287
+   },
+   "ptop": {
+    "x": 0.548,
+    "y": 0.178
+   }
+  },
+  "h-ninja-r3": {
+   "kind": "hero",
+   "key": "ninja",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.502,
+    "y": 0.49
+   },
+   "top": {
+    "x": 0.532,
+    "y": 0.287
+   },
+   "ptop": {
+    "x": 0.548,
+    "y": 0.178
+   }
+  },
+  "h-robot-r1": {
+   "kind": "hero",
+   "key": "robot",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.484,
+    "y": 0.527
+   },
+   "top": {
+    "x": 0.51,
+    "y": 0.321
+   },
+   "ptop": {
+    "x": 0.539,
+    "y": 0.196
+   }
+  },
+  "h-robot-r2": {
+   "kind": "hero",
+   "key": "robot",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.484,
+    "y": 0.527
+   },
+   "top": {
+    "x": 0.51,
+    "y": 0.321
+   },
+   "ptop": {
+    "x": 0.539,
+    "y": 0.196
+   }
+  },
+  "h-robot-r3": {
+   "kind": "hero",
+   "key": "robot",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.484,
+    "y": 0.527
+   },
+   "top": {
+    "x": 0.51,
+    "y": 0.321
+   },
+   "ptop": {
+    "x": 0.539,
+    "y": 0.196
+   }
+  },
+  "h-super-r1": {
+   "kind": "hero",
+   "key": "super",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.496,
+    "y": 0.499
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.306
+   },
+   "ptop": {
+    "x": 0.544,
+    "y": 0.195
+   }
+  },
+  "h-super-r2": {
+   "kind": "hero",
+   "key": "super",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.496,
+    "y": 0.499
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.306
+   },
+   "ptop": {
+    "x": 0.544,
+    "y": 0.195
+   }
+  },
+  "h-super-r3": {
+   "kind": "hero",
+   "key": "super",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.496,
+    "y": 0.499
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.306
+   },
+   "ptop": {
+    "x": 0.544,
+    "y": 0.195
+   }
+  },
+  "h-unicorn-r1": {
+   "kind": "hero",
+   "key": "unicorn",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.638,
+    "y": 0.359
+   },
+   "top": {
+    "x": 0.695,
+    "y": 0.18
+   },
+   "ptop": {
+    "x": 0.77,
+    "y": 0.031
+   }
+  },
+  "h-unicorn-r2": {
+   "kind": "hero",
+   "key": "unicorn",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.638,
+    "y": 0.359
+   },
+   "top": {
+    "x": 0.695,
+    "y": 0.18
+   },
+   "ptop": {
+    "x": 0.77,
+    "y": 0.031
+   }
+  },
+  "h-unicorn-r3": {
+   "kind": "hero",
+   "key": "unicorn",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.638,
+    "y": 0.359
+   },
+   "top": {
+    "x": 0.695,
+    "y": 0.18
+   },
+   "ptop": {
+    "x": 0.77,
+    "y": 0.031
+   }
+  },
+  "h-wizard-r1": {
+   "kind": "hero",
+   "key": "wizard",
+   "rank": 1,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.495,
+    "y": 0.564
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.36
+   },
+   "ptop": {
+    "x": 0.552,
+    "y": 0.257
+   }
+  },
+  "h-wizard-r2": {
+   "kind": "hero",
+   "key": "wizard",
+   "rank": 2,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.495,
+    "y": 0.564
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.36
+   },
+   "ptop": {
+    "x": 0.552,
+    "y": 0.257
+   }
+  },
+  "h-wizard-r3": {
+   "kind": "hero",
+   "key": "wizard",
+   "rank": 3,
+   "size": 192,
+   "anims": {
+    "idle": {
+     "n": 12,
+     "ms": 2000,
+     "loop": true
+    },
+    "atk": {
+     "n": 8,
+     "ms": 560,
+     "loop": false
+    },
+    "block": {
+     "n": 6,
+     "ms": 450,
+     "loop": false
+    },
+    "win": {
+     "n": 12,
+     "ms": 1200,
+     "loop": false
+    }
+   },
+   "poster": true,
+   "head": {
+    "x": 0.495,
+    "y": 0.564
+   },
+   "top": {
+    "x": 0.525,
+    "y": 0.36
+   },
+   "ptop": {
+    "x": 0.552,
+    "y": 0.257
+   }
+  }
+ },
+ "atlas": {
+  "s": {
+   "file": "s-atlas.webp",
+   "cell": 128,
+   "w": 768,
+   "h": 128,
+   "items": {
+    "0": [
+     0,
+     0
+    ],
+    "1": [
+     128,
+     0
+    ],
+    "2": [
+     256,
+     0
+    ],
+    "3": [
+     384,
+     0
+    ],
+    "4": [
+     512,
+     0
+    ],
+    "5": [
+     640,
+     0
+    ]
+   }
+  },
+  "p": {
+   "file": "p-atlas.webp",
+   "cell": 128,
+   "w": 768,
+   "h": 128,
+   "items": {
+    "chick": [
+     0,
+     0
+    ],
+    "troll": [
+     128,
+     0
+    ],
+    "butterfly": [
+     256,
+     0
+    ],
+    "snake": [
+     384,
+     0
+    ],
+    "crab": [
+     512,
+     0
+    ],
+    "unicorn": [
+     640,
+     0
+    ]
+   }
+  }
+ },
+ "files": {
+  "troll-idle.webp": {
+   "v": "d6170ea9",
+   "bytes": 127332
+  },
+  "troll-taunt.webp": {
+   "v": "ec3d67c2",
+   "bytes": 126282
+  },
+  "troll-hit.webp": {
+   "v": "ded5462f",
+   "bytes": 89276
+  },
+  "troll-fall.webp": {
+   "v": "60408fed",
+   "bytes": 104630
+  },
+  "orm-idle.webp": {
+   "v": "376940ad",
+   "bytes": 96504
+  },
+  "orm-taunt.webp": {
+   "v": "a3bbf7b4",
+   "bytes": 84548
+  },
+  "orm-hit.webp": {
+   "v": "c51fb278",
+   "bytes": 71782
+  },
+  "orm-fall.webp": {
+   "v": "720150bd",
+   "bytes": 99558
+  },
+  "h-dragon-r0-idle.webp": {
+   "v": "c5c17730",
+   "bytes": 40044
+  },
+  "h-dragon-r0-atk.webp": {
+   "v": "9162ac7a",
+   "bytes": 29450
+  },
+  "h-dragon-r0-block.webp": {
+   "v": "c0a21f40",
+   "bytes": 19122
+  },
+  "h-dragon-r0-win.webp": {
+   "v": "34f7a166",
+   "bytes": 42096
+  },
+  "h-dragon-r0-poster.webp": {
+   "v": "e0495b25",
+   "bytes": 3782
+  },
+  "h-unicorn-r0-idle.webp": {
+   "v": "54bc5d4c",
+   "bytes": 35892
+  },
+  "h-unicorn-r0-atk.webp": {
+   "v": "8aae2860",
+   "bytes": 23722
+  },
+  "h-unicorn-r0-block.webp": {
+   "v": "11082d96",
+   "bytes": 18148
+  },
+  "h-unicorn-r0-win.webp": {
+   "v": "cfefca00",
+   "bytes": 34596
+  },
+  "h-unicorn-r0-poster.webp": {
+   "v": "e84daccc",
+   "bytes": 3768
+  },
+  "m-add10-idle.webp": {
+   "v": "5d3c8532",
+   "bytes": 12630
+  },
+  "m-add10-au.webp": {
+   "v": "bc1979eb",
+   "bytes": 14468
+  },
+  "m-sub10-idle.webp": {
+   "v": "cacc0e66",
+   "bytes": 9490
+  },
+  "m-sub10-au.webp": {
+   "v": "82e89d97",
+   "bytes": 12236
+  },
+  "m-ten1-idle.webp": {
+   "v": "6ba46970",
+   "bytes": 9548
+  },
+  "m-ten1-au.webp": {
+   "v": "0f74cf09",
+   "bytes": 11240
+  },
+  "m-cmp1-idle.webp": {
+   "v": "6252f305",
+   "bytes": 8916
+  },
+  "m-cmp1-au.webp": {
+   "v": "2cefd33c",
+   "bytes": 11342
+  },
+  "m-pat1-idle.webp": {
+   "v": "d6b15438",
+   "bytes": 10642
+  },
+  "m-pat1-au.webp": {
+   "v": "97b20f22",
+   "bytes": 12554
+  },
+  "m-seq1-idle.webp": {
+   "v": "56edfe5a",
+   "bytes": 10398
+  },
+  "m-seq1-au.webp": {
+   "v": "d93b63d3",
+   "bytes": 13300
+  },
+  "m-eq1-idle.webp": {
+   "v": "74cbf384",
+   "bytes": 8770
+  },
+  "m-eq1-au.webp": {
+   "v": "47231a3d",
+   "bytes": 9534
+  },
+  "m-add20-idle.webp": {
+   "v": "27cd454a",
+   "bytes": 9128
+  },
+  "m-add20-au.webp": {
+   "v": "7c5ab995",
+   "bytes": 11376
+  },
+  "m-sub20-idle.webp": {
+   "v": "c0302ee8",
+   "bytes": 10276
+  },
+  "m-sub20-au.webp": {
+   "v": "e4b2fa83",
+   "bytes": 11816
+  },
+  "m-clock1-idle.webp": {
+   "v": "c74b902c",
+   "bytes": 12142
+  },
+  "m-clock1-au.webp": {
+   "v": "a9e1407c",
+   "bytes": 13510
+  },
+  "m-place2-idle.webp": {
+   "v": "ef45e82d",
+   "bytes": 10040
+  },
+  "m-place2-au.webp": {
+   "v": "f5cefb62",
+   "bytes": 12422
+  },
+  "m-line2-idle.webp": {
+   "v": "431129cb",
+   "bytes": 9826
+  },
+  "m-line2-au.webp": {
+   "v": "e063bb8d",
+   "bytes": 11426
+  },
+  "m-count2-idle.webp": {
+   "v": "5ae15c43",
+   "bytes": 13854
+  },
+  "m-count2-au.webp": {
+   "v": "01e0502c",
+   "bytes": 14576
+  },
+  "m-add100-idle.webp": {
+   "v": "6d4e9443",
+   "bytes": 8856
+  },
+  "m-add100-au.webp": {
+   "v": "c706ee81",
+   "bytes": 10322
+  },
+  "m-sub100-idle.webp": {
+   "v": "6529295c",
+   "bytes": 8806
+  },
+  "m-sub100-au.webp": {
+   "v": "a05fd245",
+   "bytes": 10888
+  },
+  "m-miss2-idle.webp": {
+   "v": "b58cdff5",
+   "bytes": 12462
+  },
+  "m-miss2-au.webp": {
+   "v": "13c20f8c",
+   "bytes": 15578
+  },
+  "m-even2-idle.webp": {
+   "v": "88120319",
+   "bytes": 12646
+  },
+  "m-even2-au.webp": {
+   "v": "171b8414",
+   "bytes": 14234
+  },
+  "m-money2-idle.webp": {
+   "v": "49811dfa",
+   "bytes": 9468
+  },
+  "m-money2-au.webp": {
+   "v": "ec9dfe41",
+   "bytes": 12424
+  },
+  "m-dbl2-idle.webp": {
+   "v": "cbf1e3f9",
+   "bytes": 11436
+  },
+  "m-dbl2-au.webp": {
+   "v": "415bf597",
+   "bytes": 12610
+  },
+  "m-mul25-idle.webp": {
+   "v": "93fa8112",
+   "bytes": 10954
+  },
+  "m-mul25-au.webp": {
+   "v": "43635e38",
+   "bytes": 14418
+  },
+  "n-nullius-idle.webp": {
+   "v": "245cbf7d",
+   "bytes": 10274
+  },
+  "n-nullius-0-idle.webp": {
+   "v": "57b320ff",
+   "bytes": 9608
+  },
+  "h-super-r0-idle.webp": {
+   "v": "e45bccd3",
+   "bytes": 36032
+  },
+  "h-super-r0-atk.webp": {
+   "v": "97f79b5b",
+   "bytes": 25618
+  },
+  "h-super-r0-block.webp": {
+   "v": "b90fea5e",
+   "bytes": 17988
+  },
+  "h-super-r0-win.webp": {
+   "v": "3499f80a",
+   "bytes": 37026
+  },
+  "h-super-r0-poster.webp": {
+   "v": "09022998",
+   "bytes": 3502
+  },
+  "h-wizard-r0-idle.webp": {
+   "v": "7891fb2a",
+   "bytes": 40514
+  },
+  "h-wizard-r0-atk.webp": {
+   "v": "f2f1115d",
+   "bytes": 27602
+  },
+  "h-wizard-r0-block.webp": {
+   "v": "a578ece8",
+   "bytes": 19070
+  },
+  "h-wizard-r0-win.webp": {
+   "v": "d99e4770",
+   "bytes": 41402
+  },
+  "h-wizard-r0-poster.webp": {
+   "v": "ed45c12f",
+   "bytes": 3850
+  },
+  "h-fox-r0-idle.webp": {
+   "v": "70bfab5c",
+   "bytes": 47348
+  },
+  "h-fox-r0-atk.webp": {
+   "v": "f37c0eee",
+   "bytes": 32190
+  },
+  "h-fox-r0-block.webp": {
+   "v": "1047e00e",
+   "bytes": 23610
+  },
+  "h-fox-r0-win.webp": {
+   "v": "6ec7a16a",
+   "bytes": 48012
+  },
+  "h-fox-r0-poster.webp": {
+   "v": "5a207c43",
+   "bytes": 4330
+  },
+  "h-ninja-r0-idle.webp": {
+   "v": "b4b03caf",
+   "bytes": 42308
+  },
+  "h-ninja-r0-atk.webp": {
+   "v": "d3fac5ea",
+   "bytes": 30116
+  },
+  "h-ninja-r0-block.webp": {
+   "v": "1b8221ec",
+   "bytes": 21618
+  },
+  "h-ninja-r0-win.webp": {
+   "v": "04935dbb",
+   "bytes": 43746
+  },
+  "h-ninja-r0-poster.webp": {
+   "v": "90325586",
+   "bytes": 3964
+  },
+  "h-fairy-r0-idle.webp": {
+   "v": "79d63b30",
+   "bytes": 35184
+  },
+  "h-fairy-r0-atk.webp": {
+   "v": "209138b9",
+   "bytes": 25176
+  },
+  "h-fairy-r0-block.webp": {
+   "v": "9dcbc3ce",
+   "bytes": 17876
+  },
+  "h-fairy-r0-win.webp": {
+   "v": "2d8a7f9f",
+   "bytes": 37258
+  },
+  "h-fairy-r0-poster.webp": {
+   "v": "da420d3b",
+   "bytes": 4136
+  },
+  "h-robot-r0-idle.webp": {
+   "v": "91e942eb",
+   "bytes": 35888
+  },
+  "h-robot-r0-atk.webp": {
+   "v": "93f9055f",
+   "bytes": 23954
+  },
+  "h-robot-r0-block.webp": {
+   "v": "c2ddaac6",
+   "bytes": 17634
+  },
+  "h-robot-r0-win.webp": {
+   "v": "a4c4a0eb",
+   "bytes": 36304
+  },
+  "h-robot-r0-poster.webp": {
+   "v": "b5181066",
+   "bytes": 3604
+  },
+  "h-dragon-r1-idle.webp": {
+   "v": "de432c16",
+   "bytes": 51188
+  },
+  "h-dragon-r1-atk.webp": {
+   "v": "2772c27e",
+   "bytes": 35516
+  },
+  "h-dragon-r1-block.webp": {
+   "v": "58d07ac5",
+   "bytes": 22552
+  },
+  "h-dragon-r1-win.webp": {
+   "v": "585124e6",
+   "bytes": 53326
+  },
+  "h-dragon-r1-poster.webp": {
+   "v": "a75a3fcd",
+   "bytes": 4456
+  },
+  "h-dragon-r2-idle.webp": {
+   "v": "b4c05a6c",
+   "bytes": 55680
+  },
+  "h-dragon-r2-atk.webp": {
+   "v": "c5d8f5ff",
+   "bytes": 38828
+  },
+  "h-dragon-r2-block.webp": {
+   "v": "ec298d9e",
+   "bytes": 23590
+  },
+  "h-dragon-r2-win.webp": {
+   "v": "696ca24c",
+   "bytes": 53156
+  },
+  "h-dragon-r2-poster.webp": {
+   "v": "b0d2c2e6",
+   "bytes": 4848
+  },
+  "h-dragon-r3-idle.webp": {
+   "v": "144d45a1",
+   "bytes": 55200
+  },
+  "h-dragon-r3-atk.webp": {
+   "v": "84fc0791",
+   "bytes": 36704
+  },
+  "h-dragon-r3-block.webp": {
+   "v": "9c228ef2",
+   "bytes": 23484
+  },
+  "h-dragon-r3-win.webp": {
+   "v": "4c92ed72",
+   "bytes": 52264
+  },
+  "h-dragon-r3-poster.webp": {
+   "v": "1928b2ba",
+   "bytes": 5260
+  },
+  "h-astro-r0-idle.webp": {
+   "v": "f3c4994d",
+   "bytes": 35594
+  },
+  "h-astro-r0-atk.webp": {
+   "v": "d33e4408",
+   "bytes": 26456
+  },
+  "h-astro-r0-block.webp": {
+   "v": "d9a9607c",
+   "bytes": 19038
+  },
+  "h-astro-r0-win.webp": {
+   "v": "0657f808",
+   "bytes": 36184
+  },
+  "h-astro-r0-poster.webp": {
+   "v": "89426e16",
+   "bytes": 3714
+  },
+  "h-astro-r1-idle.webp": {
+   "v": "c32bc997",
+   "bytes": 48956
+  },
+  "h-astro-r1-atk.webp": {
+   "v": "e1f6603f",
+   "bytes": 33248
+  },
+  "h-astro-r1-block.webp": {
+   "v": "00bb66f3",
+   "bytes": 23898
+  },
+  "h-astro-r1-win.webp": {
+   "v": "648d1d1f",
+   "bytes": 47924
+  },
+  "h-astro-r1-poster.webp": {
+   "v": "115df0b1",
+   "bytes": 4720
+  },
+  "h-astro-r2-idle.webp": {
+   "v": "b2542ad8",
+   "bytes": 48464
+  },
+  "h-astro-r2-atk.webp": {
+   "v": "e7255252",
+   "bytes": 30132
+  },
+  "h-astro-r2-block.webp": {
+   "v": "fba7897e",
+   "bytes": 22128
+  },
+  "h-astro-r2-win.webp": {
+   "v": "575ceb9e",
+   "bytes": 46482
+  },
+  "h-astro-r2-poster.webp": {
+   "v": "a37edfae",
+   "bytes": 5250
+  },
+  "h-astro-r3-idle.webp": {
+   "v": "89298f45",
+   "bytes": 54670
+  },
+  "h-astro-r3-atk.webp": {
+   "v": "75035333",
+   "bytes": 33940
+  },
+  "h-astro-r3-block.webp": {
+   "v": "fab74ada",
+   "bytes": 23858
+  },
+  "h-astro-r3-win.webp": {
+   "v": "783d5055",
+   "bytes": 51822
+  },
+  "h-astro-r3-poster.webp": {
+   "v": "1b391a0d",
+   "bytes": 5796
+  },
+  "h-dino-r0-idle.webp": {
+   "v": "6782f137",
+   "bytes": 33178
+  },
+  "h-dino-r0-atk.webp": {
+   "v": "a9121982",
+   "bytes": 25522
+  },
+  "h-dino-r0-block.webp": {
+   "v": "ccc02bc3",
+   "bytes": 16994
+  },
+  "h-dino-r0-win.webp": {
+   "v": "3ebaf585",
+   "bytes": 39002
+  },
+  "h-dino-r0-poster.webp": {
+   "v": "975d73ac",
+   "bytes": 3580
+  },
+  "h-dino-r1-idle.webp": {
+   "v": "3a4fd5d6",
+   "bytes": 44922
+  },
+  "h-dino-r1-atk.webp": {
+   "v": "20a1a15a",
+   "bytes": 31338
+  },
+  "h-dino-r1-block.webp": {
+   "v": "553b1c27",
+   "bytes": 21054
+  },
+  "h-dino-r1-win.webp": {
+   "v": "51f14bfa",
+   "bytes": 48260
+  },
+  "h-dino-r1-poster.webp": {
+   "v": "a5ade452",
+   "bytes": 4244
+  },
+  "h-dino-r2-idle.webp": {
+   "v": "a6a7fa67",
+   "bytes": 45256
+  },
+  "h-dino-r2-atk.webp": {
+   "v": "ff380e69",
+   "bytes": 27986
+  },
+  "h-dino-r2-block.webp": {
+   "v": "4b4766ce",
+   "bytes": 19410
+  },
+  "h-dino-r2-win.webp": {
+   "v": "e5a569be",
+   "bytes": 49320
+  },
+  "h-dino-r2-poster.webp": {
+   "v": "be231a6f",
+   "bytes": 4850
+  },
+  "h-dino-r3-idle.webp": {
+   "v": "eb36215e",
+   "bytes": 50866
+  },
+  "h-dino-r3-atk.webp": {
+   "v": "4126746e",
+   "bytes": 33176
+  },
+  "h-dino-r3-block.webp": {
+   "v": "16ff5b6a",
+   "bytes": 22142
+  },
+  "h-dino-r3-win.webp": {
+   "v": "55bb119a",
+   "bytes": 53572
+  },
+  "h-dino-r3-poster.webp": {
+   "v": "cdfe6b6a",
+   "bytes": 5404
+  },
+  "h-fairy-r1-idle.webp": {
+   "v": "4557e21c",
+   "bytes": 39316
+  },
+  "h-fairy-r1-atk.webp": {
+   "v": "f3f5b38d",
+   "bytes": 27428
+  },
+  "h-fairy-r1-block.webp": {
+   "v": "73504bc4",
+   "bytes": 20308
+  },
+  "h-fairy-r1-win.webp": {
+   "v": "ec77e29a",
+   "bytes": 38890
+  },
+  "h-fairy-r1-poster.webp": {
+   "v": "d07dc88d",
+   "bytes": 4534
+  },
+  "h-fairy-r2-idle.webp": {
+   "v": "9ebe0852",
+   "bytes": 45904
+  },
+  "h-fairy-r2-atk.webp": {
+   "v": "41ecab69",
+   "bytes": 31322
+  },
+  "h-fairy-r2-block.webp": {
+   "v": "37cb49f3",
+   "bytes": 22000
+  },
+  "h-fairy-r2-win.webp": {
+   "v": "0d97d806",
+   "bytes": 48372
+  },
+  "h-fairy-r2-poster.webp": {
+   "v": "7267c63f",
+   "bytes": 5208
+  },
+  "h-fairy-r3-idle.webp": {
+   "v": "14a46024",
+   "bytes": 50868
+  },
+  "h-fairy-r3-atk.webp": {
+   "v": "9030f736",
+   "bytes": 34804
+  },
+  "h-fairy-r3-block.webp": {
+   "v": "281fc022",
+   "bytes": 24584
+  },
+  "h-fairy-r3-win.webp": {
+   "v": "1c8eaad2",
+   "bytes": 52988
+  },
+  "h-fairy-r3-poster.webp": {
+   "v": "0bad5e5e",
+   "bytes": 5686
+  },
+  "h-fox-r1-idle.webp": {
+   "v": "fbbbb4e9",
+   "bytes": 50966
+  },
+  "h-fox-r1-atk.webp": {
+   "v": "70629ac6",
+   "bytes": 33548
+  },
+  "h-fox-r1-block.webp": {
+   "v": "07930d7d",
+   "bytes": 24518
+  },
+  "h-fox-r1-win.webp": {
+   "v": "a2a4e3c2",
+   "bytes": 50602
+  },
+  "h-fox-r1-poster.webp": {
+   "v": "b49ceb71",
+   "bytes": 4526
+  },
+  "h-fox-r2-idle.webp": {
+   "v": "5bad2fb2",
+   "bytes": 52520
+  },
+  "h-fox-r2-atk.webp": {
+   "v": "c164fa8f",
+   "bytes": 33854
+  },
+  "h-fox-r2-block.webp": {
+   "v": "d8158d5b",
+   "bytes": 21998
+  },
+  "h-fox-r2-win.webp": {
+   "v": "498e641b",
+   "bytes": 51242
+  },
+  "h-fox-r2-poster.webp": {
+   "v": "a7399384",
+   "bytes": 5242
+  },
+  "h-fox-r3-idle.webp": {
+   "v": "9cbe625b",
+   "bytes": 54936
+  },
+  "h-fox-r3-atk.webp": {
+   "v": "32272cb3",
+   "bytes": 36192
+  },
+  "h-fox-r3-block.webp": {
+   "v": "a1d0d324",
+   "bytes": 23556
+  },
+  "h-fox-r3-win.webp": {
+   "v": "6b358fed",
+   "bytes": 53772
+  },
+  "h-fox-r3-poster.webp": {
+   "v": "5d71b0a2",
+   "bytes": 5500
+  },
+  "h-ninja-r1-idle.webp": {
+   "v": "34ff90ba",
+   "bytes": 56110
+  },
+  "h-ninja-r1-atk.webp": {
+   "v": "440d518a",
+   "bytes": 36292
+  },
+  "h-ninja-r1-block.webp": {
+   "v": "bc7ef8ef",
+   "bytes": 26452
+  },
+  "h-ninja-r1-win.webp": {
+   "v": "d7c03583",
+   "bytes": 56740
+  },
+  "h-ninja-r1-poster.webp": {
+   "v": "6819603a",
+   "bytes": 4952
+  },
+  "h-ninja-r2-idle.webp": {
+   "v": "4dd06155",
+   "bytes": 53066
+  },
+  "h-ninja-r2-atk.webp": {
+   "v": "b7f0f61d",
+   "bytes": 35960
+  },
+  "h-ninja-r2-block.webp": {
+   "v": "3c4affcd",
+   "bytes": 23544
+  },
+  "h-ninja-r2-win.webp": {
+   "v": "b16cd33e",
+   "bytes": 52498
+  },
+  "h-ninja-r2-poster.webp": {
+   "v": "930dc3e3",
+   "bytes": 5588
+  },
+  "h-ninja-r3-idle.webp": {
+   "v": "53a4cd13",
+   "bytes": 53424
+  },
+  "h-ninja-r3-atk.webp": {
+   "v": "47379470",
+   "bytes": 39532
+  },
+  "h-ninja-r3-block.webp": {
+   "v": "0c014578",
+   "bytes": 26144
+  },
+  "h-ninja-r3-win.webp": {
+   "v": "d297c9f5",
+   "bytes": 57594
+  },
+  "h-ninja-r3-poster.webp": {
+   "v": "07d36113",
+   "bytes": 6052
+  },
+  "h-robot-r1-idle.webp": {
+   "v": "afda8bb7",
+   "bytes": 46932
+  },
+  "h-robot-r1-atk.webp": {
+   "v": "541c8cf6",
+   "bytes": 29750
+  },
+  "h-robot-r1-block.webp": {
+   "v": "05db87e1",
+   "bytes": 21676
+  },
+  "h-robot-r1-win.webp": {
+   "v": "eee593b6",
+   "bytes": 47480
+  },
+  "h-robot-r1-poster.webp": {
+   "v": "1b03d334",
+   "bytes": 4452
+  },
+  "h-robot-r2-idle.webp": {
+   "v": "e0207840",
+   "bytes": 54410
+  },
+  "h-robot-r2-atk.webp": {
+   "v": "886111dd",
+   "bytes": 34262
+  },
+  "h-robot-r2-block.webp": {
+   "v": "d47214e5",
+   "bytes": 23324
+  },
+  "h-robot-r2-win.webp": {
+   "v": "6fb00dc4",
+   "bytes": 54022
+  },
+  "h-robot-r2-poster.webp": {
+   "v": "3892b1eb",
+   "bytes": 5130
+  },
+  "h-robot-r3-idle.webp": {
+   "v": "a4a35fdc",
+   "bytes": 53310
+  },
+  "h-robot-r3-atk.webp": {
+   "v": "62dd2ab4",
+   "bytes": 33536
+  },
+  "h-robot-r3-block.webp": {
+   "v": "73edc884",
+   "bytes": 23282
+  },
+  "h-robot-r3-win.webp": {
+   "v": "9d6aa73b",
+   "bytes": 53222
+  },
+  "h-robot-r3-poster.webp": {
+   "v": "aa3e749a",
+   "bytes": 5646
+  },
+  "h-super-r1-idle.webp": {
+   "v": "4ce6385c",
+   "bytes": 47924
+  },
+  "h-super-r1-atk.webp": {
+   "v": "8356918b",
+   "bytes": 32876
+  },
+  "h-super-r1-block.webp": {
+   "v": "929f6fc8",
+   "bytes": 22578
+  },
+  "h-super-r1-win.webp": {
+   "v": "6a79b9d1",
+   "bytes": 51006
+  },
+  "h-super-r1-poster.webp": {
+   "v": "78439972",
+   "bytes": 4618
+  },
+  "h-super-r2-idle.webp": {
+   "v": "ffbb1bce",
+   "bytes": 53642
+  },
+  "h-super-r2-atk.webp": {
+   "v": "400d0f65",
+   "bytes": 36210
+  },
+  "h-super-r2-block.webp": {
+   "v": "6a996eec",
+   "bytes": 24202
+  },
+  "h-super-r2-win.webp": {
+   "v": "b40421fc",
+   "bytes": 56342
+  },
+  "h-super-r2-poster.webp": {
+   "v": "3b3ee6e4",
+   "bytes": 5154
+  },
+  "h-super-r3-idle.webp": {
+   "v": "375e517f",
+   "bytes": 51138
+  },
+  "h-super-r3-atk.webp": {
+   "v": "99277817",
+   "bytes": 34904
+  },
+  "h-super-r3-block.webp": {
+   "v": "76d91138",
+   "bytes": 23522
+  },
+  "h-super-r3-win.webp": {
+   "v": "0a153e98",
+   "bytes": 54440
+  },
+  "h-super-r3-poster.webp": {
+   "v": "3c5a092e",
+   "bytes": 5644
+  },
+  "h-unicorn-r1-idle.webp": {
+   "v": "da718778",
+   "bytes": 42988
+  },
+  "h-unicorn-r1-atk.webp": {
+   "v": "fc04e877",
+   "bytes": 28208
+  },
+  "h-unicorn-r1-block.webp": {
+   "v": "36e9b041",
+   "bytes": 21472
+  },
+  "h-unicorn-r1-win.webp": {
+   "v": "05d318c1",
+   "bytes": 41008
+  },
+  "h-unicorn-r1-poster.webp": {
+   "v": "17dff021",
+   "bytes": 4384
+  },
+  "h-unicorn-r2-idle.webp": {
+   "v": "4990369e",
+   "bytes": 43706
+  },
+  "h-unicorn-r2-atk.webp": {
+   "v": "e79e9497",
+   "bytes": 28350
+  },
+  "h-unicorn-r2-block.webp": {
+   "v": "23ba1d24",
+   "bytes": 22130
+  },
+  "h-unicorn-r2-win.webp": {
+   "v": "f08539ed",
+   "bytes": 42278
+  },
+  "h-unicorn-r2-poster.webp": {
+   "v": "eb3461b7",
+   "bytes": 4496
+  },
+  "h-unicorn-r3-idle.webp": {
+   "v": "f5c77218",
+   "bytes": 45112
+  },
+  "h-unicorn-r3-atk.webp": {
+   "v": "22ca7e51",
+   "bytes": 29468
+  },
+  "h-unicorn-r3-block.webp": {
+   "v": "923661f4",
+   "bytes": 22856
+  },
+  "h-unicorn-r3-win.webp": {
+   "v": "037ef9f4",
+   "bytes": 43446
+  },
+  "h-unicorn-r3-poster.webp": {
+   "v": "4dc90d22",
+   "bytes": 4548
+  },
+  "h-wizard-r1-idle.webp": {
+   "v": "cac78467",
+   "bytes": 54400
+  },
+  "h-wizard-r1-atk.webp": {
+   "v": "615e0516",
+   "bytes": 34650
+  },
+  "h-wizard-r1-block.webp": {
+   "v": "e24dde03",
+   "bytes": 24832
+  },
+  "h-wizard-r1-win.webp": {
+   "v": "7f3349e8",
+   "bytes": 55524
+  },
+  "h-wizard-r1-poster.webp": {
+   "v": "ffe0261a",
+   "bytes": 4850
+  },
+  "h-wizard-r2-idle.webp": {
+   "v": "d7c3081d",
+   "bytes": 57712
+  },
+  "h-wizard-r2-atk.webp": {
+   "v": "3f505094",
+   "bytes": 37652
+  },
+  "h-wizard-r2-block.webp": {
+   "v": "1a1b5fd6",
+   "bytes": 26436
+  },
+  "h-wizard-r2-win.webp": {
+   "v": "eaf6eb9d",
+   "bytes": 56626
+  },
+  "h-wizard-r2-poster.webp": {
+   "v": "d0bbf3cf",
+   "bytes": 5432
+  },
+  "h-wizard-r3-idle.webp": {
+   "v": "9cbbbe63",
+   "bytes": 53332
+  },
+  "h-wizard-r3-atk.webp": {
+   "v": "c47e8b4a",
+   "bytes": 35274
+  },
+  "h-wizard-r3-block.webp": {
+   "v": "df2036a6",
+   "bytes": 25480
+  },
+  "h-wizard-r3-win.webp": {
+   "v": "a9480589",
+   "bytes": 52724
+  },
+  "h-wizard-r3-poster.webp": {
+   "v": "6f968ee6",
+   "bytes": 5740
+  },
+  "s-atlas.webp": {
+   "v": "8e48be04",
+   "bytes": 27294
+  },
+  "p-atlas.webp": {
+   "v": "ed2b8d5c",
+   "bytes": 27618
+  }
+ }
+}

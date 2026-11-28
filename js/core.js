@@ -18,65 +18,8 @@
 // ============================================================
 // SCRATCH PAD
 // ============================================================
-let scratchTool='pen',scratchSize=2,scratchColor='#ffffff',drawing=false,lastX=0,lastY=0;
-const cvs=document.getElementById('scratch-canvas');
-const ctx2=cvs.getContext('2d',{willReadFrequently:true}); // resizeCanvas leser bildet (getImageData)
-
-function resizeCanvas(){
-  const w=cvs.parentElement.clientWidth||290;
-  const img=ctx2.getImageData(0,0,cvs.width,cvs.height);
-  cvs.width=w; cvs.height=Math.max(360,window.innerHeight*.52);
-  ctx2.putImageData(img,0,0);
-}
-function getPos(e){
-  const r=cvs.getBoundingClientRect(),src=e.touches?e.touches[0]:e;
-  return{x:(src.clientX-r.left)*(cvs.width/r.width),y:(src.clientY-r.top)*(cvs.height/r.height)};
-}
-function startDraw(e){e.preventDefault();drawing=true;const p=getPos(e);lastX=p.x;lastY=p.y;}
-function doDraw(e){
-  if(!drawing)return;e.preventDefault();
-  const p=getPos(e);
-  ctx2.beginPath();ctx2.lineCap='round';ctx2.lineJoin='round';
-  if(scratchTool==='erase'){ctx2.globalCompositeOperation='destination-out';ctx2.lineWidth=scratchSize*4;}
-  else{ctx2.globalCompositeOperation='source-over';ctx2.strokeStyle=scratchColor;ctx2.lineWidth=scratchSize;}
-  ctx2.moveTo(lastX,lastY);ctx2.lineTo(p.x,p.y);ctx2.stroke();
-  lastX=p.x;lastY=p.y;
-}
-function endDraw(){drawing=false;ctx2.globalCompositeOperation='source-over';}
-cvs.addEventListener('mousedown',startDraw);cvs.addEventListener('mousemove',doDraw);
-cvs.addEventListener('mouseup',endDraw);cvs.addEventListener('mouseleave',endDraw);
-cvs.addEventListener('touchstart',startDraw,{passive:false});cvs.addEventListener('touchmove',doDraw,{passive:false});
-cvs.addEventListener('touchend',endDraw);
-
-function setTool(t){
-  scratchTool=t;
-  document.getElementById('tool-pen').classList.toggle('active',t==='pen');
-  document.getElementById('tool-erase').classList.toggle('active',t==='erase');
-  cvs.className='scratch-canvas'+(t==='erase'?' erase':'');
-}
-function setSize(s,id){
-  scratchSize=s;
-  ['sz-s','sz-m','sz-l'].forEach(i=>document.getElementById(i).classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function setColor(c,id){
-  scratchColor=c;scratchTool='pen';setTool('pen');
-  ['col-w','col-c','col-g','col-r','col-gold'].forEach(i=>document.getElementById(i).classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function clearScratch(){
-  if(scratchMode==='draw')ctx2.clearRect(0,0,cvs.width,cvs.height);
-  else document.getElementById('scratch-text').value='';
-}
-let scratchMode='draw';
-function switchTab(mode){
-  scratchMode=mode;
-  document.getElementById('tab-draw').classList.toggle('active',mode==='draw');
-  document.getElementById('tab-write').classList.toggle('active',mode==='write');
-  document.getElementById('scratch-draw').style.display=mode==='draw'?'block':'none';
-  document.getElementById('scratch-write').classList.toggle('active',mode==='write');
-  if(mode==='draw')resizeCanvas();
-}
+// Kladdeboka er bare et skrivefelt (tegning er fjernet etter ønske fra forelder)
+function clearScratch(){const tx=document.getElementById('scratch-text');if(tx)tx.value='';}
 let scratchVisible=false;
 function toggleScratch(){
   const col=document.getElementById('scratch-col');
@@ -84,10 +27,8 @@ function toggleScratch(){
   col.classList.toggle('mobile-hidden',!scratchVisible);
   document.getElementById('scratch-toggle').textContent=scratchVisible?'✖️':'✏️';
   document.querySelectorAll('.scratch-top-btn').forEach(b=>b.textContent=scratchVisible?'✖️':'✏️');
-  if(scratchVisible)setTimeout(()=>{resizeCanvas();if(window.innerWidth<=920)col.scrollIntoView({behavior:'smooth',block:'start'});},50); // mobil: kladdeboka ligger under spillet
+  if(scratchVisible)setTimeout(()=>{if(window.innerWidth<=920)col.scrollIntoView({behavior:'smooth',block:'start'});},50); // mobil: kladdeboka ligger under spillet
 }
-window.addEventListener('resize',resizeCanvas);
-setTimeout(()=>resizeCanvas(),200);
 
 // ============================================================
 // STORY
@@ -102,6 +43,7 @@ function storyShow(i){
   if(ov)ov.classList.toggle('ask',!!ask); // ingen «Hopp over» på spørsmålet om klasse
   if(ask&&typeof ttsNoteMaybe==='function')ttsNoteMaybe(); // ingen norsk stemme: beskjed til den voksne (speech.js)
   storySay();
+  if(typeof figStory==='function')figStory(); // Nullius som figur (figures.js)
 }
 // Les panelet høyt (når opplesing er på); force = 🔊-knappen
 function storySay(force){
@@ -160,6 +102,7 @@ function buildSidekickGrid(){
     const d=document.createElement('div');
     d.className='sk-card'+(i===0?' selected':'');
     d.innerHTML=`<span class="sk-emoji">${s.emoji}</span><div class="sk-name">${s.name}</div>`;
+    if(typeof figSidekick==='function')figSidekick(d.querySelector('.sk-emoji'),i); // figur fra atlas (figures.js)
     d.onclick=()=>{selectedSidekick=i;document.querySelectorAll('.sk-card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');};
     g.appendChild(d);
   });
@@ -182,6 +125,7 @@ function sidekickReact(type){
 function updateSidekick(){
   const el=document.getElementById('hud-sidekick');
   if(el)el.textContent=getSidekickEmoji();
+  if(el&&typeof figSidekick==='function')figSidekick(el,parseInt(localStorage.getItem('mh_sidekick')||'0')||0);
 }
 
 // ============================================================
@@ -221,8 +165,8 @@ const CHARS=[
   {emoji:'🧙',name:'Trollmannen'},{emoji:'🦸',name:'Superhelten'},
   {emoji:'🥷',name:'Ninjaen'},{emoji:'🧚',name:'Alven'},
   {emoji:'🤖',name:'Roboten'},{emoji:'🦊',name:'Reven'},
-  {emoji:'🐉',name:'Dragen'},{emoji:'⚡',name:'Lynet'},
-  {emoji:'🦄',name:'Enhørningen'},{emoji:'🚀',name:'Raketten'},
+  {emoji:'🐉',name:'Dragen'},{emoji:'🦖',name:'Lyn-dinoen'},
+  {emoji:'🦄',name:'Enhørningen'},{emoji:'🧑‍🚀',name:'Rakett-astronauten'},
 ];
 
 // Helten forblir helten: samme figur hele veien. Rangen gir pynt rundt figuren (glød, vinger, krone, stjernestøv – fun.js/css/fun.css).
@@ -230,8 +174,8 @@ const CHARS=[
 // lvl = gammel nivågrense (brukes bare til farge på heltekortet); gift = det helten får.
 const RANKS = [
   {name:'Lærling 🌱', lvl:1,  color:'#8878cc', gift:'mot',         desc:'Du har akkurat begynt eventyret ditt!'},
-  {name:'Kriger ⚔️',  lvl:3,  color:'#06d6ff', gift:'glød',        desc:'Du slo din første boss!'},
-  {name:'Mester 🔥',  lvl:5,  color:'#ff6b35', gift:'vinger',      desc:'To bosser er slått!'},
+  {name:'Kriger ⚔️',  lvl:3,  color:'#06d6ff', gift:'vinger',      desc:'Du slo din første boss!'},
+  {name:'Mester 🔥',  lvl:5,  color:'#ff6b35', gift:'gullvinger',  desc:'To bosser er slått!'},
   {name:'Legende ⭐', lvl:8,  color:'#ffd93d', gift:'krone',       desc:'Fire bosser er slått!'},
   {name:'Mattegud 🌌',lvl:12, color:'#a855f7', gift:'stjernestøv', desc:'Alle bossene er slått!'},
 ];
@@ -242,7 +186,7 @@ function getCharEmoji(charIdx) { return CHARS[charIdx]?.emoji || (typeof getPlay
 
 function getCharIdx() {
   const v = localStorage.getItem('mh_char_idx');
-  if(v == null && typeof getPlayer === 'function') { const i = CHARS.findIndex(c => c.emoji === getPlayer().emoji); if(i >= 0) return i; }
+  if(v == null && typeof getPlayer === 'function') { const e = getPlayer().emoji, i = CHARS.findIndex(c => c.emoji === e); if(i >= 0) return i; if(e === '⚡') return 7; if(e === '🚀') return 9; } // ⚡/🚀 ble Lyn-dinoen og Rakett-astronauten
   return parseInt(v || '0') || 0;
 }
 
@@ -260,6 +204,7 @@ function showEvolution() {
   const eo = document.getElementById('evo-old'), en = document.getElementById('evo-new');
   eo.textContent = emoji; en.textContent = emoji; // samme helt, nå sterkere
   if(typeof applyHeroDecor === 'function') { applyHeroDecor(eo, {pet:false, tier:from}); applyHeroDecor(en, {pet:false, tier:to}); }
+  if(typeof figHero === 'function') { figHeroPoster(eo, {rank:from}); figHero(en, 'win', {rank:to, once:true}); } // figur: gammel rang, så seier i ny rang
   document.getElementById('evo-rank-badge').textContent = rank.name;
   document.getElementById('evo-rank-badge').style.background = `linear-gradient(135deg,${rank.color},${rank.color}99)`;
   document.getElementById('evo-desc').textContent = rank.desc;
@@ -284,6 +229,7 @@ function updatePlayerEmoji() {
   // Update everywhere
   document.getElementById('hud-char').textContent = emoji;
   document.getElementById('player-avatar').textContent = emoji;
+  if(typeof figHero === 'function') { figHeroPoster(document.getElementById('hud-char')); figHero(document.getElementById('player-avatar')); } // figur (figures.js), emoji er reserven
   const p = getPlayer();
   p.emoji = emoji;
   // HUD level label with rank badge
@@ -298,9 +244,10 @@ function buildCharGrid(){
     const d=document.createElement('div');
     d.className='char-card'+(i===0?' selected':'');
     d.innerHTML=`<span class="char-emoji">${c.emoji}</span><div class="char-name">${c.name}</div>`;
-    d.onclick=()=>{selectedChar=i;document.querySelectorAll('.char-card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');};
+    d.onclick=()=>{selectedChar=i;document.querySelectorAll('.char-card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');if(typeof figPick==='function')figPick(d.querySelector('.char-emoji'),i);};
     g.appendChild(d);
   });
+  if(typeof figCharGrid==='function')figCharGrid(); // plakater (figures.js)
 }
 
 function saveCharacter(){
